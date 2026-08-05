@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>采集信息-链接过期</title>
+  <style>
+    :root {
+      --c9: #0f172a;
+      --c7: #334155;
+      --c5: #64748b;
+      --c4: #94a3b8;
+      --c3: #cbd5e1;
+      --dv: #f1f5f9;
+      --sf: #fff;
+      --f: "Inter", "Noto Sans SC", "PingFang SC", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      display: grid;
+      place-items: center;
+      color: var(--c9);
+      background: #dfe6ec;
+      font-family: var(--f);
+      letter-spacing: 0;
+    }
+
+    button { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; }
+
+    .phone {
+      position: relative;
+      width: min(100vw, 430px);
+      height: 100dvh;
+      min-height: 720px;
+      max-height: 932px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--sf);
+      box-shadow: 0 14px 42px rgba(15, 23, 42, .14);
+    }
+
+    .status-bar {
+      flex: 0 0 54px;
+      padding: 16px 21px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      background: var(--sf);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .status-left { display: flex; align-items: center; gap: 9px; }
+    .mini-mark {
+      width: 14px;
+      height: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      transform: rotate(22deg);
+    }
+    .mini-mark span:nth-child(1) { background: #18b3e6; border-radius: 9px 0 9px 0; }
+    .mini-mark span:nth-child(2) { background: #46c37b; border-radius: 0 9px 0 9px; }
+    .status-dots { display: flex; gap: 4px; margin-left: 5px; }
+    .status-dots i { width: 3px; height: 3px; border-radius: 50%; background: var(--c9); }
+    .signal-wrap { display: flex; align-items: center; gap: 7px; }
+    .network { display: grid; gap: 2px; color: #30343b; font-size: 10px; font-weight: 800; line-height: .75; text-align: center; }
+    .bars { height: 17px; display: flex; align-items: flex-end; gap: 2px; }
+    .bars i { width: 3px; border-radius: 2px 2px 0 0; background: #353941; }
+    .bars i:nth-child(1) { height: 5px; }
+    .bars i:nth-child(2) { height: 8px; }
+    .bars i:nth-child(3) { height: 12px; }
+    .bars i:nth-child(4) { height: 16px; }
+    .battery {
+      min-width: 26px;
+      height: 18px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      color: #26313e;
+      background: #dce4ed;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .topbar {
+      flex: 0 0 56px;
+      display: grid;
+      grid-template-columns: 98px 1fr 58px;
+      align-items: center;
+      padding: 0 14px;
+      background: var(--sf);
+      border-bottom: 1px solid var(--dv);
+    }
+    .nav-left { display: flex; align-items: center; gap: 18px; }
+    .nav-btn {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+    }
+    .topbar h1 {
+      margin: 0;
+      color: #111;
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 500;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .more { justify-self: end; display: flex; align-items: center; gap: 5px; width: 44px; height: 44px; justify-content: center; }
+    .more i { width: 4px; height: 4px; border-radius: 50%; background: #111; }
+
+    .content {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--sf);
+    }
+    .empty-state {
+      position: absolute;
+      top: 48%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
+      display: grid;
+      justify-items: center;
+      gap: 25px;
+      padding: 0 32px;
+      text-align: center;
+    }
+    .planet {
+      width: 142px;
+      height: 112px;
+      opacity: .66;
+    }
+    .empty-text {
+      margin: 0;
+      color: #111;
+      font-size: 16px;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    .browser-bar {
+      flex: 0 0 54px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: center;
+      background: var(--sf);
+      color: #9ca3af;
+    }
+    .browser-bar span {
+      min-height: 44px;
+      display: grid;
+      place-items: center;
+    }
+
+    @media (max-width: 430px) {
+      body { display: block; background: var(--sf); }
+      .phone { width: 100vw; max-height: none; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" aria-label="链接过期">
+    <header class="status-bar" aria-label="手机状态栏">
+      <div class="status-left">
+        <span>15:14</span>
+        <span class="mini-mark" aria-hidden="true"><span></span><span></span></span>
+        <span class="status-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      </div>
+      <div class="signal-wrap" aria-hidden="true">
+        <span class="network"><span>5G</span><span>↕</span></span>
+        <span class="bars"><i></i><i></i><i></i><i></i></span>
+        <span class="network"><span>4G</span><span>&nbsp;</span></span>
+        <span class="bars"><i></i><i></i><i></i><i></i></span>
+        <span class="battery">63</span>
+      </div>
+    </header>
+
+    <nav class="topbar" aria-label="页面导航">
+      <div class="nav-left">
+        <button class="nav-btn" type="button" aria-label="返回">
+          <svg width="17" height="30" viewBox="0 0 17 30" fill="none" aria-hidden="true"><path d="M14.5 3L3 15l11.5 12" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="nav-btn" type="button" aria-label="关闭">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M3.5 3.5l19 19M22.5 3.5l-19 19" stroke="#111" stroke-width="3" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <h1>您好，此链接已经过期</h1>
+      <button class="more" type="button" aria-label="更多"><i></i><i></i><i></i></button>
+    </nav>
+
+    <section class="content">
+      <div class="empty-state">
+        <svg class="planet" viewBox="0 0 160 126" fill="none" aria-hidden="true">
+          <ellipse cx="82" cy="65" rx="49" ry="49" fill="#dedede"/>
+          <path d="M36 69c12 12 37 22 67 25 29 3 53-1 60-11" stroke="#c9c9c9" stroke-width="4" stroke-linecap="round"/>
+          <path d="M13 58c1-15 31-24 70-20 41 4 73 22 72 40-.1 5-3 9-8 12" stroke="#cfcfcf" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="62" cy="56" r="17" fill="#cfcfcf"/>
+          <path d="M103 18c8 5 15 12 20 21-14 2-25-3-31-15 4-3 7-5 11-6z" fill="#c7c7c7"/>
+          <path d="M46 94c10 14 25 21 42 20-3-15-17-26-37-29-2 3-4 6-5 9z" fill="#d1d1d1"/>
+          <circle cx="129" cy="25" r="8" fill="#d2d2d2"/>
+          <circle cx="141" cy="52" r="10" fill="#cfcfcf"/>
+          <circle cx="31" cy="73" r="10" fill="#d2d2d2"/>
+          <circle cx="129" cy="81" r="12" fill="#c7c7c7"/>
+          <path d="M128 93c12 2 24-5 28-17" stroke="#c9c9c9" stroke-width="4" stroke-linecap="round"/>
+          <path d="M123 69c2-12 12-19 24-16" stroke="#bdbdbd" stroke-width="4" stroke-linecap="round"/>
+          <path d="M124 78c4-9 12-13 22-11" stroke="#bdbdbd" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <p class="empty-text">您好，此链接已经过期</p>
+      </div>
+    </section>
+
+    <footer class="browser-bar" aria-label="浏览器工具栏">
+      <span aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 4.5h6M6 9h6M6 13.5h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </span>
+      <span aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="4" y="5" width="9" height="7" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M13 7.5h1.5a1.5 1.5 0 010 3H13M7 13.5h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </span>
+      <span aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3.8l1.45 2.94 3.25.47-2.35 2.3.55 3.24L9 11.21l-2.9 1.54.55-3.24-2.35-2.3 3.25-.47L9 3.8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      </span>
+    </footer>
+  </main>
+</body>
+</html>
