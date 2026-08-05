@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>入职配置 - 扫码报道配置</title>
+  <title>预入职管理全景图</title>
   <style>
     :root {
       --blue: #1677ff;
@@ -15078,8 +15078,8 @@
       </div>
       <div class="nav-item employment-parent" data-nav-parent="employment">● 任职管理 <span class="nav-arrow">⌃</span></div>
       <div class="nav-children employment-children">
-        <div class="nav-item child" data-page="onboardingPanorama">预入职管理全景图</div>
-        <div class="nav-item child active" data-page="employmentOnboarding">入职管理</div>
+        <div class="nav-item child active" data-page="onboardingPanorama">预入职管理全景图</div>
+        <div class="nav-item child" data-page="employmentOnboarding">入职管理</div>
         <div class="nav-item child" data-page="onboardingPlans">入职方案管理</div>
         <div class="nav-item child">转正流程</div>
         <div class="nav-item child">调动流程</div>
@@ -15105,7 +15105,7 @@
     <main class="main">
       <header class="topbar">
         <div class="breadcrumb">
-          <span>入职配置</span><span>/</span><strong id="breadcrumbCurrent">扫码报道配置</strong>
+          <span>任职管理</span><span>/</span><strong id="breadcrumbCurrent">预入职管理全景图</strong>
         </div>
         <div class="top-actions" id="fieldTopActions">
           <button class="btn primary" type="button" id="openCreate"><span class="icon">＋</span>新建自定义字段</button>
@@ -16130,7 +16130,7 @@
                 <span class="stage-no">10</span>
                 <div>
                   <h2>扫码报道提醒</h2>
-                  <p>签到同步 · 入职提醒</p>
+                  <p>签到同步 · 入职提醒 · 状态跟踪</p>
                 </div>
               </div>
               <div class="role-group" data-panorama-role="hrbp">
@@ -16138,6 +16138,12 @@
                 <div class="scenario-card compact">
                   <div class="scenario-title">接收扫码报道提醒</div>
                   <div class="scenario-desc">候选人扫码报道后，HRBP 接收入职提醒。</div>
+                  <span class="scenario-arrow">→</span>
+                  <div class="terminal-tags"><span class="terminal-tag pc">PC</span></div>
+                </div>
+                <div class="scenario-card compact">
+                  <div class="scenario-title">扫码报道跟踪</div>
+                  <div class="scenario-desc">查看候选人扫码报道状态，跟进入职报道进度。</div>
                   <span class="scenario-arrow">→</span>
                   <div class="terminal-tags"><span class="terminal-tag pc">PC</span></div>
                 </div>
@@ -19334,6 +19340,8 @@
           reminderEnabled: true,
           reminderTemplate: "入职信息采集催办通知模板",
           reminderChannels: ["邮件", "短信"],
+          returnCollectTemplate: "退回采集信息通知模板",
+          returnCollectChannels: ["邮件", "短信"],
           reminderDays: 3,
           reminderInterval: 1,
           reminderTime: "09:00",
@@ -19412,6 +19420,8 @@
           reminderEnabled: true,
           reminderTemplate: "入职信息采集催办通知模板",
           reminderChannels: ["邮件"],
+          returnCollectTemplate: "退回采集信息通知模板",
+          returnCollectChannels: ["邮件"],
           reminderDays: 3,
           reminderInterval: 2,
           reminderTime: "10:30",
@@ -20026,6 +20036,7 @@
       "待入职资料填写提醒模板",
       "劳务转正式信息采集通知模板",
       "入职信息采集催办通知模板",
+      "退回采集信息通知模板",
       "单条入职准备事项待办通知模板",
       "合并入职准备事项待办通知模板",
       "入职准备事项催办通知模板"
@@ -21846,7 +21857,7 @@
       updateAutoStopState();
       updateReminderVisibility();
       renderQrReportConfigs();
-      showWorkspace("employmentOnboarding");
+      showWorkspace("onboardingPanorama");
     }
 
     function formatNow() {
@@ -24682,6 +24693,8 @@
           reminderEnabled: true,
           reminderTemplate: "入职信息采集催办通知模板",
           reminderChannels: ["邮件"],
+          returnCollectTemplate: "退回采集信息通知模板",
+          returnCollectChannels: ["邮件"],
           reminderDays: 3,
           reminderInterval: 1,
           reminderTime: "09:00",
@@ -25400,6 +25413,19 @@
 
         <div class="plan-form-block">
           <div class="plan-form-block-head">
+            <span class="plan-form-block-title">退回采集信息通知模板</span>
+            <span class="plan-form-block-desc">可设置退回采集信息时使用的通知模板，系统会自动给待入职员工发送退回采集信息通知</span>
+          </div>
+          ${renderPlanMessageConfigRow({
+            templateId: "planReturnCollectTemplate",
+            templateValue: rule.returnCollectTemplate || "退回采集信息通知模板",
+            rule,
+            channelField: "returnCollectChannels"
+          })}
+        </div>
+
+        <div class="plan-form-block">
+          <div class="plan-form-block-head">
             <span class="plan-form-block-title">信息采集链接有效期</span>
             <span class="plan-form-block-desc">发送信息采集后一段时间内有效，过期需重新发送</span>
           </div>
@@ -25914,6 +25940,7 @@
       };
       const notifyChannels = getChannelValues("notifyChannels", previousCollectRule.notifyChannels || ["邮件"]);
       const reminderChannels = getChannelValues("reminderChannels", previousCollectRule.reminderChannels || ["邮件"]);
+      const returnCollectChannels = getChannelValues("returnCollectChannels", previousCollectRule.returnCollectChannels || ["邮件"]);
       const singleTodoChannels = getChannelValues("singleTodoChannels", previousPrepareRule.singleTodoChannels || ["邮件"]);
       const mergedTodoChannels = getChannelValues("mergedTodoChannels", previousPrepareRule.mergedTodoChannels || ["邮件"]);
       const prepareReminderChannels = getChannelValues("prepareReminderChannels", previousPrepareRule.prepareReminderChannels || previousPrepareRule.reminderChannels || ["邮件"]);
@@ -25939,6 +25966,8 @@
         reminderEnabled: document.querySelector("#planReminderEnabled").checked,
         reminderTemplate: document.querySelector("#planReminderTemplate")?.value || previousCollectRule.reminderTemplate || "入职信息采集催办通知模板",
         reminderChannels,
+        returnCollectTemplate: document.querySelector("#planReturnCollectTemplate")?.value || previousCollectRule.returnCollectTemplate || "退回采集信息通知模板",
+        returnCollectChannels,
         reminderDays: Number(document.querySelector("#planReminderDays")?.value ?? previousCollectRule.reminderDays ?? 3),
         reminderInterval: Number(document.querySelector("#planReminderInterval")?.value ?? previousCollectRule.reminderInterval ?? 1),
         reminderTime: document.querySelector("#planReminderTime")?.value || previousCollectRule.reminderTime || "09:00",
@@ -28553,7 +28582,7 @@
           return;
         }
         if (stageTitle === "扫码报道提醒") {
-          openPanoramaNotification();
+          title === "扫码报道跟踪" ? openPanoramaOnboardingList() : openPanoramaNotification();
           return;
         }
         if (stageTitle === "取消入职") {
