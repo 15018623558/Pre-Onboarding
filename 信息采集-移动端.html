@@ -1,0 +1,1621 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>信息采集-移动端</title>
+  <style>
+    :root {
+      --pr: #2563eb;
+      --pr50: #eff6ff;
+      --pr100: #dbeafe;
+      --pr700: #1d4ed8;
+      --ro: #f43f5e;
+      --ro50: #fff1f2;
+      --ro100: #ffe4e6;
+      --em: #10b981;
+      --em50: #ecfdf5;
+      --c9: #0f172a;
+      --c7: #334155;
+      --c5: #64748b;
+      --c4: #94a3b8;
+      --c3: #cbd5e1;
+      --c2: #e2e8f0;
+      --c1: #f1f5f8;
+      --sf: #fff;
+      --bg: #eef2f7;
+      --dv: #f1f5f9;
+      --bd: rgba(15, 23, 42, .06);
+      --f: "Inter", "Noto Sans SC", "PingFang SC", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --m: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      display: grid;
+      place-items: center;
+      color: var(--c9);
+      background: #dfe6ec;
+      font-family: var(--f);
+      letter-spacing: 0;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .icon { display: block; pointer-events: none; }
+
+    .app {
+      position: relative;
+      width: min(100vw, 430px);
+      height: 100dvh;
+      min-height: 720px;
+      max-height: 932px;
+      overflow: hidden;
+      background: var(--bg);
+      box-shadow: 0 14px 42px rgba(15, 23, 42, .14);
+    }
+    .status-bar {
+      height: 42px;
+      padding: 12px 18px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      color: var(--c9);
+      background: var(--sf);
+      font-size: 14px;
+      font-weight: 750;
+    }
+    .status-right { display: flex; align-items: center; gap: 8px; }
+    .battery { padding: 2px 8px; border-radius: 999px; background: #e8eef6; }
+    .view-host { height: calc(100% - 42px); }
+    .view { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+
+    .topbar {
+      flex: 0 0 58px;
+      padding: 0 14px;
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+      background: var(--sf);
+      border-bottom: 1px solid var(--dv);
+    }
+    .topbar h1 { margin: 0; font-size: 18px; line-height: 1.2; font-weight: 800; text-align: center; }
+    .icon-button {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: var(--c7);
+      background: transparent;
+    }
+    .icon-button.primary { color: var(--pr); }
+    .icon-button:active, .primary-button:active, .secondary-button:active { transform: scale(.97); }
+
+    .anchor-nav {
+      flex: 0 0 44px;
+      padding: 0 10px;
+      display: flex;
+      align-items: stretch;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      background: var(--sf);
+      border-bottom: 1px solid var(--c2);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
+      scroll-behavior: smooth;
+    }
+    .anchor-nav::-webkit-scrollbar { display: none; }
+    .anchor-item {
+      position: relative;
+      flex: 0 0 auto;
+      height: 44px;
+      padding: 0 12px;
+      color: var(--c5);
+      background: transparent;
+      font-size: 14px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    .anchor-item.active { color: var(--pr); font-weight: 750; }
+    .anchor-item.active::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 0;
+      height: 2px;
+      border-radius: 2px 2px 0 0;
+      background: var(--pr);
+    }
+
+    .home-scroll, .detail-scroll, .editor-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      background: var(--bg);
+    }
+    .welcome {
+      margin-bottom: 10px;
+      padding: 18px 16px 16px;
+      color: #fff;
+      background: var(--pr);
+    }
+    .welcome h2 { margin: 0 0 5px; font-size: 18px; line-height: 1.3; font-weight: 800; }
+    .welcome p { margin: 0; font-size: 11px; line-height: 1.45; opacity: .88; }
+
+    .reject-notice {
+      margin: 0 16px 10px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--ro100);
+      border-radius: 12px;
+      color: var(--c9);
+      background: var(--ro50);
+      box-shadow: 0 1px 3px rgba(244, 63, 94, .08);
+    }
+    .reject-icon {
+      flex: 0 0 28px;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: var(--ro);
+      background: var(--sf);
+    }
+    .reject-content { min-width: 0; }
+    .reject-reason {
+      margin: 0;
+      color: var(--c7);
+      font-size: 12px;
+      line-height: 1.55;
+      font-weight: 650;
+      word-break: break-word;
+    }
+
+    .module-section {
+      margin: 0 0 10px;
+      padding: 8px 16px 14px;
+      background: var(--sf);
+      border-top: 1px solid rgba(15, 23, 42, .04);
+      border-bottom: 1px solid var(--bd);
+      scroll-margin-top: 8px;
+    }
+    .module-head {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .module-title {
+      position: relative;
+      min-width: 0;
+      padding-left: 10px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .module-title::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 3px;
+      height: 18px;
+      border-radius: 3px;
+      background: var(--pr);
+      transform: translateY(-50%);
+    }
+    .module-required-star {
+      color: var(--ro);
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 800;
+    }
+    .record-count { color: var(--c5); font-size: 12px; font-weight: 650; white-space: nowrap; }
+    .module-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; }
+    .module-hint {
+      margin: 6px 0 10px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: rgba(37, 99, 235, .06);
+      color: var(--c5);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .new-button {
+      position: relative;
+      height: 36px;
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--pr);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, .2);
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .new-button::before {
+      content: "";
+      position: absolute;
+      inset: -4px;
+    }
+    .new-button .icon { width: 15px; height: 15px; }
+    .edit-employee {
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--pr100);
+      border-radius: 7px;
+      color: var(--pr);
+      background: var(--pr50);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .display-row {
+      min-height: 42px;
+      padding: 7px 12px;
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--dv);
+      font-size: 14px;
+    }
+    .display-row:last-child { border-bottom: 0; }
+    .display-label { color: var(--c5); font-size: 14px; line-height: 1.4; }
+    .display-label.has-help { display: inline-flex; align-items: center; gap: 5px; }
+    .display-value { min-width: 0; color: var(--c9); font-size: 14px; line-height: 1.45; font-weight: 650; text-align: right; word-break: break-word; }
+    .display-value.muted { color: var(--c4); font-weight: 500; }
+    .display-value.mono { font-family: var(--m); font-size: 14px; }
+    .display-row.file-display { display: block; padding-top: 10px; padding-bottom: 10px; }
+    .file-display .display-label { display: block; margin-bottom: 8px; }
+    .file-tiles { display: flex; flex-wrap: wrap; gap: 8px; }
+    .file-tile {
+      width: 72px;
+      min-height: 58px;
+      padding: 7px 5px;
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      border: 1px solid var(--c2);
+      border-radius: 6px;
+      color: var(--c5);
+      background: #f8fafc;
+      font-size: 9px;
+      text-align: center;
+      overflow: hidden;
+    }
+    .file-tile.image { color: #0e7490; background: #ecfeff; }
+    .file-name { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .record-card {
+      margin-bottom: 10px;
+      overflow: hidden;
+      border: 1px solid var(--c2);
+      border-radius: 8px;
+      background: var(--sf);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
+    }
+    .record-head {
+      height: 46px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--dv);
+    }
+    .record-index { color: var(--c5); font-size: 13px; font-weight: 700; }
+    .record-actions { display: flex; gap: 6px; }
+    .record-action {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+    }
+    .record-action::before {
+      content: "";
+      position: absolute;
+      inset: -6px;
+    }
+    .record-action .icon { width: 16px; height: 16px; }
+    .record-action.edit { color: var(--pr); background: var(--pr50); }
+    .record-action.delete { color: var(--ro); background: var(--ro50); }
+    .view-detail {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      color: var(--pr);
+      background: var(--sf);
+      border-top: 1px solid var(--dv);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .module-toggle, .employee-toggle {
+      width: 100%;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      color: var(--c5);
+      background: var(--sf);
+      border-top: 1px solid var(--c2);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .empty-state {
+      min-height: 116px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--c2);
+      border-radius: 8px;
+      color: var(--c4);
+      background: var(--sf);
+      font-size: 12px;
+    }
+    .empty-state span { display: grid; justify-items: center; gap: 7px; }
+
+    .bottom-bar {
+      flex: 0 0 76px;
+      padding: 12px 16px 20px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      background: rgba(255, 255, 255, .98);
+      border-top: 1px solid var(--c2);
+    }
+    .bottom-bar.two { grid-template-columns: 1fr 1.65fr; }
+    .primary-button, .secondary-button {
+      height: 44px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 750;
+      transition: transform .12s ease-out;
+    }
+    .primary-button { color: #fff; background: var(--pr); }
+    .secondary-button { color: var(--c7); background: var(--sf); border: 1px solid var(--c3); }
+
+    .detail-scroll { padding: 0 16px 96px; background: var(--sf); }
+    .detail-list { background: var(--sf); }
+    .detail-list .display-row { min-height: 64px; padding-left: 0; padding-right: 0; grid-template-columns: 132px minmax(0, 1fr); border-color: #e8edf3; }
+    .detail-list .display-row.file-display { min-height: 0; }
+    .detail-actions { grid-template-columns: 1fr 1fr; }
+    .action-button {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .action-button.edit { color: var(--pr); background: var(--pr50); border: 1px solid var(--pr100); }
+    .action-button.delete { color: var(--ro); background: var(--ro50); border: 1px solid #ffe4e6; }
+
+    .editor-scroll { padding: 14px 16px 96px; }
+    .form-card {
+      overflow: hidden;
+      border: 1px solid var(--bd);
+      border-radius: 8px;
+      background: var(--sf);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+    }
+    .form-row {
+      min-height: 62px;
+      padding: 9px 12px;
+      display: grid;
+      grid-template-columns: 122px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--dv);
+    }
+    .form-row:last-child { border-bottom: 0; }
+    .form-row.wide { display: block; }
+    .form-row > label { color: var(--c7); font-size: 13px; line-height: 1.35; font-weight: 650; }
+    .form-row > label.required::before { content: "*"; margin-right: 4px; color: var(--ro); }
+    .form-control {
+      min-width: 0;
+      width: 100%;
+      min-height: 42px;
+      padding: 0 8px;
+      border: 0;
+      outline: 0;
+      color: var(--c9);
+      background: transparent;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: right;
+    }
+    textarea.form-control { height: 92px; padding: 10px 0; resize: none; line-height: 1.55; text-align: left; }
+    .form-control::placeholder { color: var(--c4); font-weight: 500; }
+    .form-control:disabled { color: var(--c4); }
+    .segmented { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 3px; border-radius: 7px; background: var(--c1); }
+    .segment { min-height: 36px; border-radius: 5px; color: var(--c5); background: transparent; font-size: 12px; font-weight: 650; }
+    .segment.selected { color: #fff; background: var(--pr); }
+    .upload-field { display: grid; gap: 8px; }
+    .upload-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .upload-tile {
+      position: relative;
+      width: 74px;
+      min-height: 70px;
+      padding: 8px 5px 5px;
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      border: 1px solid var(--c2);
+      border-radius: 7px;
+      color: var(--c5);
+      background: #f8fafc;
+      font-size: 9px;
+      overflow: hidden;
+    }
+    .upload-remove {
+      position: absolute;
+      right: 3px;
+      top: 3px;
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--ro);
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, .12);
+    }
+    .upload-add {
+      width: 74px;
+      min-height: 70px;
+      display: grid;
+      place-items: center;
+      gap: 3px;
+      border: 1px dashed var(--c3);
+      border-radius: 7px;
+      color: var(--pr);
+      background: var(--pr50);
+      font-size: 10px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .upload-add input { display: none; }
+
+    /* Transfer-form interaction patterns, sized for the information collection page. */
+    .editor-scroll { padding: 12px 16px 96px; }
+    .form-card { border-radius: 14px; }
+    .form-row {
+      min-height: 44px;
+      padding: 12px 14px;
+      display: flex;
+      grid-template-columns: none;
+      gap: 0;
+      align-items: center;
+    }
+    .form-row > label {
+      width: 92px;
+      flex: 0 0 92px;
+      display: inline-flex;
+      align-items: center;
+      color: var(--c5);
+      font-size: 14px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+    .form-row > label::before { content: ""; width: 9px; flex: 0 0 9px; }
+    .form-row > label.required::before { content: "*"; width: 8px; flex-basis: 8px; margin-right: 1px; color: var(--ro); }
+    .form-control {
+      flex: 1;
+      min-height: 0;
+      padding: 0;
+      color: var(--c9);
+      font-family: var(--f);
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+    .form-control::placeholder { color: var(--c4); font-size: 14px; font-weight: 500; }
+    .form-row textarea.auto-text-input {
+      flex: 1 1 0;
+      width: 0;
+      min-width: 0;
+      max-width: 100%;
+      height: auto;
+      min-height: 16px;
+      max-height: none;
+      padding: 0;
+      overflow: hidden;
+      resize: none;
+      border: 0;
+      border-radius: 0;
+      color: var(--c9);
+      background: transparent;
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 600;
+      text-align: right;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .form-row:not(.wide) > input.form-control {
+      flex: 1 1 0;
+      width: 0;
+      min-width: 0;
+      max-width: 100%;
+      text-align: right;
+    }
+    .form-row.wide { display: flex; flex-direction: column; align-items: stretch; gap: 7px; }
+    .form-row.wide > label { width: auto; flex: none; }
+    .textarea-head { display: flex; align-items: center; justify-content: space-between; }
+    .textarea-head > label { width: auto; display: inline-flex; align-items: center; color: var(--c5); font-size: 14px; line-height: 1.35; font-weight: 600; }
+    .textarea-head > label::before { content: ""; width: 9px; flex: 0 0 9px; }
+    .textarea-head > label.required::before { content: "*"; width: 8px; flex-basis: 8px; margin-right: 1px; color: var(--ro); }
+    .textarea-count { color: var(--c4); font-family: var(--m); font-size: 11px; }
+    textarea.form-control {
+      flex: none;
+      width: 100%;
+      height: 74px;
+      min-height: 74px;
+      padding: 9px 10px;
+      border: 1px solid var(--c2);
+      border-radius: 10px;
+      color: var(--c7);
+      background: #f7f9fc;
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: left;
+    }
+    .textarea-help { color: var(--c4); font-size: 10px; line-height: 1.4; }
+    .form-row.attachment-row { padding: 12px 14px 14px; gap: 10px; }
+    .attachment-row > label { color: var(--c7); font-size: 14px; font-weight: 800; }
+    .field-help-button {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 8px;
+      color: var(--c4);
+      background: transparent;
+      vertical-align: middle;
+    }
+    .field-help-button:active { transform: scale(.92); }
+    .field-help-button .icon { width: 17px; height: 17px; }
+    .field-help-button .help-fill { fill: var(--c3); stroke: none; }
+    .field-help-button .help-mark { stroke: #fff; }
+    .form-row.readonly { opacity: .58; background: #f7f9fc; }
+    .form-row.readonly.no-dim { opacity: 1; background: var(--sf); }
+    .form-row.readonly.no-dim .form-control:disabled,
+    .form-row.readonly.no-dim textarea.form-control:disabled {
+      color: var(--c9);
+    }
+    .boolean-row { gap: 12px; }
+    .boolean-row > label { width: auto; flex: 1 1 auto; white-space: normal; }
+    .boolean-row .segmented { flex: 0 0 auto; }
+    .segmented { display: flex; justify-content: flex-end; gap: 6px; padding: 0; background: transparent; }
+    .segment {
+      min-width: 48px;
+      min-height: 32px;
+      padding: 0 13px;
+      border-radius: 9px;
+      color: var(--c7);
+      background: var(--sf);
+      box-shadow: inset 0 0 0 1px var(--c2), 0 1px 3px rgba(0, 0, 0, .05);
+      font-size: 14px;
+      font-weight: 700;
+      transition: background .16s, color .16s, box-shadow .16s, transform .12s;
+    }
+    .segment:active { transform: scale(.95); }
+    .segment.selected { color: #fff; background: var(--pr); box-shadow: 0 3px 10px rgba(37, 99, 235, .22); }
+    .choice-trigger {
+      flex: 1 1 0;
+      width: 0;
+      min-width: 0;
+      max-width: 100%;
+      min-height: 16px;
+      padding: 0 0 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 3px;
+      color: var(--c9);
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: right;
+    }
+    .choice-trigger .icon { flex: 0 0 auto; color: var(--c4); }
+    .choice-value { width: 100%; min-width: 0; overflow: visible; text-align: right; text-overflow: clip; white-space: normal; word-break: break-word; overflow-wrap: anywhere; }
+    .choice-value.placeholder { color: var(--c4); font-weight: 500; }
+    .date-trigger .choice-value { font-family: var(--m); }
+    .upload-grid { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .upload-grid::-webkit-scrollbar { display: none; }
+    .upload-tile, .upload-add { width: 84px; min-width: 84px; height: 72px; min-height: 72px; border-radius: 8px; }
+    .upload-tile { padding: 0; display: block; border-color: var(--dv); background: #f7f9fc; }
+    .upload-preview { position: absolute; inset: 0; padding: 6px; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(180deg, rgba(15, 23, 42, .58), rgba(15, 23, 42, .18) 36%, rgba(255, 255, 255, .96) 37%); }
+    .upload-lines { position: absolute; left: 7px; right: 7px; top: 8px; display: flex; flex-direction: column; gap: 3px; }
+    .upload-lines span { height: 3px; border-radius: 2px; background: rgba(255, 255, 255, .55); }
+    .upload-lines span:nth-child(2) { width: 68%; }
+    .upload-lines span:nth-child(3) { width: 46%; }
+    .upload-name { overflow: hidden; color: var(--c5); font-size: 9px; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+    .upload-type { margin-top: 1px; color: var(--c7); font-family: var(--m); font-size: 9px; }
+    .upload-remove { right: -1px; top: -1px; z-index: 2; border-radius: 0 0 0 10px; color: #fff; background: rgba(15, 23, 42, .86); box-shadow: none; }
+    .upload-add { display: flex; align-items: center; justify-content: center; border: 1px solid var(--dv); color: var(--c3); background: #f7f9fc; }
+
+    .field-sheet-mask {
+      position: absolute;
+      inset: 0;
+      z-index: 60;
+      opacity: 0;
+      pointer-events: none;
+      background: rgba(15, 23, 42, .35);
+      transition: opacity .25s;
+    }
+    .field-sheet-mask.show { opacity: 1; pointer-events: auto; }
+    .field-sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 61;
+      max-height: 55vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 20px 20px 0 0;
+      background: var(--sf);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(100%);
+      transition: transform .3s ease-in-out, opacity .2s ease-out, visibility .2s ease-out;
+    }
+    .field-sheet.show { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
+    .field-sheet-handle { width: 36px; height: 4px; margin: 10px auto 0; border-radius: 2px; background: var(--c3); }
+    .field-sheet-head { padding: 14px 20px 10px; display: flex; align-items: center; justify-content: space-between; }
+    .field-sheet-title { color: var(--c9); font-size: 15px; font-weight: 700; }
+    .field-sheet-close { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; color: var(--c5); background: var(--c1); }
+    .field-sheet-search { position: relative; margin: 0 16px 8px; }
+    .field-sheet-search .icon { position: absolute; left: 11px; top: 11px; color: var(--c4); }
+    .field-sheet-search input { width: 100%; height: 38px; padding: 0 12px 0 36px; border: 1px solid var(--c2); border-radius: 10px; outline: 0; color: var(--c9); background: #f7f9fc; font-size: 13px; }
+    .field-sheet-search input:focus { border-color: var(--pr); background: var(--sf); }
+    .field-sheet-list { flex: 1; overflow-y: auto; padding: 0 8px 12px; scrollbar-width: none; }
+    .field-sheet-list::-webkit-scrollbar { display: none; }
+    .field-sheet-option { width: 100%; min-height: 46px; padding: 12px; display: flex; align-items: center; justify-content: space-between; border-radius: 10px; color: var(--c7); background: transparent; font-size: 14px; text-align: left; }
+    .field-sheet-option:active { background: var(--pr50); }
+    .field-sheet-option.selected { color: var(--pr); font-weight: 600; }
+    .field-sheet-option.selected::after { content: "✓"; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--pr); font-size: 11px; font-weight: 800; }
+    .field-sheet-actions { padding: 8px 16px calc(12px + env(safe-area-inset-bottom)); display: flex; gap: 8px; border-top: 1px solid var(--dv); background: var(--sf); box-shadow: 0 -6px 14px rgba(15, 23, 42, .04); }
+    .field-sheet-actions button { flex: 1; height: 40px; border-radius: 10px; font-size: 14px; font-weight: 600; }
+    .field-sheet-clear { color: var(--c5); border: 1px solid var(--c2); background: #f7f9fc; }
+    .field-sheet-confirm { color: #fff; background: var(--pr); box-shadow: 0 4px 14px rgba(37, 99, 235, .25); }
+    .field-sheet.date-sheet { max-height: 258px; box-shadow: 0 -8px 24px rgba(15, 23, 42, .08); }
+    .date-sheet-head { padding: 14px 16px 10px; display: flex; align-items: center; justify-content: space-between; }
+    .date-sheet-head button { background: transparent; font-size: 14px; }
+    .date-sheet-cancel { color: var(--c5); }
+    .date-sheet-title { color: var(--c9); font-size: 16px; font-weight: 700; }
+    .date-sheet-confirm { color: var(--pr); font-weight: 600; }
+    .date-wheels { height: 182px; padding: 0 16px 10px; display: flex; align-items: flex-start; gap: 8px; }
+    .date-wheel { flex: 1; height: 170px; overflow-y: auto; text-align: center; scrollbar-width: none; overscroll-behavior: contain; scroll-padding: 56px 0; }
+    .date-wheel::-webkit-scrollbar { display: none; }
+    .date-wheel-label { position: sticky; top: 0; z-index: 1; height: 26px; padding: 5px 0 3px; color: var(--c4); background: var(--sf); font-size: 10px; font-weight: 600; }
+    .date-wheel-option { width: 100%; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: var(--c5); background: transparent; font-family: var(--m); font-size: 15px; }
+    .date-wheel-option:active { background: var(--pr50); }
+    .date-wheel-option.selected { height: 44px; color: var(--pr); background: var(--pr50); font-size: 16px; font-weight: 700; }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      top: 112px;
+      z-index: 40;
+      max-width: calc(100% - 32px);
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #fff;
+      background: rgba(15, 23, 42, .88);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .18);
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -8px);
+      transition: .2s ease-out;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .sheet-mask {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: flex-end;
+      background: rgba(15, 23, 42, .38);
+    }
+    .sheet-mask.show { display: flex; }
+    .confirm-sheet {
+      width: 100%;
+      padding: 10px 16px 24px;
+      border-radius: 16px 16px 0 0;
+      background: var(--sf);
+      box-shadow: 0 -8px 30px rgba(15, 23, 42, .14);
+      animation: slideUp .22s ease-out;
+    }
+    .sheet-handle { width: 36px; height: 4px; margin: 0 auto 18px; border-radius: 999px; background: var(--c3); }
+    .confirm-sheet h3 { margin: 0 0 8px; font-size: 17px; text-align: center; }
+    .confirm-sheet p { margin: 0 0 18px; color: var(--c5); font-size: 12px; line-height: 1.55; text-align: center; }
+    .sheet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .danger-button { height: 44px; border-radius: 8px; color: #fff; background: var(--ro); font-size: 14px; font-weight: 750; }
+    .help-tip-mask {
+      position: absolute;
+      inset: 0;
+      z-index: 70;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 14px;
+      background: rgba(15, 23, 42, .68);
+    }
+    .help-tip-mask.show { display: flex; }
+    .help-tip-card {
+      width: 100%;
+      max-width: 360px;
+      padding: 24px 22px 26px;
+      border-radius: 8px;
+      background: var(--sf);
+      box-shadow: 0 14px 36px rgba(15, 23, 42, .22);
+    }
+    .help-tip-title {
+      position: relative;
+      margin: 0 0 18px;
+      padding-left: 18px;
+      color: var(--c9);
+      font-size: 22px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+    .help-tip-title::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--pr);
+    }
+    .help-tip-content {
+      margin: 0;
+      color: var(--c7);
+      font-size: 15px;
+      line-height: 1.7;
+      font-weight: 500;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    @media (max-width: 430px) {
+      body { display: block; background: var(--sf); }
+      .app { width: 100vw; max-height: none; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" id="app" role="application" aria-label="信息采集移动端">
+    <header class="status-bar" aria-label="手机状态栏">
+      <span>19:27</span>
+      <span class="status-right"><span>5G</span><span>▮▮▮</span><span class="battery">86</span></span>
+    </header>
+    <div class="view-host" id="viewHost"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="sheet-mask" id="deleteMask" aria-hidden="true">
+      <section class="confirm-sheet" role="dialog" aria-modal="true" aria-label="确认删除">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <h3>确认删除这条记录？</h3>
+        <p id="deleteMessage">删除后无法恢复。</p>
+        <div class="sheet-actions">
+          <button class="secondary-button" type="button" data-action="cancel-delete">取消</button>
+          <button class="danger-button" type="button" data-action="confirm-delete">删除</button>
+        </div>
+      </section>
+    </div>
+    <div class="field-sheet-mask" id="fieldSheetMask" data-action="close-field-sheet" aria-hidden="true"></div>
+    <section class="field-sheet" id="fieldSheet" role="dialog" aria-modal="true"></section>
+    <div class="help-tip-mask" id="helpTipMask" data-action="close-help-tip" aria-hidden="true">
+      <section class="help-tip-card" role="dialog" aria-modal="true" aria-labelledby="helpTipTitle" onclick="event.stopPropagation()">
+        <h3 class="help-tip-title" id="helpTipTitle"></h3>
+        <p class="help-tip-content" id="helpTipContent"></p>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const iconNodes = {
+      chevronLeft: '<path d="m15 18-6-6 6-6"></path>',
+      chevronRight: '<path d="m9 18 6-6-6-6"></path>',
+      chevronDown: '<path d="m6 9 6 6 6-6"></path>',
+      chevronUp: '<path d="m18 15-6-6-6 6"></path>',
+      plus: '<path d="M5 12h14"></path><path d="M12 5v14"></path>',
+      circleAlert: '<circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line>',
+      circleHelp: '<circle class="help-fill" cx="12" cy="12" r="10"></circle><path class="help-mark" d="M9.5 9a2.7 2.7 0 1 1 4.4 2.1c-.9.7-1.3 1.1-1.3 2.2"></path><path class="help-mark" d="M12 17h.01"></path>',
+      pencil: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path>',
+      trash: '<path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>',
+      inbox: '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>',
+      image: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>',
+      file: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline>',
+      camera: '<path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3z"></path><circle cx="12" cy="13" r="3"></circle>',
+      search: '<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>',
+      x: '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>'
+    };
+
+    function icon(name, size = 20) {
+      return `<svg class="icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconNodes[name] || ""}</svg>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+    }
+
+    function defaultOptions(label, secondType) {
+      if (secondType === "是否") return ["是", "否"];
+      if (label === "性别") return ["男", "女"];
+      if (label.includes("学历")) return ["博士", "硕士", "本科", "大专", "高中"];
+      if (label.includes("学位")) return ["博士", "硕士", "学士", "EMBA", "无"];
+      if (["单选列表", "单选值", "单选框"].includes(secondType)) return ["--", "是", "否", "其他"];
+      return [];
+    }
+
+    function field(label, fieldType, secondType, requiredText, editableText, defaultValue = "", extra = {}) {
+      return {
+        key: extra.key || label,
+        label,
+        fieldType,
+        secondType,
+        requiredText,
+        editableText,
+        required: requiredText === "是" || requiredText === "条件必填",
+        editable: editableText !== "否",
+        defaultValue,
+        value: Object.prototype.hasOwnProperty.call(extra, "value") ? extra.value : defaultValue,
+        options: extra.options || defaultOptions(label, secondType),
+        help: extra.help || "",
+        noReadonlyDim: Boolean(extra.noReadonlyDim),
+        wide: Boolean(extra.wide) || fieldType === "内容框" || secondType === "文本区"
+      };
+    }
+
+    const candidate = { name: "测试234", organization: "AI-二级组织02", email: "1079028588@qq.com", mobile: "15018623558", status: "HR退回" };
+    const rejectionInfo = {
+      returned: true,
+      reason: "工龄证明附件不符合要求，请重新上传后提交"
+    };
+
+    const employeeFields = [
+      field("姓名", "文本框", "单行文本", "是", "是", "根据offer自动带出", { value: "WX-德国1784536618" }),
+      field("性别", "单选框", "单选值", "是", "是", "", { value: "男", options: ["男", "女"] }),
+      field("公司邮箱", "文本框", "单行文本", "是", "否", "", { value: "1079028588@qq.com", noReadonlyDim: true }),
+      field("个人邮箱", "文本框", "电子邮件", "是", "是", "根据offer自动带出", { value: "1079028588@qq.com" }),
+      field("手机号码", "文本框", "单行文本", "是", "是", "根据offer自动带出", { value: "15018623558" }),
+      field("政治面貌", "下拉框", "单选列表", "是", "是", "", { value: "共青团员", options: ["共青团员", "群众", "中共党员"] }),
+      field("民族", "下拉框", "单选列表", "是", "是", "", { value: "回族", options: ["汉族", "回族", "满族", "壮族"] }),
+      field("籍贯", "文本框", "单行文本", "是", "是", "", { value: "江西省赣州市于都县" }),
+      field("证件类型", "下拉框", "单选列表", "是", "是", "身份证", { value: "身份证", options: ["身份证", "护照", "港澳通行证", "台湾通行证"] }),
+      field("身份证人像面", "文件上传", "图片上传", "是", "是", "", { value: "身份证人像面.jpg" }),
+      field("身份证国徽面", "文件上传", "图片上传", "是", "是", "", { value: "身份证国徽面.jpg" }),
+      field("证件号码", "文本框", "单行文本", "是", "是", "", { value: "360731199411025372" }),
+      field("证件有效期", "时间日期", "日期", "是", "是", "", { value: "2035-07-20" }),
+      field("出生日期", "时间日期", "日期", "是", "是", "", { value: "2026-07-20" }),
+      field("年龄", "文本框", "整数", "是", "是", "", { value: "0" }),
+      field("户口地址", "文本框", "单行文本", "是", "是", "", { value: "轻铺南" }),
+      field("户口类别", "下拉框", "单选列表", "是", "是", "", { value: "农村户口", options: ["农村户口", "城镇户口"] }),
+      field("现居住地址", "文本框", "单行文本", "是", "是", "", { value: "江西省" }),
+      field("参加工作日期", "时间日期", "日期", "是", "是", ""),
+      field("工龄证明附件", "文件上传", "多文件上传", "是", "是", "", {
+        value: ["社保缴纳记录.pdf", "离职证明.pdf"],
+        help: "即证明工龄的文件，如社保缴纳记录、劳动合同、离职证明等，要包含个人信息、最早的工作起始年月，并与【参加工作日期】字段对应填写。这些信息将用于计算您的年假天数。"
+      }),
+      field("婚姻状况", "下拉框", "单选列表", "是", "是", "", { options: ["未婚", "已婚", "离异", "丧偶"] }),
+      field("毕业学校名称", "文本框", "单行文本", "是", "是", "", { value: "江西科技学院" }),
+      field("毕业时间", "时间日期", "日期", "是", "是", "", { value: "2026-09-24" }),
+      field("专业", "文本框", "单行文本", "是", "是", "", { value: "过分分" }),
+      field("最高学历", "下拉框", "单选列表", "是", "是", "", { value: "本科", options: ["博士", "硕士", "本科", "大专", "高中"] }),
+      field("毕业证照", "文件上传", "多图片上传", "条件必填", "是", "", { value: ["毕业证正面.jpg", "毕业证反面.jpg"] }),
+      field("最高学位", "下拉框", "单选列表", "条件必填", "是", "", { value: "EMBA", options: ["博士", "硕士", "学士", "EMBA", "无"] }),
+      field("学位证", "文件上传", "多图片上传", "条件必填", "是", "", { value: ["学位证书.jpg", "学位认证页.jpg", "学位证补充页.jpg", "学位证英文版.jpg"] }),
+      field("外语水平", "下拉框", "单选列表", "条件必填", "是", "", { value: "英语四级(CET4)", options: ["英语四级(CET4)", "英语六级(CET6)", "专业四级", "专业八级"] }),
+      field("计算机水平", "下拉框", "单选列表", "条件必填", "是", "", { options: ["一级", "二级", "三级", "四级"] }),
+      field("个人职业照", "文件上传", "图片上传", "是", "是", "", { value: "个人职业照.jpg" }),
+      field("紧急联系人", "文本框", "单行文本", "是", "是", ""),
+      field("紧急联系人与本人关系", "下拉框", "单选列表", "是", "是", "", { options: ["父母", "配偶", "子女", "朋友"] }),
+      field("紧急联系人电话", "文本框", "单行文本", "是", "是", ""),
+      field("紧急联系人地址", "文本框", "单行文本", "是", "是", ""),
+      field("是否有亲属/亲密朋友在本司任职", "单选框", "是否", "是", "是", "", { value: "否", options: ["是", "否"] }),
+      field("本司任职亲属/亲密朋友姓名", "文本框", "员工单选", "条件必填", "是", ""),
+      field("亲属/亲密关系", "文本框", "单行文本", "条件必填", "是", ""),
+      field("是否落户口", "单选框", "是否", "是", "是", "", { options: ["是", "否"] }),
+      field("户口本照片", "文件上传", "图片上传", "条件必填", "是", "", { value: "户口本首页.jpg" }),
+      field("社保电脑号", "文本框", "单行文本", "是", "是", ""),
+      field("公积金账号", "文本框", "单行文本", "是", "是", ""),
+      field("银行卡号", "文本框", "单行文本", "是", "是", ""),
+      field("银行名称", "文本框", "单行文本", "是", "是", ""),
+      field("开户行名称", "文本框", "单行文本", "是", "是", ""),
+      field("银行联行号", "文本框", "单行文本", "是", "是", ""),
+      field("银行卡照片", "文件上传", "图片上传", "是", "是", "", { value: "银行卡正面.jpg" }),
+      field("离职证明照片", "文件上传", "图片上传", "是", "是", "", { value: "离职证明.jpg" }),
+      field("健康情况", "下拉框", "单选列表", "是", "是", "", { options: ["健康", "良好", "一般"] }),
+      field("体检报告附件", "文件上传", "多文件上传", "是", "是", "", { value: ["体检报告.pdf", "复查说明.pdf"] }),
+      field("无犯罪记录证明", "文件上传", "文件上传", "是", "是", "", { value: "无犯罪记录证明.pdf" }),
+      field("其他入职附件", "文件上传", "多文件上传", "否", "是", "", { value: ["承诺书.pdf", "补充材料.docx"] }),
+      field("是否在其他公司兼职法人", "单选框", "是否", "是", "是", "否", { value: "否", options: ["是", "否"] }),
+      field("兼职信息", "文本框", "单行文本", "条件必填", "是", "")
+    ];
+
+    const sections = [
+      { id: "employee", title: "员工信息", type: "info" },
+      { id: "visa", title: "签证信息", required: true, fields: [
+        field("是否有签证", "单选框", "是否", "条件必填", "是", "", { options: ["是", "否"] }),
+        field("签证国家", "文本框", "单行文本", "条件必填", "是"),
+        field("签证类型", "下拉框", "单选列表", "条件必填", "是"),
+        field("签证生效日期", "时间日期", "日期", "条件必填", "是"),
+        field("签证失效日期", "时间日期", "日期", "条件必填", "是"),
+        field("签证附件", "文件上传", "多文件上传", "条件必填", "是")
+      ], rows: [{ 是否有签证: "否", 签证国家: "--", 签证类型: "--", 签证生效日期: "--", 签证失效日期: "--", 签证附件: "--" }] },
+      { id: "work", title: "工作履历", required: true, hint: "由近到远填写全职工作经历；在职人员结束日期填未来日期，实习无需填写，多条经历可点新建添加", fields: [
+        field("开始日期", "时间日期", "日期", "是", "是"), field("结束日期", "时间日期", "日期", "是", "是"),
+        field("单位名称", "文本框", "单行文本", "是", "是"), field("职位", "文本框", "单行文本", "是", "是"),
+        field("离职原因", "文本框", "单行文本", "是", "是"), field("证明人", "文本框", "单行文本", "是", "是"),
+        field("证明人联系方式", "文本框", "单行文本", "是", "是")
+      ], rows: [{ 开始日期: "2024-07-20", 结束日期: "2027-07-20", 单位名称: "三分毒", 职位: "--", 离职原因: "再说", 证明人: "测试", 证明人联系方式: "13256854317" }] },
+      { id: "education", title: "教育经历", required: true, fields: [
+        field("开始日期", "时间日期", "日期", "是", "是"), field("结束日期", "时间日期", "日期", "是", "是"),
+        field("毕业学校名称", "文本框", "单行文本", "是", "是"), field("专业", "文本框", "单行文本", "是", "是"),
+        field("学历", "下拉框", "单选列表", "是", "是", "", { options: ["博士", "硕士", "本科", "大专", "高中"] }),
+        field("学位", "下拉框", "单选列表", "是", "是", "", { options: ["博士", "硕士", "学士", "EMBA", "无"] }),
+        field("学习形式", "下拉框", "单选列表", "是", "是", "", { options: ["普通全日制", "开放教育", "成人教育", "自考"] }),
+        field("培养方式", "下拉框", "单选列表", "是", "是", "", { options: ["统招", "委培", "定向", "非定向"] }),
+        field("是否最高学历", "单选框", "是否", "是", "是", "", { options: ["是", "否"] }),
+        field("学历证书附件", "文件上传", "多图片上传", "是", "是"), field("学位证书附件", "文件上传", "多图片上传", "是", "是")
+      ], rows: [{ 开始日期: "2023-07-20", 结束日期: "2026-09-24", 毕业学校名称: "江西科技学院", 专业: "过分分", 学历: "本科", 学位: "EMBA", 学习形式: "开放教育", 培养方式: "委培", 是否最高学历: "是", 学历证书附件: "学历证明.pdf", 学位证书附件: "--" }] },
+      { id: "training", title: "培训经历", fields: [
+        field("开始日期", "时间日期", "日期", "否", "是"), field("结束日期", "时间日期", "日期", "否", "是"),
+        field("名称", "文本框", "单行文本", "否", "是"), field("培训机构", "文本框", "单行文本", "否", "是"), field("培训分数", "文本框", "单行文本", "否", "是")
+      ], rows: [{ 开始日期: "--", 结束日期: "--", 名称: "学而思", 培训机构: "--", 培训分数: "--" }] },
+      { id: "project", title: "项目经历", fields: [
+        field("项目名称", "文本框", "单行文本", "否", "是"), field("职务", "文本框", "单行文本", "否", "是"),
+        field("开始日期", "时间日期", "日期", "否", "是"), field("结束日期", "时间日期", "日期", "否", "是"),
+        field("描述", "内容框", "文本区", "否", "是", "", { wide: true })
+      ], rows: [] },
+      { id: "skill", title: "技能特长", fields: [
+        field("名称", "文本框", "单行文本", "是", "是"), field("掌握程度", "下拉框", "单选列表", "否", "是", "", { options: ["了解", "熟练", "精通"] }),
+        field("种类", "下拉框", "单选列表", "否", "是", "", { options: ["专业技能", "工具软件", "业务能力"] })
+      ], rows: [] },
+      { id: "language", title: "语言能力", fields: [
+        field("语言", "下拉框", "单选列表", "条件必填", "是", "", { options: ["英语", "日语", "德语", "法语"] }),
+        field("是否母语", "单选框", "是否", "条件必填", "是", "", { options: ["是", "否"] }),
+        field("掌握程度", "下拉框", "单选列表", "条件必填", "是", "", { options: ["一般", "良好", "熟练", "精通"] }),
+        field("书写能力", "下拉框", "单选列表", "条件必填", "是", "", { options: ["一般", "良好", "熟练", "精通"] }),
+        field("阅读能力", "下拉框", "单选列表", "条件必填", "是", "", { options: ["一般", "良好", "熟练", "精通"] }),
+        field("口语能力", "下拉框", "单选列表", "条件必填", "是", "", { options: ["一般", "良好", "熟练", "精通"] })
+      ], rows: [] },
+      { id: "certificate", title: "证书信息", fields: [
+        field("证书名称", "文本框", "单行文本", "否", "是"), field("证书编号", "文本框", "单行文本", "否", "是"),
+        field("发证机构", "文本框", "单行文本", "否", "是"), field("获得时间", "时间日期", "日期", "否", "是"),
+        field("有效期至", "时间日期", "日期", "否", "是"), field("附件", "文件上传", "多文件上传", "否", "是")
+      ], rows: [] },
+      { id: "family", title: "家庭成员", fields: [
+        field("姓名", "文本框", "单行文本", "是", "是"), field("与本人关系", "下拉框", "单选列表", "是", "是", "", { options: ["夫妻", "父母", "子女", "兄弟姐妹"] }),
+        field("性别", "单选框", "单选框", "是", "是", "", { options: ["女", "男"] }), field("出生日期", "时间日期", "日期", "是", "是"),
+        field("住址", "文本框", "单行文本", "是", "是"), field("职务", "文本框", "单行文本", "是", "是"), field("手机号码", "文本框", "单行文本", "是", "是")
+      ], rows: [{ 姓名: "测试", 与本人关系: "夫妻", 性别: "女", 出生日期: "--", 住址: "轻铺南", 职务: "--", 手机号码: "13265864562" }] },
+      { id: "award", title: "表彰与奖励", fields: [
+        field("奖项", "文本框", "单行文本", "否", "是"), field("获奖日期", "时间日期", "日期", "否", "是"), field("简述", "内容框", "文本区", "否", "是", "", { wide: true })
+      ], rows: [] }
+    ];
+
+    const state = {
+      view: "home",
+      homeScroll: 0,
+      focusSection: null,
+      activeAnchor: "employee",
+      employeeExpanded: false,
+      expandedSections: new Set(),
+      detail: null,
+      editor: null,
+      fieldPicker: null,
+      deleteTarget: null
+    };
+
+    const viewHost = document.getElementById("viewHost");
+    const toast = document.getElementById("toast");
+    const deleteMask = document.getElementById("deleteMask");
+    const deleteMessage = document.getElementById("deleteMessage");
+    const fieldSheetMask = document.getElementById("fieldSheetMask");
+    const fieldSheet = document.getElementById("fieldSheet");
+    const helpTipMask = document.getElementById("helpTipMask");
+    const helpTipTitle = document.getElementById("helpTipTitle");
+    const helpTipContent = document.getElementById("helpTipContent");
+    let toastTimer;
+
+    function getSection(id) { return sections.find(section => section.id === id); }
+    function isFileField(item) { return item.fieldType === "文件上传"; }
+    function isImageField(item) { return item.secondType.includes("图片"); }
+    function isTextareaField(item) { return item.fieldType === "内容框" || item.secondType === "文本区"; }
+    function isBooleanField(item) { return item.fieldType === "单选框" && item.secondType === "是否"; }
+    function isSelectField(item) { return item.fieldType === "下拉框" || (item.fieldType === "单选框" && !isBooleanField(item)); }
+    function isDateField(item) { return item.fieldType === "时间日期"; }
+    function isMonoField(item) { return isDateField(item) || /手机|电话|号码|日期|时间|证件|邮箱|账号|卡号/.test(item.label); }
+    function normalizeFiles(value) {
+      if (Array.isArray(value)) return value.filter(Boolean);
+      if (!value || value === "--") return [];
+      return String(value).split(/[,，、]/).map(item => item.trim()).filter(Boolean);
+    }
+    function fileType(file) {
+      const match = String(file).match(/\.([^.]+)$/);
+      return match ? match[1].slice(0, 4).toUpperCase() : "FILE";
+    }
+    function fieldOptions(item) {
+      const options = item.options.length ? item.options : ["是", "否", "其他"];
+      return options.filter(option => option && option !== "--");
+    }
+    function displayValue(item, source) {
+      const value = source && Object.prototype.hasOwnProperty.call(source, item.key) ? source[item.key] : item.value;
+      if (value === undefined || value === "") return item.defaultValue || "--";
+      return value;
+    }
+
+    function renderFileTiles(item, value) {
+      const files = normalizeFiles(value);
+      if (!files.length) return '<span class="display-value muted">--</span>';
+      return `<span class="file-tiles">${files.map(file => `<span class="file-tile ${isImageField(item) ? "image" : ""}">${icon(isImageField(item) ? "image" : "file", 18)}<span class="file-name">${escapeHtml(file)}</span></span>`).join("")}</span>`;
+    }
+
+    function renderHelpButton(item) {
+      if (!item.help) return "";
+      return `<button class="field-help-button" type="button" data-action="open-help-tip" data-help-title="${escapeHtml(item.label)}" data-help-content="${escapeHtml(item.help)}" aria-label="查看${escapeHtml(item.label)}帮助">${icon("circleHelp", 18)}</button>`;
+    }
+
+    function renderFormLabel(item) {
+      return `${escapeHtml(item.label)}${renderHelpButton(item)}`;
+    }
+
+    function formRowStateClass(item) {
+      if (item.editable) return "";
+      return item.noReadonlyDim ? "readonly no-dim" : "readonly";
+    }
+
+    function renderDisplayLabel(item) {
+      return `<span class="display-label ${item.help ? "has-help" : ""}">${escapeHtml(item.label)}${renderHelpButton(item)}</span>`;
+    }
+
+    function renderDisplayRow(item, source) {
+      const value = displayValue(item, source);
+      if (isFileField(item)) {
+        return `<div class="display-row file-display">${renderDisplayLabel(item)}${renderFileTiles(item, value)}</div>`;
+      }
+      const text = Array.isArray(value) ? value.join("、") : value;
+      return `<div class="display-row">${renderDisplayLabel(item)}<span class="display-value ${text === "--" ? "muted" : ""} ${isMonoField(item) ? "mono" : ""}">${escapeHtml(text)}</span></div>`;
+    }
+
+    function renderTopbar(title, backAction = "", right = "") {
+      return `<header class="topbar">${backAction ? `<button class="icon-button" type="button" data-action="${backAction}" aria-label="返回">${icon("chevronLeft", 24)}</button>` : "<span></span>"}<h1>${escapeHtml(title)}</h1>${right || "<span></span>"}</header>`;
+    }
+
+    function renderAnchors() {
+      return `<nav class="anchor-nav" id="anchorNav" aria-label="首页锚点导航">${sections.map(section => `<button class="anchor-item ${state.activeAnchor === section.id ? "active" : ""}" type="button" data-action="anchor" data-section-id="${section.id}">${escapeHtml(section.title)}</button>`).join("")}</nav>`;
+    }
+
+    function renderRejectNotice() {
+      if (!rejectionInfo.returned || !rejectionInfo.reason) return "";
+      return `<section class="reject-notice" aria-label="退回提示"><span class="reject-icon">${icon("circleAlert", 18)}</span><div class="reject-content"><p class="reject-reason">${escapeHtml(rejectionInfo.reason)}</p></div></section>`;
+    }
+
+    function renderEmployeeSection() {
+      const fields = state.employeeExpanded ? employeeFields : employeeFields.slice(0, 8);
+      return `<section class="module-section" id="section-employee" data-section="employee"><div class="module-head"><div class="module-title">员工信息</div><button class="edit-employee" type="button" data-action="edit-employee">编辑</button></div>${fields.map(item => renderDisplayRow(item, null)).join("")}<button class="employee-toggle" type="button" data-action="toggle-employee">${state.employeeExpanded ? "收起员工信息" : "展开员工信息"} ${icon(state.employeeExpanded ? "chevronUp" : "chevronDown", 16)}</button></section>`;
+    }
+
+    function renderRecordCard(section, row, index) {
+      return `<article class="record-card"><div class="record-head"><span class="record-index">记录 ${String(index + 1).padStart(2, "0")}</span><span class="record-actions"><button class="record-action edit" type="button" data-action="edit-record" data-section-id="${section.id}" data-row-index="${index}" aria-label="编辑">${icon("pencil", 18)}</button><button class="record-action delete" type="button" data-action="delete-record" data-section-id="${section.id}" data-row-index="${index}" aria-label="删除">${icon("trash", 18)}</button></span></div>${section.fields.map(item => renderDisplayRow(item, row)).join("")}</article>`;
+    }
+
+    function renderModuleSection(section) {
+      const rows = section.rows;
+      const content = rows.length ? rows.map((row, index) => renderRecordCard(section, row, index)).join("") : `<div class="empty-state"><span>${icon("inbox", 24)}暂无数据</span></div>`;
+      const count = section.rows.length ? ` <span class="record-count">${section.rows.length} 条记录</span>` : "";
+      const required = section.required ? `<span class="module-required-star" aria-label="必填">*</span>` : "";
+      const hint = section.hint ? `<div class="module-hint">${escapeHtml(section.hint)}</div>` : "";
+      return `<section class="module-section" id="section-${section.id}" data-section="${section.id}"><div class="module-head"><div class="module-title">${required}${escapeHtml(section.title)}${count}</div><div class="module-actions"><button class="new-button" type="button" data-action="add-record" data-section-id="${section.id}">${icon("plus", 17)} 新建</button></div></div>${hint}${content}</section>`;
+    }
+
+    function renderHome() {
+      state.view = "home";
+      const welcomeDesc = rejectionInfo.returned ? "" : "<p>请补充入职信息，完成后提交。</p>";
+      viewHost.innerHTML = `<section class="view home-view">${renderTopbar("入职信息采集")}${renderAnchors()}<div class="home-scroll" id="homeScroll"><div class="welcome"><h2>你好，${escapeHtml(employeeFields[0].value || candidate.name)}</h2>${welcomeDesc}</div>${renderRejectNotice()}${renderEmployeeSection()}${sections.filter(section => section.type !== "info").map(renderModuleSection).join("")}</div><div class="bottom-bar"><button class="primary-button" type="button" data-action="submit">提交信息</button></div></section>`;
+      requestAnimationFrame(() => {
+        const scroller = document.getElementById("homeScroll");
+        if (!scroller) return;
+        if (state.focusSection) {
+          const target = document.getElementById(`section-${state.focusSection}`);
+          if (target) scroller.scrollTop = target.offsetTop - 8;
+          state.focusSection = null;
+        } else {
+          scroller.scrollTop = state.homeScroll;
+        }
+        updateAnchorFromScroll();
+      });
+    }
+
+    function renderDetail() {
+      const detail = state.detail;
+      const section = getSection(detail?.sectionId);
+      const row = section?.rows?.[detail?.rowIndex];
+      if (!section || !row) { state.focusSection = detail?.sectionId || "employee"; renderHome(); return; }
+      state.view = "detail";
+      const editButton = `<button class="icon-button primary" type="button" data-action="edit-detail" aria-label="编辑">${icon("pencil", 20)}</button>`;
+      viewHost.innerHTML = `<section class="view detail-view">${renderTopbar(`${section.title}详情`, "back-home", editButton)}<div class="detail-scroll"><div class="detail-list">${section.fields.map(item => renderDisplayRow(item, row)).join("")}</div></div><div class="bottom-bar detail-actions"><button class="action-button edit" type="button" data-action="edit-detail">${icon("pencil", 19)} 编辑</button><button class="action-button delete" type="button" data-action="delete-detail">${icon("trash", 19)} 删除</button></div></section>`;
+    }
+
+    function renderUploadEditor(item, value) {
+      const files = normalizeFiles(value);
+      return `<div class="form-row wide attachment-row ${formRowStateClass(item)}"><label class="${item.required ? "required" : ""}">${renderFormLabel(item)}</label><div class="upload-field"><input type="hidden" data-field="${escapeHtml(item.key)}" value="${escapeHtml(files.join("、"))}"><div class="upload-grid" data-upload-grid="${escapeHtml(item.key)}">${renderUploadItems(item, files)}</div></div></div>`;
+    }
+
+    function renderUploadItems(item, files) {
+      const tiles = files.map((file, index) => `<span class="upload-tile">${item.editable ? `<button class="upload-remove" type="button" data-action="remove-file" data-field-key="${escapeHtml(item.key)}" data-file-index="${index}" aria-label="移除附件">${icon("x", 13)}</button>` : ""}<span class="upload-preview"><span class="upload-lines"><span></span><span></span><span></span></span><span class="upload-name">${escapeHtml(file)}</span><span class="upload-type">${escapeHtml(fileType(file))}</span></span></span>`).join("");
+      const add = item.editable ? `<label class="upload-add" aria-label="上传附件">${icon("camera", 24)}<input type="file" data-upload-input="${escapeHtml(item.key)}" ${item.secondType.includes("多") ? "multiple" : ""} ${isImageField(item) ? 'accept="image/*"' : ""}></label>` : "";
+      return tiles + add;
+    }
+
+    function renderChoiceField(item, safe, kind) {
+      const action = kind === "date" ? "open-date-picker" : "open-select-picker";
+      return `<div class="form-row ${formRowStateClass(item)}"><label class="${item.required ? "required" : ""}">${escapeHtml(item.label)}</label><input type="hidden" data-field="${escapeHtml(item.key)}" value="${escapeHtml(safe)}"><button class="choice-trigger ${kind === "date" ? "date-trigger" : ""}" type="button" data-action="${action}" data-field-key="${escapeHtml(item.key)}" ${item.editable ? "" : "disabled"}><span class="choice-value ${safe ? "" : "placeholder"}" data-field-display="${escapeHtml(item.key)}">${escapeHtml(safe || "请选择")}</span>${icon("chevronRight", 14)}</button></div>`;
+    }
+
+    function renderFormField(item, value) {
+      const safe = value === "--" || value == null ? (item.defaultValue || "") : value;
+      if (isFileField(item)) return renderUploadEditor(item, safe);
+      if (isTextareaField(item)) return `<div class="form-row wide ${formRowStateClass(item)}"><div class="textarea-head"><label class="${item.required ? "required" : ""}">${escapeHtml(item.label)}</label><span class="textarea-count" data-count-for="${escapeHtml(item.key)}">${String(safe).length}/200</span></div><textarea class="form-control" data-field="${escapeHtml(item.key)}" maxlength="200" placeholder="请输入" ${item.editable ? "" : "disabled"}>${escapeHtml(safe)}</textarea><div class="textarea-help">最多 200 字，超出后无法继续输入</div></div>`;
+      if (isBooleanField(item)) {
+        const options = fieldOptions(item).slice(0, 2);
+        return `<div class="form-row boolean-row ${formRowStateClass(item)}"><label class="${item.required ? "required" : ""}">${escapeHtml(item.label)}</label><input type="hidden" data-field="${escapeHtml(item.key)}" value="${escapeHtml(safe)}"><div class="segmented">${options.map(option => `<button class="segment ${option === safe ? "selected" : ""}" type="button" data-action="segment" data-field-key="${escapeHtml(item.key)}" data-value="${escapeHtml(option)}" ${item.editable ? "" : "disabled"}>${escapeHtml(option)}</button>`).join("")}</div></div>`;
+      }
+      if (isSelectField(item)) return renderChoiceField(item, String(safe), "select");
+      if (isDateField(item)) return renderChoiceField(item, String(safe), "date");
+      const type = item.secondType === "整数" ? "number" : item.secondType === "电子邮件" ? "email" : "text";
+      if (type !== "number") return `<div class="form-row ${formRowStateClass(item)}"><label class="${item.required ? "required" : ""}">${escapeHtml(item.label)}</label><textarea class="form-control auto-text-input" rows="1" data-field="${escapeHtml(item.key)}" placeholder="请输入" ${type === "email" ? 'inputmode="email"' : ""} ${item.editable ? "" : "disabled"}>${escapeHtml(safe)}</textarea></div>`;
+      return `<div class="form-row ${formRowStateClass(item)}"><label class="${item.required ? "required" : ""}">${escapeHtml(item.label)}</label><input class="form-control" type="number" data-field="${escapeHtml(item.key)}" value="${escapeHtml(safe)}" placeholder="请输入" ${item.editable ? "" : "disabled"}></div>`;
+    }
+
+    function resizeAutoTextInput(control) {
+      if (!control) return;
+      control.style.height = "auto";
+      control.style.height = `${Math.max(16, control.scrollHeight)}px`;
+    }
+
+    function currentEditorSection() {
+      if (!state.editor) return null;
+      return state.editor.sectionId === "employee" ? { id: "employee", fields: employeeFields } : getSection(state.editor.sectionId);
+    }
+
+    function currentEditorField(key) {
+      return currentEditorSection()?.fields.find(item => item.key === key) || null;
+    }
+
+    function updateChoiceValue(key, value) {
+      const hidden = document.querySelector(`#editorForm [data-field="${CSS.escape(key)}"]`);
+      const display = document.querySelector(`#editorForm [data-field-display="${CSS.escape(key)}"]`);
+      if (hidden) hidden.value = value;
+      if (display) {
+        display.textContent = value || "请选择";
+        display.classList.toggle("placeholder", !value);
+      }
+    }
+
+    function closeFieldSheet() {
+      fieldSheetMask.classList.remove("show");
+      fieldSheetMask.setAttribute("aria-hidden", "true");
+      fieldSheet.classList.remove("show");
+      state.fieldPicker = null;
+    }
+
+    function openSelectPicker(key) {
+      const item = currentEditorField(key);
+      const hidden = document.querySelector(`#editorForm [data-field="${CSS.escape(key)}"]`);
+      if (!item || !hidden || !item.editable) return;
+      state.fieldPicker = { kind: "select", key, item, value: hidden.value };
+      renderFieldSheet();
+      requestAnimationFrame(() => {
+        fieldSheetMask.classList.add("show");
+        fieldSheetMask.setAttribute("aria-hidden", "false");
+        fieldSheet.classList.add("show");
+      });
+    }
+
+    function dateParts(value) {
+      const match = String(value || "").match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+      const now = new Date();
+      return match ? { y: Number(match[1]), m: Number(match[2]), d: Number(match[3]) } : { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() };
+    }
+
+    function openDatePicker(key) {
+      const item = currentEditorField(key);
+      const hidden = document.querySelector(`#editorForm [data-field="${CSS.escape(key)}"]`);
+      if (!item || !hidden || !item.editable) return;
+      state.fieldPicker = { kind: "date", key, item, parts: dateParts(hidden.value) };
+      renderFieldSheet();
+      requestAnimationFrame(() => {
+        fieldSheetMask.classList.add("show");
+        fieldSheetMask.setAttribute("aria-hidden", "false");
+        fieldSheet.classList.add("show");
+        centerDateWheels();
+      });
+    }
+
+    function renderSelectSheet(picker) {
+      const options = fieldOptions(picker.item);
+      return `<div class="field-sheet-handle"></div><div class="field-sheet-head"><span class="field-sheet-title">选择${escapeHtml(picker.item.label)}</span><button class="field-sheet-close" type="button" data-action="close-field-sheet" aria-label="关闭">${icon("x", 16)}</button></div><div class="field-sheet-search">${icon("search", 16)}<input type="text" data-field-search placeholder="搜索${escapeHtml(picker.item.label)}"></div><div class="field-sheet-list">${options.map(option => `<button class="field-sheet-option ${option === picker.value ? "selected" : ""}" type="button" data-action="select-field-option" data-value="${escapeHtml(option)}">${escapeHtml(option)}</button>`).join("")}</div><div class="field-sheet-actions"><button class="field-sheet-clear" type="button" data-action="clear-field-picker">清空</button><button class="field-sheet-confirm" type="button" data-action="confirm-field-picker">确认</button></div>`;
+    }
+
+    function dateRange(start, end) {
+      return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+    }
+
+    function daysInMonth(year, month) {
+      return new Date(year, month, 0).getDate();
+    }
+
+    function renderDateWheel(label, part, values, selected) {
+      return `<div class="date-wheel" data-date-wheel="${part}"><div class="date-wheel-label">${label}</div>${values.map(value => `<button class="date-wheel-option ${Number(value) === Number(selected) ? "selected" : ""}" type="button" data-action="pick-date-option" data-date-part="${part}" data-value="${value}">${String(value).padStart(part === "y" ? 4 : 2, "0")}</button>`).join("")}</div>`;
+    }
+
+    function renderDateSheet(picker) {
+      const nowYear = new Date().getFullYear();
+      const parts = picker.parts;
+      const maxDay = daysInMonth(parts.y, parts.m);
+      if (parts.d > maxDay) parts.d = maxDay;
+      return `<div class="date-sheet-head"><button class="date-sheet-cancel" type="button" data-action="close-field-sheet">取消</button><span class="date-sheet-title">选择日期</span><button class="date-sheet-confirm" type="button" data-action="confirm-date-picker">确认</button></div><div class="date-wheels">${renderDateWheel("年", "y", dateRange(nowYear - 80, nowYear + 20), parts.y)}${renderDateWheel("月", "m", dateRange(1, 12), parts.m)}${renderDateWheel("日", "d", dateRange(1, maxDay), parts.d)}</div>`;
+    }
+
+    function renderFieldSheet() {
+      const picker = state.fieldPicker;
+      if (!picker) return;
+      fieldSheet.classList.toggle("date-sheet", picker.kind === "date");
+      fieldSheet.setAttribute("aria-label", picker.kind === "date" ? "选择日期" : `选择${picker.item.label}`);
+      fieldSheet.innerHTML = picker.kind === "date" ? renderDateSheet(picker) : renderSelectSheet(picker);
+    }
+
+    function centerDateWheels() {
+      fieldSheet.querySelectorAll(".date-wheel-option.selected").forEach(option => option.scrollIntoView({ block: "center" }));
+    }
+
+    function confirmDatePicker() {
+      const picker = state.fieldPicker;
+      if (!picker || picker.kind !== "date") return;
+      const { y, m, d } = picker.parts;
+      updateChoiceValue(picker.key, `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`);
+      closeFieldSheet();
+    }
+
+    function openEditor(sectionId, rowIndex = null, returnView = "home") {
+      captureHomeScroll();
+      const isEmployee = sectionId === "employee";
+      const section = isEmployee ? { id: "employee", title: "员工信息", fields: employeeFields } : getSection(sectionId);
+      if (!section) return;
+      const source = isEmployee ? Object.fromEntries(employeeFields.map(item => [item.key, item.value])) : rowIndex === null ? {} : { ...(section.rows[rowIndex] || {}) };
+      state.editor = { sectionId, rowIndex, returnView, source, mode: rowIndex === null && !isEmployee ? "new" : "edit" };
+      renderEditor();
+    }
+
+    function renderEditor() {
+      const draft = state.editor;
+      const isEmployee = draft.sectionId === "employee";
+      const section = isEmployee ? { id: "employee", title: "员工信息", fields: employeeFields } : getSection(draft.sectionId);
+      if (!section) { renderHome(); return; }
+      state.view = "editor";
+      const title = `${draft.mode === "new" ? "新建" : "编辑"}${section.title}`;
+      viewHost.innerHTML = `<section class="view editor-view">${renderTopbar(title, "cancel-editor")}<div class="editor-scroll"><form class="form-card" id="editorForm">${section.fields.map(item => renderFormField(item, draft.source[item.key])).join("")}</form></div><div class="bottom-bar two"><button class="secondary-button" type="button" data-action="save-draft">存草稿</button><button class="primary-button" type="button" data-action="save-editor">确定</button></div></section>`;
+      requestAnimationFrame(() => document.querySelectorAll("#editorForm .auto-text-input").forEach(resizeAutoTextInput));
+    }
+
+    function readEditorValues(section, validate = true) {
+      const values = {};
+      document.querySelectorAll("#editorForm [data-field]").forEach(control => {
+        values[control.dataset.field] = String(control.value || "").trim() || "--";
+      });
+      const missing = validate ? section.fields.find(item => item.requiredText === "是" && values[item.key] === "--") : null;
+      if (missing) { showToast(`请填写${missing.label}`); return null; }
+      return values;
+    }
+
+    function persistEditorValues(values) {
+      const draft = state.editor;
+      if (!draft || !values) return null;
+      const isEmployee = draft.sectionId === "employee";
+      const section = isEmployee ? { id: "employee", fields: employeeFields } : getSection(draft.sectionId);
+      if (isEmployee) {
+        employeeFields.forEach(item => { if (Object.prototype.hasOwnProperty.call(values, item.key)) item.value = values[item.key]; });
+        return { sectionId: "employee", rowIndex: null, isEmployee };
+      }
+      let rowIndex = draft.rowIndex;
+      if (draft.mode === "new") {
+        section.rows.unshift(values);
+        rowIndex = 0;
+        state.expandedSections.add(section.id);
+      } else {
+        section.rows[rowIndex] = values;
+      }
+      return { sectionId: section.id, rowIndex, isEmployee };
+    }
+
+    function finishEditor(result, message) {
+      state.editor = null;
+      state.detail = null;
+      state.focusSection = result?.sectionId || "employee";
+      renderHome();
+      showToast(message);
+    }
+
+    function saveEditor() {
+      const draft = state.editor;
+      if (!draft) return;
+      const section = draft.sectionId === "employee" ? { id: "employee", fields: employeeFields } : getSection(draft.sectionId);
+      const values = readEditorValues(section, true);
+      const result = persistEditorValues(values);
+      if (!result) return;
+      finishEditor(result, result.isEmployee ? "员工信息已保存" : (draft.mode === "new" ? "记录已新增" : "修改已保存"));
+    }
+
+    function saveDraftEditor() {
+      const draft = state.editor;
+      if (!draft) return;
+      const section = draft.sectionId === "employee" ? { id: "employee", fields: employeeFields } : getSection(draft.sectionId);
+      const values = readEditorValues(section, false);
+      const result = persistEditorValues(values);
+      if (!result) return;
+      finishEditor(result, "草稿已保存");
+    }
+
+    function openHelpTip(title, content) {
+      helpTipTitle.textContent = title || "帮助";
+      helpTipContent.textContent = content || "";
+      helpTipMask.classList.add("show");
+      helpTipMask.setAttribute("aria-hidden", "false");
+    }
+
+    function closeHelpTip() {
+      helpTipMask.classList.remove("show");
+      helpTipMask.setAttribute("aria-hidden", "true");
+    }
+
+    function captureHomeScroll() {
+      const scroller = document.getElementById("homeScroll");
+      if (scroller) state.homeScroll = scroller.scrollTop;
+    }
+
+    function updateAnchorFromScroll() {
+      if (state.view !== "home") return;
+      const scroller = document.getElementById("homeScroll");
+      if (!scroller) return;
+      const top = scroller.getBoundingClientRect().top;
+      let current = "employee";
+      scroller.querySelectorAll("[data-section]").forEach(section => {
+        if (section.getBoundingClientRect().top - top <= 28) current = section.dataset.section;
+      });
+      if (current !== state.activeAnchor) {
+        state.activeAnchor = current;
+        document.querySelectorAll(".anchor-item").forEach(item => item.classList.toggle("active", item.dataset.sectionId === current));
+        document.querySelector(`.anchor-item[data-section-id="${current}"]`)?.scrollIntoView({ inline: "center", block: "nearest" });
+      }
+      state.homeScroll = scroller.scrollTop;
+    }
+
+    function scrollToSection(sectionId) {
+      const scroller = document.getElementById("homeScroll");
+      const target = document.getElementById(`section-${sectionId}`);
+      if (!scroller || !target) return;
+      state.activeAnchor = sectionId;
+      document.querySelectorAll(".anchor-item").forEach(item => item.classList.toggle("active", item.dataset.sectionId === sectionId));
+      document.querySelector(`.anchor-item[data-section-id="${sectionId}"]`)?.scrollIntoView({ inline: "center", block: "nearest" });
+      scroller.scrollTo({ top: target.offsetTop - 8, behavior: "smooth" });
+    }
+
+    function requestDelete(sectionId, rowIndex) {
+      const section = getSection(sectionId);
+      if (!section?.rows?.[rowIndex]) return;
+      state.deleteTarget = { sectionId, rowIndex, from: state.view };
+      deleteMessage.textContent = `将删除“${section.title}”中的记录 ${rowIndex + 1}，删除后无法恢复。`;
+      deleteMask.classList.add("show");
+      deleteMask.setAttribute("aria-hidden", "false");
+    }
+
+    function closeDeleteSheet() {
+      state.deleteTarget = null;
+      deleteMask.classList.remove("show");
+      deleteMask.setAttribute("aria-hidden", "true");
+    }
+
+    function confirmDelete() {
+      const target = state.deleteTarget;
+      const section = getSection(target?.sectionId);
+      if (!section?.rows?.[target?.rowIndex]) { closeDeleteSheet(); return; }
+      section.rows.splice(target.rowIndex, 1);
+      const from = target.from;
+      closeDeleteSheet();
+      state.detail = null;
+      state.focusSection = section.id;
+      renderHome();
+      showToast(from === "detail" ? "记录已删除，已返回首页" : "记录已删除");
+    }
+
+    function updateUploadGrid(fieldKey) {
+      const hidden = document.querySelector(`#editorForm [data-field="${CSS.escape(fieldKey)}"]`);
+      const grid = document.querySelector(`[data-upload-grid="${CSS.escape(fieldKey)}"]`);
+      const item = (state.editor.sectionId === "employee" ? employeeFields : getSection(state.editor.sectionId).fields).find(field => field.key === fieldKey);
+      if (!hidden || !grid || !item) return;
+      const files = normalizeFiles(hidden.value);
+      grid.innerHTML = renderUploadItems(item, files);
+    }
+
+    function showToast(message) {
+      window.clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.add("show");
+      toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    document.addEventListener("scroll", event => {
+      if (event.target?.id === "homeScroll") updateAnchorFromScroll();
+    }, true);
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      const action = button.dataset.action;
+      if (action === "anchor") return scrollToSection(button.dataset.sectionId);
+      if (action === "toggle-employee") { captureHomeScroll(); state.employeeExpanded = !state.employeeExpanded; renderHome(); return; }
+      if (action === "toggle-section") {
+        captureHomeScroll();
+        const id = button.dataset.sectionId;
+        state.expandedSections.has(id) ? state.expandedSections.delete(id) : state.expandedSections.add(id);
+        state.focusSection = id;
+        renderHome();
+        return;
+      }
+      if (action === "edit-employee") return openEditor("employee", null, "home");
+      if (action === "add-record") return openEditor(button.dataset.sectionId, null, "home");
+      if (action === "edit-record") return openEditor(button.dataset.sectionId, Number(button.dataset.rowIndex), "home");
+      if (action === "view-detail") {
+        captureHomeScroll();
+        state.detail = { sectionId: button.dataset.sectionId, rowIndex: Number(button.dataset.rowIndex) };
+        renderDetail();
+        return;
+      }
+      if (action === "delete-record") return requestDelete(button.dataset.sectionId, Number(button.dataset.rowIndex));
+      if (action === "back-home") { state.focusSection = state.detail?.sectionId || state.activeAnchor; state.detail = null; renderHome(); return; }
+      if (action === "edit-detail") return openEditor(state.detail.sectionId, state.detail.rowIndex, "detail");
+      if (action === "delete-detail") return requestDelete(state.detail.sectionId, state.detail.rowIndex);
+      if (action === "cancel-editor") {
+        const returnView = state.editor?.returnView;
+        state.editor = null;
+        return returnView === "detail" && state.detail ? renderDetail() : renderHome();
+      }
+      if (action === "save-draft") return saveDraftEditor();
+      if (action === "save-editor") return saveEditor();
+      if (action === "open-help-tip") return openHelpTip(button.dataset.helpTitle, button.dataset.helpContent);
+      if (action === "close-help-tip") return closeHelpTip();
+      if (action === "open-select-picker") return openSelectPicker(button.dataset.fieldKey);
+      if (action === "open-date-picker") return openDatePicker(button.dataset.fieldKey);
+      if (action === "close-field-sheet") return closeFieldSheet();
+      if (action === "select-field-option") {
+        const picker = state.fieldPicker;
+        if (!picker || picker.kind !== "select") return;
+        picker.value = button.dataset.value;
+        updateChoiceValue(picker.key, picker.value);
+        renderFieldSheet();
+        window.setTimeout(closeFieldSheet, 150);
+        return;
+      }
+      if (action === "clear-field-picker") {
+        const picker = state.fieldPicker;
+        if (!picker || picker.kind !== "select") return;
+        picker.value = "";
+        updateChoiceValue(picker.key, "");
+        renderFieldSheet();
+        return;
+      }
+      if (action === "confirm-field-picker") {
+        const picker = state.fieldPicker;
+        if (!picker || picker.kind !== "select") return;
+        updateChoiceValue(picker.key, picker.value);
+        closeFieldSheet();
+        return;
+      }
+      if (action === "pick-date-option") {
+        const picker = state.fieldPicker;
+        if (!picker || picker.kind !== "date") return;
+        picker.parts[button.dataset.datePart] = Number(button.dataset.value);
+        renderFieldSheet();
+        window.setTimeout(centerDateWheels, 0);
+        return;
+      }
+      if (action === "confirm-date-picker") return confirmDatePicker();
+      if (action === "segment") {
+        const key = button.dataset.fieldKey;
+        const hidden = document.querySelector(`#editorForm [data-field="${CSS.escape(key)}"]`);
+        if (hidden) hidden.value = button.dataset.value;
+        button.closest(".segmented")?.querySelectorAll(".segment").forEach(segment => segment.classList.toggle("selected", segment === button));
+        return;
+      }
+      if (action === "remove-file") {
+        const hidden = document.querySelector(`#editorForm [data-field="${CSS.escape(button.dataset.fieldKey)}"]`);
+        if (!hidden) return;
+        const files = normalizeFiles(hidden.value);
+        files.splice(Number(button.dataset.fileIndex), 1);
+        hidden.value = files.join("、");
+        updateUploadGrid(button.dataset.fieldKey);
+        return;
+      }
+      if (action === "submit") return showToast("信息采集已提交");
+      if (action === "cancel-delete") return closeDeleteSheet();
+      if (action === "confirm-delete") return confirmDelete();
+    });
+
+    document.addEventListener("change", event => {
+      const input = event.target.closest("[data-upload-input]");
+      if (!input) return;
+      const key = input.dataset.uploadInput;
+      const hidden = document.querySelector(`#editorForm [data-field="${CSS.escape(key)}"]`);
+      if (!hidden) return;
+      const current = normalizeFiles(hidden.value);
+      const selected = Array.from(input.files || []).map(file => file.name);
+      const next = input.multiple ? [...current, ...selected] : selected;
+      if (next.length > 4) showToast("最多上传 4 个附件");
+      hidden.value = next.slice(0, 4).join("、");
+      updateUploadGrid(key);
+    });
+
+    document.addEventListener("input", event => {
+      const search = event.target.closest("[data-field-search]");
+      if (search) {
+        const query = search.value.trim().toLowerCase();
+        fieldSheet.querySelectorAll(".field-sheet-option").forEach(option => {
+          option.hidden = !option.textContent.toLowerCase().includes(query);
+        });
+        return;
+      }
+      const autoTextInput = event.target.closest("textarea.auto-text-input");
+      if (autoTextInput) {
+        resizeAutoTextInput(autoTextInput);
+        return;
+      }
+      const textarea = event.target.closest("textarea[data-field]");
+      if (textarea) {
+        const count = document.querySelector(`[data-count-for="${CSS.escape(textarea.dataset.field)}"]`);
+        if (count) count.textContent = `${textarea.value.length}/200`;
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Enter" && event.target.closest("textarea.auto-text-input")) event.preventDefault();
+    });
+
+    deleteMask.addEventListener("click", event => { if (event.target === deleteMask) closeDeleteSheet(); });
+    renderHome();
+  </script>
+</body>
+</html>

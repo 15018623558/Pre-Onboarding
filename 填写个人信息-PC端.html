@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>填写个人信息-PC端</title>
+  <style>
+    :root {
+      --pr: #2563eb;
+      --pr50: #eff6ff;
+      --pr100: #dbeafe;
+      --pr700: #1d4ed8;
+      --em: #10b981;
+      --em50: #ecfdf5;
+      --em700: #047857;
+      --ac: #f59e0b;
+      --ac50: #fffbeb;
+      --ro: #f43f5e;
+      --ro50: #fff1f2;
+      --ro100: #ffe4e6;
+      --c9: #18181b;
+      --c7: #3f3f46;
+      --c6: #52525b;
+      --c5: #71717a;
+      --c4: #a1a1aa;
+      --c3: #d4d4d8;
+      --c2: #e4e4e7;
+      --c1: #f4f4f5;
+      --sf: #fff;
+      --bg: #f5f5f4;
+      --line: #eef1f6;
+      --shadow-card: 0 1px 3px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.03);
+      --shadow-modal: 0 25px 60px -12px rgba(0,0,0,.2);
+      --f: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+      --m: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --r1: 6px;
+      --r2: 8px;
+      --r3: 10px;
+      --r4: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--c9); background: var(--bg); font: 14px/1.5 var(--f); }
+    button, input, select, textarea { font: inherit; }
+    button { border: 0; background: transparent; cursor: pointer; }
+    [hidden] { display: none !important; }
+
+    .app-shell { min-width: 1180px; min-height: 100vh; }
+
+    .login-view {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 40px;
+      background: #eef2f7;
+    }
+
+    .login-card {
+      position: relative;
+      width: min(980px, calc(100vw - 80px));
+      min-height: 560px;
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      gap: 40px;
+      overflow: hidden;
+      border-radius: 18px;
+      background: var(--sf);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, .12);
+    }
+
+    .login-visual {
+      position: relative;
+      padding: 54px 0 0 58px;
+      background: var(--pr50);
+      overflow: hidden;
+    }
+
+    .login-visual h1 {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      color: #0f172a;
+      font-size: 30px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .login-visual p {
+      position: relative;
+      z-index: 1;
+      width: 330px;
+      margin: 14px 0 0;
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .login-illu {
+      position: absolute;
+      right: 34px;
+      bottom: 26px;
+      width: 330px;
+      height: 300px;
+      pointer-events: none;
+    }
+
+    .login-panel {
+      position: relative;
+      padding: 54px 44px 40px 0;
+    }
+
+    .login-lang {
+      position: absolute;
+      top: 22px;
+      right: 32px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .login-hi { margin-top: 72px; }
+    .login-hi h2 { margin: 0; color: #0f172a; font-size: 26px; font-weight: 700; line-height: 1.35; letter-spacing: 0; }
+    .login-hi h2 em { display: block; font-style: normal; }
+    .login-mode {
+      display: flex;
+      gap: 3px;
+      min-height: 44px;
+      margin-top: 24px;
+      padding: 3px;
+      border-radius: 8px;
+      background: #eef2f7;
+    }
+    .login-mode button {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: #64748b;
+      font: 600 13px/1 var(--f);
+      cursor: pointer;
+      transition: color .18s, background .18s, box-shadow .18s;
+    }
+    .login-mode button.on {
+      color: #0f172a;
+      background: var(--sf);
+      box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    }
+    .fld { margin-top: 28px; }
+    .login-mode + .fld { margin-top: 20px; }
+    .fld-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      padding-bottom: 12px;
+      border-bottom: 1.5px solid #e2e8f0;
+      transition: border-color .2s;
+    }
+    .fld-row:focus-within { border-color: var(--pr); }
+    .fld-row.err { border-color: var(--ro); animation: shake .35s ease; }
+    @keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+    .fld-code { display: inline-flex; align-items: center; gap: 3px; color: #0f172a; font-size: 15px; font-weight: 500; white-space: nowrap; }
+    .fld-code.hide { display: none; }
+    .fld input { flex: 1; min-width: 0; border: 0; outline: none; color: #0f172a; background: transparent; font-size: 15px; }
+    .fld input::placeholder { color: #94a3b8; }
+    .fld-link { color: var(--pr); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; }
+    .fld-link.dis { color: #94a3b8; pointer-events: none; }
+    .login-btn {
+      width: 100%;
+      height: 48px;
+      margin-top: 36px;
+      border-radius: 10px;
+      color: #fff;
+      background: var(--pr);
+      box-shadow: 0 4px 14px rgba(37,99,235,.25);
+      font-size: 16px;
+      font-weight: 600;
+      transition: transform .12s, background .12s, opacity .2s;
+    }
+    .login-btn:active { transform: scale(.98); background: var(--pr700); }
+    .sp {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      border: 2.5px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      vertical-align: -3px;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .login-agree { display: flex; align-items: flex-start; gap: 8px; margin-top: 16px; color: #64748b; font-size: 12px; line-height: 1.6; }
+    .login-agree a { color: var(--pr); text-decoration: underline; text-underline-offset: 2px; }
+    .ck {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      margin-top: 1px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      transition: all .15s;
+    }
+    .ck.on { border-color: var(--pr); background: var(--pr); }
+    .ck.on::after { content: ""; width: 8px; height: 5px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translateY(-1px); }
+
+    .detail-view { min-height: 100vh; background: #f5f7fb; }
+    .detail-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 52px;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--c2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(16px);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--c9); font-size: 15px; font-weight: 700; }
+    .brand-mark { width: 28px; height: 28px; border-radius: 6px; display: grid; place-items: center; color: #fff; background: var(--pr); font-weight: 800; }
+    .top-user { display: inline-flex; align-items: center; gap: 10px; color: var(--c5); font-size: 13px; }
+    .top-avatar { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: var(--pr); font-size: 12px; font-weight: 700; }
+
+    .collect-detail-page { padding: 18px 24px 24px; }
+    .collect-detail-layout {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 156px;
+      gap: 12px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .collect-profile {
+      grid-column: 1 / -1;
+      min-height: 112px;
+      padding: 16px 18px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      background: #fff;
+      box-shadow: var(--shadow-card);
+    }
+    .collect-profile-person { min-width: 0; display: flex; align-items: center; gap: 14px; }
+    .collect-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 4px;
+      display: grid;
+      place-items: center;
+      color: #8aa5cb;
+      background: #eef4ff;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .collect-profile-info { min-width: 0; display: grid; gap: 8px; }
+    .collect-profile-title { display: flex; align-items: center; gap: 8px; color: #1f2937; font-size: 18px; font-weight: 700; }
+    .collect-profile-meta { display: flex; flex-wrap: wrap; gap: 8px 18px; color: #667085; font-size: 12px; }
+    .collect-profile-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
+    .collect-return-notice {
+      grid-column: 1 / -1;
+      min-height: 54px;
+      padding: 0 16px;
+      border: 1px solid var(--ro100);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #1f2937;
+      background: var(--ro50);
+      box-shadow: var(--shadow-card);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .collect-return-icon {
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--ro100);
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      color: var(--ro);
+      background: #fff;
+      flex: 0 0 auto;
+    }
+    .collect-return-icon svg { width: 15px; height: 15px; }
+
+    .btn, .employment-btn {
+      height: 32px;
+      padding: 0 13px;
+      border: 1px solid #d7dce3;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #374151;
+      background: #fff;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .btn.primary, .employment-btn.primary { border-color: #1677ff; color: #fff; background: #1677ff; }
+    .btn.draft { border-color: #9bc7ff; color: #1677ff; background: #fff; }
+
+    .collect-detail-main { grid-column: 1; min-width: 0; display: grid; gap: 12px; }
+    #collectDetailSections { display: grid; gap: 12px; }
+    .collect-section {
+      overflow: hidden;
+      border: 1px solid #eef1f6;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(15,23,42,.04);
+    }
+    .collect-section-head {
+      padding: 10px 16px;
+      border-bottom: 1px solid #eef1f6;
+      display: grid;
+      gap: 8px;
+      background: #fff;
+    }
+    .collect-section-head-main {
+      min-height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .collect-section-title { display: inline-flex; align-items: center; gap: 8px; color: #1f2937; font-size: 14px; font-weight: 700; }
+    .collect-section-title::before { content: ""; width: 3px; height: 14px; border-radius: 2px; background: #1677ff; }
+    .collect-section-required { color: var(--ro); font-size: 14px; font-weight: 700; line-height: 1; }
+    .collect-section-actions { display: inline-flex; align-items: center; gap: 12px; }
+    .collect-section-actions button { color: #1677ff; font-size: 12px; font-weight: 500; }
+    .collect-section-hint {
+      padding: 8px 10px;
+      border-radius: 4px;
+      color: #64748b;
+      background: #f8fafc;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .collect-section.collapsed .collect-section-body { display: none; }
+
+    .collect-info-grid {
+      padding: 20px 22px 24px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 72px;
+      row-gap: 18px;
+    }
+    .collect-info-item { min-height: 44px; display: grid; align-content: start; gap: 5px; color: #344054; font-size: 12px; }
+    .collect-info-item > span { color: #5f6875; line-height: 18px; }
+    .collect-info-item strong { min-width: 0; display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; color: #344054; font-weight: 600; overflow: visible; white-space: normal; line-height: 20px; }
+    .collect-value-wrap { min-width: 0; display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+
+    .collect-file-list, .collect-image-list { min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .collect-file-chip {
+      max-width: 238px;
+      height: 24px;
+      padding: 0 6px;
+      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #475467;
+      background: #f3f6f9;
+      font-size: 12px;
+      line-height: 1;
+      vertical-align: middle;
+    }
+    .collect-file-icon { width: 14px; height: 14px; border-radius: 2px; display: inline-grid; place-items: center; color: #1677ff; background: #e8f2ff; font-size: 10px; flex: 0 0 auto; }
+    .collect-file-icon.image { color: #0f766e; background: #e6fffb; }
+    .collect-file-name { min-width: 0; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .collect-file-action { width: 18px; height: 18px; border-left: 1px solid #dfe4eb; display: inline-grid; place-items: center; color: #98a2b3; flex: 0 0 auto; font-size: 13px; }
+    .collect-file-action.delete { color: #667085; font-size: 12px; }
+    .collect-file-extra { display: none; }
+    .collect-table .collect-file-chip { width: min(100%, 320px); max-width: 100%; }
+    .collect-table .collect-file-name { flex: 1 1 auto; max-width: none; }
+
+    .collect-table-wrap { margin: 12px 14px 14px; border: 1px solid #eef1f6; border-radius: 6px; overflow-x: auto; background: #fff; }
+    .collect-table { width: 100%; min-width: 960px; table-layout: fixed; border-collapse: collapse; }
+    .collect-table th, .collect-table td { height: 36px; padding: 0 12px; border-bottom: 1px solid #f2f4f7; color: #424a55; text-align: left; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .collect-table th { height: 34px; color: #2f3742; background: #f8fafc; font-weight: 650; }
+    .collect-row-actions { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }
+    .link { color: #1677ff; font-size: 12px; }
+    .link.danger { color: var(--ro); }
+    .collect-empty { height: 52px; display: grid; place-items: center; color: #a0a8b4; font-size: 12px; }
+
+    .collect-anchor {
+      position: sticky;
+      top: 68px;
+      align-self: start;
+      grid-column: 2;
+      padding: 10px 8px 10px 18px;
+      border: 1px solid #eef1f6;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow-card);
+    }
+    .collect-anchor a { position: relative; min-height: 30px; padding: 0 8px 0 18px; display: flex; align-items: center; color: #64748b; font-size: 12px; text-decoration: none; }
+    .collect-anchor a::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: #dfe4eb; }
+    .collect-anchor a::after { content: ""; position: absolute; left: -3px; top: 12px; width: 7px; height: 7px; border-radius: 50%; background: #cfd6e2; box-shadow: 0 0 0 3px #fff; }
+    .collect-anchor a:hover, .collect-anchor a.active { color: #1677ff; font-weight: 600; }
+    .collect-anchor a.active::after { background: #1677ff; }
+
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      background: rgba(16,24,40,.38);
+    }
+    .modal-mask.show { display: block; }
+    .collect-record-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 110;
+      width: min(980px, calc(100vw - 48px));
+      max-height: calc(100vh - 80px);
+      border-radius: 8px;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: var(--shadow-modal);
+      transform: translate(-50%, -50%);
+    }
+    .collect-record-modal.show { display: flex; }
+    .modal-head { height: 56px; padding: 0 22px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; }
+    .modal-head h3 { margin: 0; font-size: 16px; font-weight: 650; }
+    .close { width: 30px; height: 30px; border-radius: 4px; color: #6b7280; font-size: 22px; }
+    .collect-record-body { padding: 18px 24px 22px; overflow: auto; }
+    .collect-record-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 18px 42px; }
+    .collect-record-field { min-width: 0; display: grid; align-self: start; gap: 8px; }
+    .collect-record-field.wide { grid-column: 1 / -1; }
+    .collect-record-field label { min-height: 18px; color: #475467; font-size: 13px; line-height: 18px; font-weight: 500; }
+    .collect-record-field label.required::before { content: "*"; margin-right: 3px; color: var(--ro); }
+    .collect-record-field input, .collect-record-field textarea {
+      min-width: 0;
+      width: 100%;
+      min-height: 34px;
+      border: 1px solid #dfe4eb;
+      border-radius: 4px;
+      padding: 0 9px;
+      color: #303846;
+      background: #fff;
+      outline: none;
+      font-size: 13px;
+      transition: border-color .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .collect-record-field input:focus, .collect-record-field textarea:focus { border-color: #60a5fa; box-shadow: 0 0 0 2px rgba(37,99,235,.12); }
+    .collect-record-field input:disabled, .collect-record-field textarea:disabled { color: #667085; background: #f7f9fc; cursor: not-allowed; }
+    .collect-record-field textarea { height: 74px; padding-top: 8px; resize: vertical; line-height: 1.5; }
+    .collect-select { position: relative; min-width: 0; }
+    .collect-select-trigger {
+      position: relative;
+      width: 100%;
+      min-height: 34px;
+      padding: 0 32px 0 9px;
+      border: 1px solid #dfe4eb;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      color: #303846;
+      background: #fff;
+      text-align: left;
+      font-size: 13px;
+      transition: border-color .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .collect-select-trigger::after {
+      content: "";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      border-right: 1.5px solid #98a2b3;
+      border-bottom: 1.5px solid #98a2b3;
+      transform: translateY(-65%) rotate(45deg);
+      transition: transform .12s ease, border-color .12s ease;
+    }
+    .collect-select.open .collect-select-trigger { border-color: #60a5fa; box-shadow: 0 0 0 2px rgba(37,99,235,.12); }
+    .collect-select.open .collect-select-trigger::after { border-color: #1677ff; transform: translateY(-30%) rotate(225deg); }
+    .collect-select-trigger.placeholder { color: #98a2b3; }
+    .collect-select-trigger:disabled { color: #667085; background: #f7f9fc; cursor: not-allowed; }
+    .collect-select-panel {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 4px);
+      z-index: 130;
+      max-height: 220px;
+      padding: 4px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      display: none;
+      overflow-y: auto;
+      background: #fff;
+      box-shadow: var(--shadow-dropdown, 0 10px 40px -10px rgba(0,0,0,.12), 0 2px 10px -2px rgba(0,0,0,.04));
+    }
+    .collect-select.open .collect-select-panel { display: block; }
+    .collect-select-option {
+      width: 100%;
+      min-height: 30px;
+      padding: 0 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      color: #303846;
+      background: #fff;
+      text-align: left;
+      font-size: 13px;
+    }
+    .collect-select-option:hover, .collect-select-option.active { color: #1677ff; background: #eff6ff; }
+    .collect-select-option.selected { color: #1677ff; font-weight: 600; }
+    .collect-upload-box { min-width: 0; display: grid; align-items: start; gap: 8px; }
+    .collect-upload-action { height: 24px; width: fit-content; padding: 0; display: inline-flex; align-items: center; gap: 6px; color: #1677ff; background: transparent; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .collect-upload-action input { display: none; }
+    .collect-upload-preview { min-height: 26px; display: flex; align-items: flex-start; flex-wrap: wrap; gap: 6px; color: #98a2b3; font-size: 13px; }
+    .collect-record-foot { height: 52px; padding: 0 18px; border-top: 1px solid #eef1f6; display: flex; align-items: center; justify-content: flex-end; gap: 8px; background: #fff; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 30px;
+      z-index: 200;
+      min-width: 168px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      display: none;
+      color: #fff;
+      background: rgba(15,23,42,.88);
+      text-align: center;
+      transform: translateX(-50%);
+      box-shadow: 0 10px 30px rgba(15,23,42,.16);
+    }
+    .toast.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <section class="login-view" id="loginView">
+      <div class="login-card">
+        <div class="login-visual">
+          <h1>HR ONE<br>入职信息采集</h1>
+          <p>请完成手机号或邮箱验证码登录，进入个人信息采集页面后核对并补充入职资料。</p>
+          <svg class="login-illu" viewBox="0 0 360 320" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="92" y="40" width="176" height="238" rx="26" fill="#fff" stroke="#DBEAFE" stroke-width="2"/>
+            <rect x="118" y="76" width="124" height="14" rx="7" fill="#DBEAFE"/>
+            <rect x="118" y="112" width="80" height="10" rx="5" fill="#BFDBFE"/>
+            <rect x="118" y="138" width="124" height="10" rx="5" fill="#E2E8F0"/>
+            <rect x="118" y="164" width="104" height="10" rx="5" fill="#E2E8F0"/>
+            <rect x="118" y="205" width="124" height="38" rx="10" fill="#2563EB"/>
+            <circle cx="255" cy="83" r="36" fill="#EFF6FF"/>
+            <path d="M243 83l8 8 17-20" stroke="#2563EB" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="180" cy="294" rx="105" ry="12" fill="#CBD5E1"/>
+          </svg>
+        </div>
+        <div class="login-panel">
+          <div class="login-lang">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#64748B" stroke-width="1.2"/><path d="M1.5 7h11M7 1c1.8 1.6 2.8 3.6 2.8 6S8.8 11.4 7 13c-1.8-1.6-2.8-3.6-2.8-6S5.2 2.6 7 1z" stroke="#64748B" stroke-width="1.2"/></svg>
+            简体中文
+            <svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="#64748B" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="login-hi">
+            <h2>你好，<em>请使用验证码登录</em></h2>
+          </div>
+          <div class="login-mode" id="loginModeTabs" role="group" aria-label="选择登录方式">
+            <button class="on" type="button" data-login-mode="phone">手机号</button>
+            <button type="button" data-login-mode="email">邮箱</button>
+          </div>
+          <div class="fld">
+            <div class="fld-row" id="fldAccount">
+              <span class="fld-code" id="accountPrefix">+86
+                <svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="#0F172A" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <input type="tel" id="inAccount" placeholder="请输入手机号" maxlength="11" value="15018623558">
+            </div>
+          </div>
+          <div class="fld">
+            <div class="fld-row" id="fldCode">
+              <input type="text" id="inCode" placeholder="请输入验证码" maxlength="6">
+              <span class="fld-link" id="getCodeBtn">获取验证码</span>
+            </div>
+          </div>
+          <button class="login-btn" id="loginBtn" type="button">登录</button>
+          <div class="login-agree">
+            <button class="ck on" id="ckLogin" type="button" aria-label="同意隐私政策和用户服务协议"></button>
+            <span>同意 <a href="javascript:;">《隐私政策》</a> 和 <a href="javascript:;">《用户服务协议》</a></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-view" id="detailView" hidden>
+      <header class="detail-topbar">
+        <div class="brand"><span class="brand-mark">H</span><span>HR ONE · 填写个人信息</span></div>
+        <div class="top-user"><span>测试234</span><span class="top-avatar">测</span></div>
+      </header>
+      <main class="collect-detail-page">
+        <div class="collect-detail-layout">
+          <section class="collect-profile">
+            <div class="collect-profile-person">
+              <div class="collect-avatar">测</div>
+              <div class="collect-profile-info">
+                <div class="collect-profile-title">
+                  <span id="collectCandidateName">测试234</span>
+                </div>
+                <div class="collect-profile-meta"></div>
+              </div>
+            </div>
+            <div class="collect-profile-actions">
+              <button class="employment-btn primary" type="button" id="detailSubmit">提交</button>
+            </div>
+          </section>
+          <section class="collect-return-notice" aria-label="HR退回原因">
+            <span class="collect-return-icon" aria-hidden="true">
+              <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M8 4.5v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <circle cx="8" cy="11.4" r="1" fill="currentColor"/>
+              </svg>
+            </span>
+            <span>工龄证明附件不符合要求，请重新上传后提交</span>
+          </section>
+          <div class="collect-detail-main">
+            <div id="collectDetailSections"></div>
+          </div>
+          <nav class="collect-anchor" id="collectAnchorNav" aria-label="信息采集模块导航"></nav>
+        </div>
+      </main>
+    </section>
+  </div>
+
+  <div class="modal-mask" id="modalMask"></div>
+  <section class="collect-record-modal" id="collectRecordModal" aria-modal="true" role="dialog">
+    <div class="modal-head">
+      <h3 id="collectRecordTitle">新增</h3>
+      <button class="close" type="button" id="closeCollectRecord" aria-label="关闭">×</button>
+    </div>
+    <div class="collect-record-body">
+      <form class="collect-record-form" id="collectRecordForm"></form>
+    </div>
+    <div class="collect-record-foot">
+      <button class="btn" type="button" id="cancelCollectRecord">取消</button>
+      <button class="btn draft" type="button" id="draftCollectRecord">存草稿</button>
+      <button class="btn primary" type="button" id="confirmCollectRecord">确定</button>
+    </div>
+  </section>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = selector => document.querySelector(selector);
+    const $$ = selector => Array.from(document.querySelectorAll(selector));
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function collectField(label, fieldType, secondType, requiredText, editableText, defaultValue = "", extra = {}) {
+      return {
+        key: extra.key || label,
+        label,
+        fieldType,
+        secondType,
+        requiredText,
+        editableText,
+        required: requiredText === "是" || requiredText === "条件必填",
+        editable: editableText !== "否",
+        defaultValue,
+        value: Object.prototype.hasOwnProperty.call(extra, "value") ? extra.value : defaultValue,
+        options: extra.options || getCollectDefaultOptions(label, secondType),
+        wide: Boolean(extra.wide) || fieldType === "内容框" || secondType === "文本区"
+      };
+    }
+
+    function getCollectDefaultOptions(label, secondType) {
+      if (secondType === "是否") return ["是", "否"];
+      if (label === "性别") return ["男", "女"];
+      if (label.includes("学历")) return ["博士", "硕士", "本科", "大专", "高中"];
+      if (label.includes("学位")) return ["博士", "硕士", "学士", "EMBA", "无"];
+      if (secondType === "单选列表" || secondType === "单选值" || secondType === "单选框") return ["--", "是", "否", "其他"];
+      return [];
+    }
+
+    const collectDetailCandidate = {
+      name: "测试234",
+      gender: "男",
+      organization: "AI-二级组织02",
+      email: "1079028588@qq.com",
+      mobile: "15018623558"
+    };
+
+    const collectEmployeeFields = [
+      collectField("姓名", "文本框", "单行文本", "是", "是", "根据offer自动带出", { value: "WX-德国1784536618" }),
+      collectField("性别", "单选框", "单选值", "是", "是", "", { value: "男", options: ["男", "女"] }),
+      collectField("公司邮箱", "文本框", "单行文本", "是", "否", "", { value: "1079028588@qq.com" }),
+      collectField("个人邮箱", "文本框", "电子邮件", "是", "是", "根据offer自动带出", { value: "1079028588@qq.com" }),
+      collectField("手机号码", "文本框", "单行文本", "是", "是", "根据offer自动带出", { value: "15018623558" }),
+      collectField("政治面貌", "下拉框", "单选列表", "是", "是", "", { value: "共青团员", options: ["共青团员", "群众", "中共党员"] }),
+      collectField("民族", "下拉框", "单选列表", "是", "是", "", { value: "回族", options: ["汉族", "回族", "满族", "壮族"] }),
+      collectField("籍贯", "文本框", "单行文本", "是", "是", "", { value: "江西省赣州市于都县" }),
+      collectField("证件类型", "下拉框", "单选列表", "是", "是", "身份证", { value: "身份证", options: ["身份证", "护照", "港澳通行证", "台湾通行证"] }),
+      collectField("身份证人像面", "文件上传", "图片上传", "是", "是", "", { value: "身份证人像面.jpg" }),
+      collectField("身份证国徽面", "文件上传", "图片上传", "是", "是", "", { value: "身份证国徽面.jpg" }),
+      collectField("证件号码", "文本框", "单行文本", "是", "是", "", { value: "360731199411025372" }),
+      collectField("证件有效期", "时间日期", "日期", "是", "是", "", { value: "2035-07-20" }),
+      collectField("出生日期", "时间日期", "日期", "是", "是", "", { value: "2026-07-20" }),
+      collectField("年龄", "文本框", "整数", "是", "是", "", { value: "0" }),
+      collectField("户口地址", "文本框", "单行文本", "是", "是", "", { value: "轻铺南" }),
+      collectField("户口类别", "下拉框", "单选列表", "是", "是", "", { value: "农村户口", options: ["农村户口", "城镇户口"] }),
+      collectField("现居住地址", "文本框", "单行文本", "是", "是", "", { value: "江西省" }),
+      collectField("参加工作日期", "时间日期", "日期", "是", "是", ""),
+      collectField("工资证明附件", "文件上传", "多文件上传", "是", "是", "", { value: ["工资流水.pdf", "收入证明.pdf"] }),
+      collectField("婚姻状况", "下拉框", "单选列表", "是", "是", "", { options: ["未婚", "已婚", "离异", "丧偶"] }),
+      collectField("毕业学校名称", "文本框", "单行文本", "是", "是", "", { value: "江西科技学院" }),
+      collectField("毕业时间", "时间日期", "日期", "是", "是", "", { value: "2026-09-24" }),
+      collectField("专业", "文本框", "单行文本", "是", "是", "", { value: "过分分" }),
+      collectField("最高学历", "下拉框", "单选列表", "是", "是", "", { value: "本科", options: ["博士", "硕士", "本科", "大专", "高中"] }),
+      collectField("毕业证照", "文件上传", "多图片上传", "条件必填", "是", "", { value: ["毕业证正面.jpg", "毕业证反面.jpg"] }),
+      collectField("最高学位", "下拉框", "单选列表", "条件必填", "是", "", { value: "EMBA", options: ["博士", "硕士", "学士", "EMBA", "无"] }),
+      collectField("学位证", "文件上传", "多图片上传", "条件必填", "是", "", { value: ["学位证书.jpg", "学位认证页.jpg", "学位证补充页.jpg", "学位证英文版.jpg"] }),
+      collectField("外语水平", "下拉框", "单选列表", "条件必填", "是", "", { value: "英语四级(CET4)", options: ["英语四级(CET4)", "英语六级(CET6)", "专业四级", "专业八级"] }),
+      collectField("计算机水平", "下拉框", "单选列表", "条件必填", "是", "", { options: ["一级", "二级", "三级", "四级"] }),
+      collectField("个人职业照", "文件上传", "图片上传", "是", "是", "", { value: "个人职业照.jpg" }),
+      collectField("紧急联系人", "文本框", "单行文本", "是", "是", ""),
+      collectField("紧急联系人与本人关系", "下拉框", "单选列表", "是", "是", "", { options: ["父母", "配偶", "子女", "朋友"] }),
+      collectField("紧急联系人电话", "文本框", "单行文本", "是", "是", ""),
+      collectField("紧急联系人地址", "文本框", "单行文本", "是", "是", ""),
+      collectField("是否有亲属/亲密朋友在本司任职", "单选框", "是否", "是", "是", "", { value: "否", options: ["是", "否"] }),
+      collectField("本司任职亲属/亲密朋友姓名", "文本框", "员工单选", "条件必填", "是", ""),
+      collectField("亲属/亲密关系", "文本框", "单行文本", "条件必填", "是", ""),
+      collectField("是否落户口", "单选框", "是否", "是", "是", "", { options: ["是", "否"] }),
+      collectField("户口本照片", "文件上传", "图片上传", "条件必填", "是", "", { value: "户口本首页.jpg" }),
+      collectField("社保电脑号", "文本框", "单行文本", "是", "是", ""),
+      collectField("公积金账号", "文本框", "单行文本", "是", "是", ""),
+      collectField("银行卡号", "文本框", "单行文本", "是", "是", ""),
+      collectField("银行名称", "文本框", "单行文本", "是", "是", ""),
+      collectField("开户行名称", "文本框", "单行文本", "是", "是", ""),
+      collectField("银行联行号", "文本框", "单行文本", "是", "是", ""),
+      collectField("银行卡照片", "文件上传", "图片上传", "是", "是", "", { value: "银行卡正面.jpg" }),
+      collectField("离职证明照片", "文件上传", "图片上传", "是", "是", "", { value: "离职证明.jpg" }),
+      collectField("健康情况", "下拉框", "单选列表", "是", "是", "", { options: ["健康", "良好", "一般"] }),
+      collectField("体检报告附件", "文件上传", "多文件上传", "是", "是", "", { value: ["体检报告.pdf", "复查说明.pdf"] }),
+      collectField("无犯罪记录证明", "文件上传", "文件上传", "是", "是", "", { value: "无犯罪记录证明.pdf" }),
+      collectField("其他入职附件", "文件上传", "多文件上传", "否", "是", "", { value: ["承诺书.pdf", "补充材料.docx"] }),
+      collectField("是否在其他公司兼职法人", "单选框", "是否", "是", "是", "否", { value: "否", options: ["是", "否"] }),
+      collectField("兼职信息", "文本框", "单行文本", "条件必填", "是", "")
+    ];
+
+    const collectDetailSections = [
+      { id: "employee", title: "员工信息", type: "info", collapsed: false },
+      {
+        id: "visa", title: "签证信息", required: true, collapsed: false,
+        fields: [
+          collectField("是否有签证", "单选框", "是否", "条件必填", "是", "", { options: ["是", "否"] }),
+          collectField("签证国家", "文本框", "单行文本", "条件必填", "是", ""),
+          collectField("签证类型", "下拉框", "单选列表", "条件必填", "是", ""),
+          collectField("签证生效日期", "时间日期", "日期", "条件必填", "是", ""),
+          collectField("签证失效日期", "时间日期", "日期", "条件必填", "是", ""),
+          collectField("签证附件", "文件上传", "多文件上传", "条件必填", "是", "")
+        ],
+        rows: [{ 是否有签证: "否", 签证国家: "--", 签证类型: "--", 签证生效日期: "--", 签证失效日期: "--", 签证附件: "--" }]
+      },
+      {
+        id: "work", title: "工作履历", required: true, collapsed: false,
+        hint: "由近到远填写全职工作经历；在职人员结束日期填未来日期，实习无需填写，多条经历可点新建添加",
+        fields: [
+          collectField("开始日期", "时间日期", "日期", "是", "是", ""),
+          collectField("结束日期", "时间日期", "日期", "是", "是", ""),
+          collectField("单位名称", "文本框", "单行文本", "是", "是", ""),
+          collectField("职位", "文本框", "单行文本", "是", "是", ""),
+          collectField("离职原因", "文本框", "单行文本", "是", "是", ""),
+          collectField("证明人", "文本框", "单行文本", "是", "是", ""),
+          collectField("证明人联系方式", "文本框", "单行文本", "是", "是", "")
+        ],
+        rows: [{ 开始日期: "2024-07-20", 结束日期: "2027-07-20", 单位名称: "三分毒", 职位: "--", 离职原因: "再说", 证明人: "测试", 证明人联系方式: "13256854317" }]
+      },
+      {
+        id: "education", title: "教育经历", required: true, collapsed: false,
+        fields: [
+          collectField("开始日期", "时间日期", "日期", "是", "是", ""),
+          collectField("结束日期", "时间日期", "日期", "是", "是", ""),
+          collectField("毕业学校名称", "文本框", "单行文本", "是", "是", ""),
+          collectField("专业", "文本框", "单行文本", "是", "是", ""),
+          collectField("学历", "下拉框", "单选列表", "是", "是", "", { options: ["博士", "硕士", "本科", "大专", "高中"] }),
+          collectField("学位", "下拉框", "单选列表", "是", "是", "", { options: ["博士", "硕士", "学士", "EMBA", "无"] }),
+          collectField("学习形式", "下拉框", "单选列表", "是", "是", "", { options: ["普通全日制", "开放教育", "成人教育", "自考"] }),
+          collectField("培养方式", "下拉框", "单选列表", "是", "是", "", { options: ["统招", "委培", "定向", "非定向"] }),
+          collectField("是否最高学历", "单选框", "是否", "是", "是", "", { options: ["是", "否"] }),
+          collectField("学历证书附件", "文件上传", "多图片上传", "是", "是", ""),
+          collectField("学位证书附件", "文件上传", "多图片上传", "是", "是", "")
+        ],
+        rows: [{ 开始日期: "2023-07-20", 结束日期: "2026-09-24", 毕业学校名称: "江西科技学院", 专业: "过分分", 学历: "本科", 学位: "EMBA", 学习形式: "开放教育", 培养方式: "委培", 是否最高学历: "是", 学历证书附件: "学历证明.pdf", 学位证书附件: "--" }]
+      },
+      {
+        id: "training", title: "培训经历", collapsed: false,
+        fields: [
+          collectField("开始日期", "时间日期", "日期", "否", "是", ""),
+          collectField("结束日期", "时间日期", "日期", "否", "是", ""),
+          collectField("名称", "文本框", "单行文本", "否", "是", ""),
+          collectField("培训机构", "文本框", "单行文本", "否", "是", ""),
+          collectField("培训分数", "文本框", "单行文本", "否", "是", "")
+        ],
+        rows: [{ 开始日期: "--", 结束日期: "--", 名称: "学而思", 培训机构: "--", 培训分数: "--" }]
+      },
+      {
+        id: "project", title: "项目经历", collapsed: false,
+        fields: [
+          collectField("项目名称", "文本框", "单行文本", "否", "是", ""),
+          collectField("职务", "文本框", "单行文本", "否", "是", ""),
+          collectField("开始日期", "时间日期", "日期", "否", "是", ""),
+          collectField("结束日期", "时间日期", "日期", "否", "是", ""),
+          collectField("描述", "内容框", "文本区", "否", "是", "", { wide: true })
+        ],
+        rows: []
+      },
+      {
+        id: "skill", title: "技能特长", collapsed: false,
+        fields: [
+          collectField("名称", "文本框", "单行文本", "是", "是", ""),
+          collectField("掌握程度", "下拉框", "单选列表", "否", "是", "", { options: ["了解", "熟练", "精通"] }),
+          collectField("种类", "下拉框", "单选列表", "否", "是", "", { options: ["专业技能", "工具软件", "业务能力"] })
+        ],
+        rows: []
+      },
+      {
+        id: "language", title: "语言能力", collapsed: false,
+        fields: [
+          collectField("语言", "下拉框", "单选列表", "条件必填", "是", "", { options: ["英语", "日语", "德语", "法语"] }),
+          collectField("是否母语", "单选框", "是否", "条件必填", "是", "", { options: ["是", "否"] }),
+          collectField("掌握程度", "下拉框", "单选列表", "条件必填", "是", "", { options: ["一般", "良好", "熟练", "精通"] }),
+          collectField("书写能力", "下拉框", "单选列表", "条件必填", "是", "", { options: ["一般", "良好", "熟练", "精通"] }),
+          collectField("阅读能力", "下拉框", "单选列表", "条件必填", "是", "", { options: ["一般", "良好", "熟练", "精通"] }),
+          collectField("口语能力", "下拉框", "单选列表", "条件必填", "是", "", { options: ["一般", "良好", "熟练", "精通"] })
+        ],
+        rows: []
+      },
+      {
+        id: "certificate", title: "证书信息", collapsed: false,
+        fields: [
+          collectField("证书名称", "文本框", "单行文本", "否", "是", ""),
+          collectField("证书编号", "文本框", "单行文本", "否", "是", ""),
+          collectField("发证机构", "文本框", "单行文本", "否", "是", ""),
+          collectField("获得时间", "时间日期", "日期", "否", "是", ""),
+          collectField("有效期至", "时间日期", "日期", "否", "是", ""),
+          collectField("附件", "文件上传", "多文件上传", "否", "是", "")
+        ],
+        rows: []
+      },
+      {
+        id: "family", title: "家庭成员", collapsed: false,
+        fields: [
+          collectField("姓名", "文本框", "单行文本", "是", "是", ""),
+          collectField("与本人关系", "下拉框", "单选列表", "是", "是", "", { options: ["夫妻", "父母", "子女", "兄弟姐妹"] }),
+          collectField("性别", "单选框", "单选框", "是", "是", "", { options: ["女", "男"] }),
+          collectField("出生日期", "时间日期", "日期", "是", "是", ""),
+          collectField("住址", "文本框", "单行文本", "是", "是", ""),
+          collectField("职务", "文本框", "单行文本", "是", "是", ""),
+          collectField("手机号码", "文本框", "单行文本", "是", "是", "")
+        ],
+        rows: [{ 姓名: "测试", 与本人关系: "夫妻", 性别: "女", 出生日期: "--", 住址: "轻铺南", 职务: "--", 手机号码: "13265864562" }]
+      },
+      {
+        id: "award", title: "表彰与奖励", collapsed: false,
+        fields: [
+          collectField("奖项", "文本框", "单行文本", "否", "是", ""),
+          collectField("获奖日期", "时间日期", "日期", "否", "是", ""),
+          collectField("简述", "内容框", "文本区", "否", "是", "", { wide: true })
+        ],
+        rows: []
+      }
+    ];
+
+    let collectRecordDraft = null;
+
+    function getCollectSection(sectionId) {
+      return collectDetailSections.find(section => section.id === sectionId);
+    }
+
+    function renderCollectDetail() {
+      $("#collectCandidateName").textContent = collectDetailCandidate.name;
+      $(".collect-avatar").textContent = collectDetailCandidate.name.slice(0, 1);
+      $(".collect-profile-meta").innerHTML = [collectDetailCandidate.organization, collectDetailCandidate.email, collectDetailCandidate.mobile]
+        .map(item => `<span>${escapeHtml(item)}</span>`)
+        .join("");
+      renderCollectAnchors();
+      $("#collectDetailSections").innerHTML = collectDetailSections.map(section => {
+        if (section.type === "info") return renderCollectInfoSection(section);
+        return renderCollectTableSection(section);
+      }).join("");
+    }
+
+    function renderCollectAnchors() {
+      $("#collectAnchorNav").innerHTML = collectDetailSections.map((section, index) => `
+        <a class="${index === 0 ? "active" : ""}" href="#collect-section-${section.id}" data-collect-anchor="${section.id}">${escapeHtml(section.title)}</a>
+      `).join("");
+    }
+
+    function renderCollectInfoSection(section) {
+      const requiredMark = section.required ? `<span class="collect-section-required">*</span>` : "";
+      return `
+        <section class="collect-section ${section.collapsed ? "collapsed" : ""}" id="collect-section-${section.id}" data-collect-section="${section.id}">
+          <div class="collect-section-head">
+            <div class="collect-section-head-main">
+              <div class="collect-section-title">${requiredMark}${escapeHtml(section.title)}</div>
+              <div class="collect-section-actions">
+                <button type="button" data-collect-action="edit-employee">编辑</button>
+                <button type="button" data-collect-action="toggle-section" data-section-id="${section.id}">${section.collapsed ? "展开⌄" : "收起⌃"}</button>
+              </div>
+            </div>
+          </div>
+          <div class="collect-section-body">
+            <div class="collect-info-grid">
+              ${collectEmployeeFields.map(field => {
+                const value = getCollectDisplayValue(field);
+                return `
+                  <div class="collect-info-item">
+                    <span>${escapeHtml(field.label)}：</span>
+                    <strong title="${escapeHtml(getCollectValueTitle(value))}">${renderCollectValue(field, value)}</strong>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderCollectTableSection(section) {
+      const rows = section.rows || [];
+      const requiredMark = section.required ? `<span class="collect-section-required">*</span>` : "";
+      const colgroup = section.fields.map(() => `<col>`).join("") + `<col style="width: 96px">`;
+      const body = `
+        <div class="collect-table-wrap">
+          <table class="collect-table">
+            <colgroup>${colgroup}</colgroup>
+            <thead>
+              <tr>
+                ${section.fields.map(field => `<th title="${escapeHtml(getCollectFieldMeta(field))}">${escapeHtml(field.label)}</th>`).join("")}
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map((row, rowIndex) => `
+                <tr>
+                  ${section.fields.map(field => {
+                    const value = getCollectDisplayValue(field, row);
+                    return `<td title="${escapeHtml(getCollectValueTitle(value))}">${renderCollectValue(field, value)}</td>`;
+                  }).join("")}
+                  <td>
+                    <span class="collect-row-actions">
+                      <button class="link" type="button" data-collect-action="edit-row" data-section-id="${section.id}" data-row-index="${rowIndex}">编辑</button>
+                      <button class="link danger" type="button" data-collect-action="delete-row" data-section-id="${section.id}" data-row-index="${rowIndex}">删除</button>
+                    </span>
+                  </td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+          ${rows.length ? "" : `<div class="collect-empty">暂无数据</div>`}
+        </div>
+      `;
+      return `
+        <section class="collect-section ${section.collapsed ? "collapsed" : ""}" id="collect-section-${section.id}" data-collect-section="${section.id}">
+          <div class="collect-section-head">
+            <div class="collect-section-head-main">
+              <div class="collect-section-title">${requiredMark}${escapeHtml(section.title)}</div>
+              <div class="collect-section-actions">
+                <button type="button" data-collect-action="add-row" data-section-id="${section.id}">新增</button>
+                <button type="button" data-collect-action="toggle-section" data-section-id="${section.id}">${section.collapsed ? "展开⌄" : "收起⌃"}</button>
+              </div>
+            </div>
+            ${section.hint ? `<div class="collect-section-hint">${escapeHtml(section.hint)}</div>` : ""}
+          </div>
+          <div class="collect-section-body">${body}</div>
+        </section>
+      `;
+    }
+
+    function renderCollectValue(field, value) {
+      const text = value || "--";
+      if (isCollectFileField(field) && String(text) !== "--") {
+        return `<span class="collect-value-wrap">${renderCollectFileChips(field, normalizeCollectFiles(text), false)}</span>`;
+      }
+      const current = Array.isArray(text) ? text.join("、") : text;
+      return escapeHtml(current);
+    }
+
+    function getCollectValueTitle(value) {
+      const current = Array.isArray(value) ? value.join("、") : value;
+      return current;
+    }
+
+    function renderCollectFileChips(field, files, editable = false) {
+      const isImage = field.secondType?.includes("图片");
+      const visibleLimit = editable ? files.length : 2;
+      return `
+        <span class="${isImage ? "collect-image-list" : "collect-file-list"}">
+          ${files.map((file, index) => `
+            <span class="collect-file-chip ${index >= visibleLimit ? "collect-file-extra" : ""}" data-file-name="${escapeHtml(file)}" title="${escapeHtml(file)}">
+              <span class="collect-file-icon ${isImage ? "image" : ""}">${isImage ? "图" : "文"}</span>
+              <span class="collect-file-name">${escapeHtml(file)}</span>
+              <button class="collect-file-action" type="button" aria-label="下载${escapeHtml(file)}">↓</button>
+              ${editable ? `<button class="collect-file-action delete" type="button" data-upload-remove="${escapeHtml(file)}" aria-label="删除${escapeHtml(file)}">×</button>` : ""}
+            </span>
+          `).join("")}
+        </span>
+      `;
+    }
+
+    function normalizeCollectFiles(value) {
+      if (Array.isArray(value)) return value.filter(Boolean);
+      return String(value).split(/[,，、]/).map(item => item.trim()).filter(Boolean);
+    }
+
+    function renderCollectUploadPreview(field, value, editable = false) {
+      const files = normalizeCollectFiles(value);
+      if (!files.length) return "暂未上传";
+      return renderCollectFileChips(field, files, editable);
+    }
+
+    function getCollectDisplayValue(field, row = {}) {
+      const value = row[field.key];
+      if (value !== undefined && value !== "") return value;
+      if (field.value !== undefined && field.value !== "") return field.value;
+      return field.defaultValue || "--";
+    }
+
+    function getCollectFieldMeta(field) {
+      const meta = [
+        `字段类型：${field.fieldType || "--"}`,
+        `二级类型：${field.secondType || "--"}`,
+        `是否必填：${field.requiredText || "--"}`,
+        `是否可编辑：${field.editableText || "--"}`
+      ];
+      if (field.defaultValue) meta.push(`默认值：${field.defaultValue}`);
+      return meta.join("；");
+    }
+
+    function isCollectSelectField(field) {
+      return field.fieldType === "下拉框" || field.fieldType === "单选框" || field.type === "select";
+    }
+
+    function isCollectFileField(field) {
+      return field.fieldType === "文件上传" || field.type === "file";
+    }
+
+    function isCollectTextareaField(field) {
+      return field.fieldType === "内容框" || field.secondType === "文本区" || field.type === "textarea";
+    }
+
+    function getCollectInputType(field) {
+      if (field.fieldType === "时间日期" || field.type === "date") return "date";
+      if (field.secondType === "整数") return "number";
+      if (field.secondType === "电子邮件") return "email";
+      return "text";
+    }
+
+    function openCollectRecordModal(sectionId, rowIndex = null) {
+      const isEmployee = sectionId === "employee";
+      const section = isEmployee ? { id: "employee", title: "员工信息", fields: collectEmployeeFields } : getCollectSection(sectionId);
+      if (!section) return;
+      collectRecordDraft = { sectionId, rowIndex };
+      const isEdit = isEmployee || rowIndex !== null;
+      $("#collectRecordTitle").textContent = `${isEdit ? "编辑" : "新增"}-${section.title}`;
+      const source = isEmployee
+        ? Object.fromEntries(collectEmployeeFields.map(field => [field.key, field.value]))
+        : (section.rows?.[rowIndex] || {});
+      $("#collectRecordForm").innerHTML = section.fields.map(field => renderCollectRecordField(field, source[field.key])).join("");
+      $("#modalMask").classList.add("show");
+      $("#collectRecordModal").classList.add("show");
+    }
+
+    function renderCollectRecordField(field, value = "") {
+      const safeValue = value === "--" || value === undefined ? (field.defaultValue || "") : value;
+      const className = `collect-record-field${isCollectTextareaField(field) ? " wide" : ""}`;
+      const disabled = field.editable === false ? " disabled" : "";
+      if (isCollectSelectField(field)) {
+        const options = field.options || [];
+        const selectedText = safeValue || "请选择";
+        return `
+          <div class="${className}">
+            <label class="${field.required ? "required" : ""}">${escapeHtml(field.label)}</label>
+            <div class="collect-select" data-collect-select>
+              <input type="hidden" data-collect-field="${escapeHtml(field.key)}" value="${escapeHtml(safeValue)}">
+              <button class="collect-select-trigger${safeValue ? "" : " placeholder"}" type="button" data-collect-select-trigger${disabled}>
+                <span>${escapeHtml(selectedText)}</span>
+              </button>
+              <div class="collect-select-panel" data-collect-select-panel>
+                ${options.map(option => `
+                  <button class="collect-select-option${option === safeValue ? " selected" : ""}" type="button" data-collect-select-option="${escapeHtml(option)}">${escapeHtml(option)}</button>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      if (isCollectTextareaField(field)) {
+        return `
+          <div class="${className}">
+            <label class="${field.required ? "required" : ""}">${escapeHtml(field.label)}</label>
+            <textarea data-collect-field="${escapeHtml(field.key)}" placeholder="请输入"${disabled}>${escapeHtml(safeValue)}</textarea>
+          </div>
+        `;
+      }
+      if (isCollectFileField(field)) {
+        const accept = field.secondType?.includes("图片") ? " accept=\"image/*\"" : "";
+        const multiple = field.secondType?.includes("多") ? " multiple" : "";
+        const currentValue = normalizeCollectFiles(safeValue).join("、");
+        const uploadText = currentValue ? "重新上传" : "上传";
+        return `
+          <div class="${className}">
+            <label class="${field.required ? "required" : ""}">${escapeHtml(field.label)}</label>
+            <div class="collect-upload-box" data-upload-box>
+              <label class="collect-upload-action">
+                <span>＋</span>${escapeHtml(uploadText)}
+                <input type="file" data-collect-field="${escapeHtml(field.key)}" data-current="${escapeHtml(currentValue)}"${accept}${multiple}${disabled}>
+              </label>
+              <div class="collect-upload-preview" data-upload-preview>${renderCollectUploadPreview(field, currentValue, true)}</div>
+            </div>
+          </div>
+        `;
+      }
+      return `
+        <div class="${className}">
+          <label class="${field.required ? "required" : ""}">${escapeHtml(field.label)}</label>
+          <input type="${getCollectInputType(field)}" value="${escapeHtml(safeValue)}" placeholder="请输入" data-collect-field="${escapeHtml(field.key)}"${disabled}>
+        </div>
+      `;
+    }
+
+    function closeCollectRecordModal() {
+      $("#collectRecordModal").classList.remove("show");
+      $("#modalMask").classList.remove("show");
+      collectRecordDraft = null;
+    }
+
+    function readCollectRecordValues() {
+      const values = {};
+      document.querySelectorAll("#collectRecordForm [data-collect-field]").forEach(control => {
+        if (control.type === "file") {
+          const selectedFiles = Array.from(control.files || []).map(file => file.name);
+          values[control.dataset.collectField] = selectedFiles.length ? selectedFiles : control.dataset.current || "--";
+        } else {
+          values[control.dataset.collectField] = control.value.trim() || "--";
+        }
+      });
+      return values;
+    }
+
+    function closeCollectSelects(except = null) {
+      document.querySelectorAll("[data-collect-select]").forEach(select => {
+        if (select !== except) select.classList.remove("open");
+      });
+    }
+
+    function saveCollectRecord({ close = true, draft = false } = {}) {
+      if (!collectRecordDraft) return;
+      const values = readCollectRecordValues();
+      if (collectRecordDraft.sectionId === "employee") {
+        collectEmployeeFields.forEach(field => {
+          if (Object.prototype.hasOwnProperty.call(values, field.key)) field.value = values[field.key];
+        });
+        collectDetailCandidate.name = values["姓名"] || collectDetailCandidate.name;
+        collectDetailCandidate.gender = values["性别"] || collectDetailCandidate.gender;
+        collectDetailCandidate.email = values["公司邮箱"] || collectDetailCandidate.email;
+        collectDetailCandidate.mobile = values["手机号码"] || collectDetailCandidate.mobile;
+      } else {
+        const section = getCollectSection(collectRecordDraft.sectionId);
+        if (!section) return;
+        if (collectRecordDraft.rowIndex === null) {
+          section.rows.unshift(values);
+          collectRecordDraft.rowIndex = 0;
+        } else {
+          section.rows[collectRecordDraft.rowIndex] = values;
+        }
+      }
+      renderCollectDetail();
+      showToast(draft ? "草稿已保存" : "已保存");
+      if (close) closeCollectRecordModal();
+    }
+
+    function deleteCollectRecord(sectionId, rowIndex) {
+      const section = getCollectSection(sectionId);
+      if (!section?.rows?.[rowIndex]) return;
+      if (!confirm(`确认删除“${section.title}”中的这条记录？`)) return;
+      section.rows.splice(rowIndex, 1);
+      renderCollectDetail();
+    }
+
+    function flashErr(id) {
+      const node = $(id);
+      node.classList.remove("err");
+      void node.offsetWidth;
+      node.classList.add("err");
+    }
+
+    let loginMode = "phone";
+    let codeTimer = null;
+    const loginAccountValues = { phone: "15018623558", email: collectDetailCandidate.email || "" };
+
+    function isPhoneMode() {
+      return loginMode === "phone";
+    }
+
+    function resetCodeBtn() {
+      if (codeTimer) {
+        clearInterval(codeTimer);
+        codeTimer = null;
+      }
+      const btn = $("#getCodeBtn");
+      btn.classList.remove("dis");
+      btn.textContent = "获取验证码";
+    }
+
+    function isValidAccount(value) {
+      if (isPhoneMode()) return /^1\d{10}$/.test(value);
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    function getAccountErrorText() {
+      return isPhoneMode() ? "请输入正确的11位手机号" : "请输入正确的邮箱地址";
+    }
+
+    function setLoginMode(mode) {
+      loginAccountValues[loginMode] = $("#inAccount").value.trim();
+      loginMode = mode === "email" ? "email" : "phone";
+      const input = $("#inAccount");
+      $("#accountPrefix").classList.toggle("hide", !isPhoneMode());
+      $$("#loginModeTabs [data-login-mode]").forEach(btn => {
+        btn.classList.toggle("on", btn.dataset.loginMode === loginMode);
+      });
+      input.type = isPhoneMode() ? "tel" : "email";
+      input.placeholder = isPhoneMode() ? "请输入手机号" : "请输入邮箱地址";
+      input.value = loginAccountValues[loginMode] || "";
+      if (isPhoneMode()) input.setAttribute("maxlength", "11");
+      else input.removeAttribute("maxlength");
+      $("#inCode").value = "";
+      $("#fldAccount").classList.remove("err");
+      $("#fldCode").classList.remove("err");
+      resetCodeBtn();
+    }
+
+    function doLogin() {
+      const account = $("#inAccount").value.trim();
+      const code = $("#inCode").value.trim();
+      if (!isValidAccount(account)) {
+        flashErr("#fldAccount");
+        showToast(getAccountErrorText());
+        return;
+      }
+      if (!code) {
+        flashErr("#fldCode");
+        showToast("请输入验证码");
+        return;
+      }
+      if (!$("#ckLogin").classList.contains("on")) {
+        showToast("请先同意隐私政策和用户服务协议");
+        return;
+      }
+      const btn = $("#loginBtn");
+      btn.innerHTML = '<span class="sp"></span>登录中...';
+      btn.disabled = true;
+      setTimeout(() => {
+        $("#loginView").hidden = true;
+        $("#detailView").hidden = false;
+        renderCollectDetail();
+        showToast("登录成功");
+      }, 450);
+    }
+
+    function sendCode() {
+      const account = $("#inAccount").value.trim();
+      if (!isValidAccount(account)) {
+        flashErr("#fldAccount");
+        showToast(getAccountErrorText());
+        return;
+      }
+      const btn = $("#getCodeBtn");
+      let sec = 60;
+      btn.classList.add("dis");
+      btn.textContent = `${sec}s`;
+      showToast(isPhoneMode() ? "验证码已发送至手机号（演示：输入任意数字）" : "验证码已发送至邮箱（演示：输入任意数字）");
+      codeTimer = setInterval(() => {
+        sec -= 1;
+        if (sec <= 0) {
+          resetCodeBtn();
+        } else {
+          btn.textContent = `${sec}s`;
+        }
+      }, 1000);
+    }
+
+    $$("#loginModeTabs [data-login-mode]").forEach(btn => {
+      btn.addEventListener("click", () => setLoginMode(btn.dataset.loginMode));
+    });
+    $("#getCodeBtn").addEventListener("click", sendCode);
+    $("#loginBtn").addEventListener("click", doLogin);
+    $("#ckLogin").addEventListener("click", event => event.currentTarget.classList.toggle("on"));
+    $("#inCode").addEventListener("keydown", event => { if (event.key === "Enter") doLogin(); });
+    $("#inAccount").addEventListener("keydown", event => { if (event.key === "Enter") sendCode(); });
+    $("#detailSubmit").addEventListener("click", () => showToast("信息已提交"));
+    $("#closeCollectRecord").addEventListener("click", closeCollectRecordModal);
+    $("#cancelCollectRecord").addEventListener("click", closeCollectRecordModal);
+    $("#draftCollectRecord").addEventListener("click", () => saveCollectRecord({ close: false, draft: true }));
+    $("#confirmCollectRecord").addEventListener("click", () => saveCollectRecord({ close: true }));
+    $("#modalMask").addEventListener("click", closeCollectRecordModal);
+
+    $("#collectRecordForm").addEventListener("change", event => {
+      const input = event.target.closest("input[type='file'][data-collect-field]");
+      if (!input) return;
+      const sectionId = collectRecordDraft?.sectionId;
+      const section = sectionId === "employee" ? { fields: collectEmployeeFields } : getCollectSection(sectionId);
+      const field = section?.fields?.find(item => item.key === input.dataset.collectField);
+      if (!field) return;
+      const selectedFiles = Array.from(input.files || []).map(file => file.name);
+      const current = selectedFiles.length ? selectedFiles : input.dataset.current;
+      input.dataset.current = normalizeCollectFiles(current).join("、");
+      const preview = input.closest("[data-upload-box]")?.querySelector("[data-upload-preview]");
+      if (preview) preview.innerHTML = renderCollectUploadPreview(field, current, true);
+    });
+
+    document.addEventListener("click", event => {
+      const selectTrigger = event.target.closest("[data-collect-select-trigger]");
+      if (selectTrigger) {
+        const select = selectTrigger.closest("[data-collect-select]");
+        const shouldOpen = !select.classList.contains("open");
+        closeCollectSelects(select);
+        select.classList.toggle("open", shouldOpen);
+        if (shouldOpen) {
+          const activeOption = select.querySelector("[data-collect-select-option].selected") || select.querySelector("[data-collect-select-option]");
+          select.querySelectorAll("[data-collect-select-option]").forEach(option => option.classList.toggle("active", option === activeOption));
+        }
+        return;
+      }
+      const selectOption = event.target.closest("[data-collect-select-option]");
+      if (selectOption) {
+        const select = selectOption.closest("[data-collect-select]");
+        const input = select.querySelector("[data-collect-field]");
+        const trigger = select.querySelector("[data-collect-select-trigger]");
+        const value = selectOption.dataset.collectSelectOption;
+        input.value = value;
+        trigger.querySelector("span").textContent = value;
+        trigger.classList.remove("placeholder");
+        select.querySelectorAll("[data-collect-select-option]").forEach(option => {
+          option.classList.toggle("selected", option === selectOption);
+        });
+        select.classList.remove("open");
+        return;
+      }
+      if (!event.target.closest("[data-collect-select]")) closeCollectSelects();
+      const remove = event.target.closest("[data-upload-remove]");
+      if (remove) {
+        const box = remove.closest("[data-upload-box]");
+        const input = box?.querySelector("input[type='file'][data-collect-field]");
+        if (!input) return;
+        const sectionId = collectRecordDraft?.sectionId;
+        const section = sectionId === "employee" ? { fields: collectEmployeeFields } : getCollectSection(sectionId);
+        const field = section?.fields?.find(item => item.key === input.dataset.collectField);
+        if (!field) return;
+        const files = normalizeCollectFiles(input.dataset.current).filter(file => file !== remove.dataset.uploadRemove);
+        input.dataset.current = files.join("、");
+        input.value = "";
+        const preview = box.querySelector("[data-upload-preview]");
+        if (preview) preview.innerHTML = renderCollectUploadPreview(field, files, true);
+        return;
+      }
+      const anchor = event.target.closest("[data-collect-anchor]");
+      if (anchor) {
+        event.preventDefault();
+        document.querySelectorAll("#collectAnchorNav a").forEach(item => item.classList.toggle("active", item === anchor));
+        document.querySelector(`#collect-section-${anchor.dataset.collectAnchor}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      const actionButton = event.target.closest("[data-collect-action]");
+      if (!actionButton) return;
+      const { collectAction, sectionId, rowIndex } = actionButton.dataset;
+      if (collectAction === "toggle-section") {
+        const section = getCollectSection(sectionId);
+        if (!section) return;
+        section.collapsed = !section.collapsed;
+        renderCollectDetail();
+      }
+      if (collectAction === "edit-employee") openCollectRecordModal("employee", null);
+      if (collectAction === "add-row") openCollectRecordModal(sectionId, null);
+      if (collectAction === "edit-row") openCollectRecordModal(sectionId, Number(rowIndex));
+      if (collectAction === "delete-row") deleteCollectRecord(sectionId, Number(rowIndex));
+    });
+
+    document.addEventListener("keydown", event => {
+      const openSelect = document.querySelector("[data-collect-select].open");
+      if (!openSelect) return;
+      const options = Array.from(openSelect.querySelectorAll("[data-collect-select-option]"));
+      if (!options.length) return;
+      const currentIndex = Math.max(options.findIndex(option => option.classList.contains("active")), options.findIndex(option => option.classList.contains("selected")), 0);
+      if (event.key === "Escape") {
+        closeCollectSelects();
+        return;
+      }
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        options.forEach(option => option.classList.remove("active"));
+        const offset = event.key === "ArrowDown" ? 1 : -1;
+        const nextIndex = (currentIndex + offset + options.length) % options.length;
+        options[nextIndex]?.classList.add("active");
+        options[nextIndex]?.scrollIntoView({ block: "nearest" });
+        return;
+      }
+      if (event.key === "Enter") {
+        const active = openSelect.querySelector("[data-collect-select-option].active") || openSelect.querySelector("[data-collect-select-option].selected");
+        if (active) {
+          event.preventDefault();
+          active.click();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
