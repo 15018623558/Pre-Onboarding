@@ -558,7 +558,7 @@
       position: absolute;
       top: 28px;
       right: 0;
-      z-index: 80;
+      z-index: 220;
       display: none;
       width: 88px;
       padding: 4px 0;
@@ -570,6 +570,14 @@
     }
 
     .plan-row-actions.open .plan-action-menu {
+      display: grid;
+    }
+
+    .plan-action-menu.is-floating {
+      position: fixed;
+      top: auto;
+      right: auto;
+      z-index: 3600;
       display: grid;
     }
 
@@ -590,7 +598,7 @@
       background: #fff1f0;
     }
 
-    .employment-table.plan-table td:last-child:has(.plan-row-actions.open) {
+    .employment-table.plan-table td:last-child {
       z-index: 60;
     }
 
@@ -5108,6 +5116,42 @@
       grid-column: 1 / -1;
     }
 
+    .plan-language-wrap {
+      position: relative;
+      min-width: 0;
+    }
+
+    .plan-language-wrap input {
+      padding-right: 38px;
+    }
+
+    .plan-language-btn {
+      position: absolute;
+      top: 50%;
+      right: 6px;
+      width: 24px;
+      height: 24px;
+      border: 1px solid #dfe4eb;
+      border-radius: 4px;
+      display: inline-grid;
+      place-items: center;
+      color: #8b95a1;
+      background: #fff;
+      transform: translateY(-50%);
+      pointer-events: none;
+      cursor: default;
+    }
+
+    .plan-language-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     .plan-stepper {
       height: 54px;
       padding: 0 18px;
@@ -5177,6 +5221,631 @@
 
     .plan-template-actions[hidden] {
       display: none;
+    }
+
+    .plan-org-multi {
+      position: relative;
+      min-width: 0;
+    }
+
+    .plan-org-trigger {
+      width: 100%;
+      min-height: 32px;
+      padding: 4px 30px 4px 8px;
+      border: 1px solid #dfe4eb;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      color: #344054;
+      background: #fff;
+      text-align: left;
+      transition: border-color .12s ease, box-shadow .12s ease;
+    }
+
+    .plan-org-trigger:hover {
+      border-color: #9bc7ff;
+    }
+
+    .plan-org-multi.open .plan-org-trigger {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 2px rgba(22, 119, 255, .1);
+    }
+
+    .plan-org-trigger:disabled,
+    .plan-org-multi.disabled .plan-org-trigger {
+      color: #98a2b3;
+      background: #f5f7fa;
+      cursor: not-allowed;
+    }
+
+    .plan-org-trigger-content {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      flex: 1;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .plan-org-placeholder {
+      color: #98a2b3;
+      font-size: 12px;
+    }
+
+    .plan-org-trigger-arrow {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      width: 7px;
+      height: 7px;
+      border-right: 1.5px solid #98a2b3;
+      border-bottom: 1.5px solid #98a2b3;
+      transform: translateY(-68%) rotate(45deg);
+      pointer-events: none;
+    }
+
+    .plan-org-multi.open .plan-org-trigger-arrow {
+      transform: translateY(-28%) rotate(225deg);
+    }
+
+    .plan-org-tag,
+    .plan-org-selected-tag {
+      max-width: 100%;
+      min-height: 20px;
+      padding: 2px 5px 2px 7px;
+      border: 0;
+      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #1d4ed8;
+      background: #eff6ff;
+      font-size: 11px;
+      line-height: 16px;
+    }
+
+    .plan-org-tag span,
+    .plan-org-selected-tag span {
+      max-width: 118px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .plan-org-tag em,
+    .plan-org-selected-tag em {
+      color: #75a7ea;
+      font-size: 14px;
+      font-style: normal;
+      line-height: 1;
+    }
+
+    .plan-org-tag:hover,
+    .plan-org-selected-tag:hover {
+      color: #1d4ed8;
+      background: #dbeafe;
+    }
+
+    .plan-org-summary {
+      color: #667085;
+      font-size: 12px;
+    }
+
+    .plan-org-menu {
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 0;
+      z-index: 160;
+      width: min(420px, calc(100vw - 32px));
+      padding: 8px;
+      border: 1px solid #dfe4eb;
+      border-radius: 6px;
+      display: none;
+      background: #fff;
+      box-shadow: 0 10px 40px -10px rgba(0, 0, 0, .12), 0 2px 10px -2px rgba(0, 0, 0, .04);
+    }
+
+    .plan-org-multi.open .plan-org-menu {
+      display: grid;
+      gap: 8px;
+    }
+
+    .plan-org-tree {
+      max-height: 230px;
+      overflow: auto;
+      padding: 2px 0;
+    }
+
+    .plan-org-tree-node {
+      display: grid;
+      gap: 2px;
+    }
+
+    .plan-org-tree-row {
+      min-height: 30px;
+      padding: 0 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #344054;
+      font-size: 12px;
+    }
+
+    .plan-org-tree-row:hover {
+      background: #f7fbff;
+    }
+
+    .plan-org-tree-row.child {
+      padding-left: 30px;
+    }
+
+    .plan-org-tree-row input {
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      accent-color: var(--blue);
+    }
+
+    .plan-org-tree-row .tree-branch {
+      width: 12px;
+      color: #98a2b3;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .plan-org-selected {
+      max-height: 104px;
+      overflow: auto;
+      padding: 8px;
+      border-top: 1px solid #eef1f6;
+      display: grid;
+      gap: 6px;
+      background: #fbfcfe;
+    }
+
+    .plan-org-selected-title {
+      color: #667085;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .plan-org-selected-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .plan-org-selected-empty {
+      color: #98a2b3;
+      font-size: 11px;
+    }
+
+    .plan-preview-mask,
+    .plan-field-help-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 4200;
+      display: none;
+      background: rgba(24, 24, 27, .38);
+    }
+
+    .plan-preview-mask.show,
+    .plan-field-help-mask.show {
+      display: block;
+    }
+
+    .plan-language-modal,
+    .plan-message-preview-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 4310;
+      width: min(560px, calc(100vw - 32px));
+      overflow: hidden;
+      border-radius: 8px;
+      display: none;
+      background: #fff;
+      box-shadow: 0 25px 60px -12px rgba(0, 0, 0, .2);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(.98);
+      transition: opacity .16s ease, transform .16s ease;
+    }
+
+    .plan-language-modal.show,
+    .plan-message-preview-modal.show {
+      display: block;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .plan-language-body {
+      padding: 18px 20px 20px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .plan-language-field {
+      display: grid;
+      gap: 6px;
+      color: #485465;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .plan-language-field input {
+      height: 32px;
+      border: 1px solid #dfe4eb;
+      border-radius: 4px;
+      padding: 0 9px;
+      color: #303846;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .plan-language-field input:focus {
+      border-color: #1677ff;
+      box-shadow: 0 0 0 2px rgba(22,119,255,.12);
+    }
+
+    .plan-pc-select-option-row {
+      min-height: 32px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      background: #fff;
+    }
+
+    .plan-pc-select-option-row:hover,
+    .plan-pc-select-option-row:has(.plan-pc-select-option.active) {
+      background: #eaf3ff;
+    }
+
+    .plan-pc-select-option-row .plan-pc-select-option {
+      min-width: 0;
+      background: transparent;
+    }
+
+    .plan-message-option-preview {
+      height: 28px;
+      padding: 0 12px 0 8px;
+      border: 0;
+      color: #1677ff;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .plan-message-option-preview:hover {
+      color: #1d4ed8;
+      text-decoration: underline;
+    }
+
+    .plan-message-preview-modal {
+      width: min(960px, calc(100vw - 48px));
+      max-height: min(720px, calc(100vh - 48px));
+      display: none;
+      flex-direction: column;
+    }
+
+    .plan-message-preview-modal.show {
+      display: flex;
+    }
+
+    .plan-message-preview-body {
+      min-height: 480px;
+      padding: 14px 18px 18px;
+      overflow: auto;
+      background: #fff;
+    }
+
+    .plan-message-preview-tabs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .plan-message-preview-tabs button {
+      height: 26px;
+      min-width: 82px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 14px;
+      color: #5f6875;
+      background: #f2f4f7;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .plan-message-preview-tabs button.active {
+      color: #fff;
+      background: #1677ff;
+    }
+
+    .plan-message-preview-pane {
+      min-height: 420px;
+      border: 1px solid #dfe4eb;
+      border-radius: 4px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .plan-preview-editor-toolbar {
+      height: 70px;
+      padding: 10px 16px;
+      border-bottom: 1px solid #e5eaf2;
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      color: #c7ced8;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    .plan-preview-mail-paper {
+      width: min(800px, calc(100% - 96px));
+      min-height: 320px;
+      margin: 14px auto 28px;
+      padding: 14px 10px 28px;
+      border: 1px solid #bfc5cf;
+      color: #303846;
+      background: #fff;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .plan-preview-mail-paper h4 {
+      margin: 0 0 14px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid #c4c8cf;
+      color: #303846;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 650;
+    }
+
+    .plan-preview-mail-paper .green {
+      color: #52a33a;
+    }
+
+    .plan-preview-message-stage {
+      min-height: 420px;
+      display: grid;
+      place-items: center;
+      background: #fff;
+    }
+
+    .plan-preview-phone-frame {
+      width: 350px;
+      min-height: 286px;
+      padding: 14px 24px;
+      border: 1px solid #d9dee6;
+      border-radius: 4px;
+      display: grid;
+      place-items: center;
+      background: #eef0f3;
+    }
+
+    .plan-preview-phone-card {
+      width: 200px;
+      min-height: 214px;
+      padding: 18px;
+      border: 1px solid #dfe3ea;
+      border-radius: 8px;
+      color: #1f2937;
+      background: #fff;
+      font-size: 13px;
+      line-height: 1.7;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+    }
+
+    .plan-message-preview-foot {
+      min-height: 52px;
+      padding: 10px 18px;
+      border-top: 1px solid #eef1f6;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      background: #fff;
+    }
+
+    .plan-preview-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 4210;
+      width: min(1440px, calc(100vw - 48px));
+      height: min(960px, calc(100vh - 48px));
+      overflow: hidden;
+      border-radius: 8px;
+      display: none;
+      grid-template-rows: 48px minmax(0, 1fr);
+      background: #fff;
+      box-shadow: 0 25px 60px -12px rgba(0, 0, 0, .2);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(.98);
+      transition: opacity .16s ease, transform .16s ease;
+    }
+
+    .plan-preview-modal.show {
+      display: grid;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .plan-preview-modal.mobile {
+      width: min(425px, calc(100vw - 24px));
+      height: min(900px, calc(100vh - 24px));
+    }
+
+    .plan-preview-head {
+      padding: 0 16px;
+      border-bottom: 1px solid #eef1f6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #fff;
+    }
+
+    .plan-preview-head h3 {
+      margin: 0;
+      color: #202733;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .plan-preview-head button {
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 4px;
+      display: grid;
+      place-items: center;
+      color: #667085;
+      background: transparent;
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .plan-preview-head button:hover {
+      color: #344054;
+      background: #f4f4f5;
+    }
+
+    .plan-preview-frame-wrap {
+      min-width: 0;
+      min-height: 0;
+      overflow: auto;
+      background: #f5f5f4;
+    }
+
+    .plan-preview-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    .plan-preview-modal.mobile .plan-preview-frame-wrap {
+      display: grid;
+      place-items: center;
+      background: #eef2f7;
+    }
+
+    .plan-preview-modal.mobile .plan-preview-frame {
+      width: min(393px, 100%);
+      height: 100%;
+      max-height: 852px;
+      background: #fff;
+    }
+
+    .plan-field-help-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 4310;
+      width: min(520px, calc(100vw - 32px));
+      overflow: hidden;
+      border-radius: 8px;
+      display: none;
+      background: #fff;
+      box-shadow: 0 25px 60px -12px rgba(0, 0, 0, .2);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(.98);
+      transition: opacity .16s ease, transform .16s ease;
+    }
+
+    .plan-field-help-modal.show {
+      display: block;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .plan-field-help-body {
+      padding: 18px 20px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .plan-field-help-row {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr);
+      align-items: start;
+      gap: 12px;
+      color: #344054;
+      font-size: 13px;
+    }
+
+    .plan-field-help-row > span {
+      padding-top: 8px;
+      color: #667085;
+    }
+
+    .plan-help-position-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .plan-help-position-item {
+      min-height: 70px;
+      padding: 10px;
+      border: 1px solid #dfe4eb;
+      border-radius: 6px;
+      display: grid;
+      align-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .plan-help-position-item:has(input:checked) {
+      border-color: var(--blue);
+      background: #f7fbff;
+    }
+
+    .plan-help-position-item label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .plan-help-position-item input {
+      margin: 0;
+      accent-color: var(--blue);
+    }
+
+    .plan-help-position-preview {
+      min-height: 20px;
+      color: #98a2b3;
+      font-size: 11px;
+    }
+
+    .plan-help-position-preview.question::after {
+      content: "字段名称  ?";
+      padding: 2px 5px;
+      border-radius: 3px;
+      color: #667085;
+      background: #f4f4f5;
+    }
+
+    .plan-help-position-preview.below::after {
+      content: "字段名称\A帮助提示显示在字段下方";
+      white-space: pre-line;
+      line-height: 1.5;
+    }
+
+    .plan-field-help-textarea {
+      min-height: 98px;
+      resize: vertical;
     }
 
     .plan-split-workspace {
@@ -5604,9 +6273,9 @@
     .plan-todo-detail-config {
       margin: 10px 12px 0;
       display: grid;
-      grid-template-columns: 112px minmax(0, 1fr);
-      align-items: center;
-      gap: 10px;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+      gap: 8px;
       padding: 10px 12px;
       border: 1px solid #e3e8f0;
       border-radius: 6px;
@@ -5681,6 +6350,10 @@
       white-space: nowrap;
     }
 
+    .plan-owner-cascade-value.placeholder {
+      color: #98a2b3;
+    }
+
     .plan-owner-cascade-menu {
       position: absolute;
       z-index: 780;
@@ -5747,6 +6420,112 @@
       min-height: 168px;
       max-height: min(260px, calc(100vh - 24px));
       animation: fi .16s ease;
+    }
+
+    .plan-owner-person-multi {
+      position: relative;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .plan-owner-person-trigger {
+      width: 100%;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 0 7px;
+      border: 1px solid #dfe4eb;
+      border-radius: 4px;
+      color: #303846;
+      background: #fff;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .plan-owner-person-trigger::after {
+      content: "⌄";
+      flex: 0 0 auto;
+      color: #a8b0bd;
+      font-size: 12px;
+    }
+
+    .plan-owner-person-value {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .plan-owner-person-value.placeholder,
+    .plan-config-table select.placeholder {
+      color: #98a2b3;
+    }
+
+    .plan-owner-person-menu {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 4px);
+      z-index: 780;
+      width: 240px;
+      max-height: 220px;
+      overflow: auto;
+      padding: 6px;
+      border: 1px solid #dfe4eb;
+      border-radius: 4px;
+      display: none;
+      gap: 4px;
+      background: #fff;
+      box-shadow: 0 10px 40px -10px rgba(0,0,0,.12), 0 2px 10px -2px rgba(0,0,0,.04);
+    }
+
+    .plan-owner-person-multi.open .plan-owner-person-trigger {
+      border-color: #1677ff;
+      box-shadow: 0 0 0 2px rgba(22,119,255,.12);
+    }
+
+    .plan-owner-person-multi.open .plan-owner-person-trigger::after {
+      content: "⌃";
+    }
+
+    .plan-owner-person-multi.open .plan-owner-person-menu {
+      display: grid;
+      animation: fi .16s ease;
+    }
+
+    .plan-owner-person-menu.is-floating {
+      position: fixed;
+      z-index: 3400;
+      top: auto;
+      left: auto;
+      right: auto;
+      display: grid;
+      width: 240px;
+      max-height: min(260px, calc(100vh - 24px));
+      animation: fi .16s ease;
+    }
+
+    .plan-owner-person-menu label {
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 6px;
+      border-radius: 4px;
+      color: #303846;
+      font-size: 12px;
+    }
+
+    .plan-owner-person-menu label:hover {
+      background: #eaf3ff;
+    }
+
+    .plan-owner-person-menu input {
+      width: 14px;
+      height: 14px;
+      accent-color: #1677ff;
+      flex: 0 0 auto;
     }
 
     .plan-pc-select {
@@ -6263,6 +7042,27 @@
       border-left: 5px solid transparent;
       border-right: 5px solid transparent;
       border-bottom: 5px solid #3f4650;
+    }
+
+    .plan-help-intro {
+      display: grid;
+      gap: 4px;
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .plan-help-inline-note {
+      grid-column: 2;
+      margin-top: -10px;
+      color: #98a2b3;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .plan-help-inline-note strong {
+      color: var(--blue);
+      font-weight: 500;
     }
 
     .plan-help-preview-row.help-after-field {
@@ -9626,7 +10426,7 @@
       padding: 10px 10px 0;
       border-radius: 8px;
       background: #fff;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .employment-toolbar {
@@ -9640,6 +10440,8 @@
     }
 
     .employment-table-scroll {
+      position: relative;
+      z-index: 2;
       overflow-x: auto;
       border-bottom: 0;
       scrollbar-color: #c9cdd3 transparent;
@@ -11189,7 +11991,6 @@
     .collect-notify-recipients {
       width: 100%;
       min-height: 36px;
-      max-height: 72px;
       border: 1px solid #dfe5ee;
       border-radius: 4px;
       padding: 6px 8px;
@@ -11200,17 +12001,17 @@
       align-items: flex-start;
       flex-wrap: wrap;
       gap: 6px;
-      overflow: hidden;
+      overflow: visible;
     }
 
-    .collect-notify-person-chip,
-    .collect-notify-more {
+    .collect-notify-person-chip {
       max-width: 150px;
-      height: 24px;
+      min-height: 24px;
       display: inline-flex;
       align-items: center;
+      gap: 4px;
       border-radius: 4px;
-      padding: 0 8px;
+      padding: 0 4px 0 8px;
       background: #fff;
       border: 1px solid #e5eaf2;
       color: #303846;
@@ -11218,17 +12019,34 @@
       white-space: nowrap;
     }
 
-    .collect-notify-person-chip {
+    .collect-notify-person-chip span {
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .collect-notify-more {
+    .collect-notify-remove {
+      width: 16px;
+      height: 16px;
       flex: 0 0 auto;
+      border-radius: 3px;
+      display: inline-grid;
+      place-items: center;
+      color: #98a2b3;
+      background: transparent;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .collect-notify-remove:hover {
       color: #2563eb;
       background: #eff6ff;
-      border-color: #dbeafe;
-      font-weight: 600;
+    }
+
+    .collect-notify-empty {
+      color: #98a2b3;
+      font-size: 12px;
+      line-height: 24px;
     }
 
     .collect-notify-select {
@@ -12576,6 +13394,13 @@
 
     .prepare-flat-table tbody tr:hover td {
       background: #fafcff;
+    }
+
+    .prepare-flat-table .prepare-empty-cell {
+      height: 38px;
+      color: #8b95a1;
+      text-align: center;
+      background: #fff;
     }
 
     .prepare-flat-table .prepare-cell-ellipsis {
@@ -14018,6 +14843,8 @@
     }
 
     .employment-pager {
+      position: relative;
+      z-index: 1;
       height: 42px;
       display: flex;
       align-items: center;
@@ -16385,12 +17212,11 @@
             <label>
               <span>适用组织</span>
               <select class="employment-select scheme-org-select" id="planOrgFilter" aria-label="适用组织">
-                <option value="">请选择组织</option>
-                <option>纵腾网络</option>
-                <option>纵腾网络 / 人力资源部</option>
-                <option>纵腾网络 / FBU仓储事业部</option>
-                <option>纵腾网络 / 产品研发部</option>
-                <option>纵腾网络 / 华东销售中心</option>
+                <option value="">全部</option>
+                <option value="org-ztn-hr">纵腾网络 / 人力资源部</option>
+                <option value="org-ztn-fbu">纵腾网络 / FBU仓储事业部</option>
+                <option value="org-ztn-rd">纵腾网络 / 产品研发部</option>
+                <option value="org-ztn-east">纵腾网络 / 华东销售中心</option>
               </select>
             </label>
             <label>
@@ -16398,7 +17224,7 @@
               <select class="employment-select scheme-org-select" id="planStatusFilter" aria-label="状态">
                 <option value="">全部</option>
                 <option>启用</option>
-                <option>停用</option>
+                <option>禁用</option>
               </select>
             </label>
           </div>
@@ -16487,6 +17313,8 @@
           <div class="plan-template-actions" id="planTemplateActions">
             <button class="employment-btn" type="button" id="openPlanLinkage">⌘ 联动设置</button>
             <button class="employment-btn" type="button" id="exportPlanFields">⇩ 导出字段</button>
+            <button class="employment-btn" type="button" id="openPlanPcPreview">预览电脑样式</button>
+            <button class="employment-btn" type="button" id="openPlanMobilePreview">预览手机样式</button>
           </div>
           <div class="plan-template-actions" id="planPrepareActions" hidden>
             <button class="employment-btn" type="button" id="exportPlanTodos">⇩ 导出</button>
@@ -18105,6 +18933,87 @@
     </div>
   </section>
   <div class="plan-help-popover" id="planHelpPopover" role="tooltip"></div>
+  <div class="plan-preview-mask" id="planPreviewMask"></div>
+  <section class="plan-preview-modal" id="planPreviewModal" aria-modal="true" role="dialog" aria-labelledby="planPreviewTitle">
+    <div class="plan-preview-head">
+      <h3 id="planPreviewTitle">预览电脑样式</h3>
+      <button type="button" id="closePlanPreview" aria-label="关闭预览">×</button>
+    </div>
+    <div class="plan-preview-frame-wrap">
+      <iframe class="plan-preview-frame" id="planPreviewFrame" title="信息采集预览"></iframe>
+    </div>
+  </section>
+  <div class="plan-field-help-mask" id="planFieldHelpMask"></div>
+  <section class="plan-field-help-modal" id="planFieldHelpModal" aria-modal="true" role="dialog" aria-labelledby="planFieldHelpTitle">
+    <div class="modal-head">
+      <h3 id="planFieldHelpTitle">编辑帮助</h3>
+      <button class="close" type="button" id="closePlanFieldHelp" aria-label="关闭">×</button>
+    </div>
+    <div class="plan-field-help-body">
+      <div class="plan-field-help-row">
+        <span>帮助位置</span>
+        <div class="plan-help-position-list">
+          <label class="plan-help-position-item">
+            <span><input type="radio" name="planHelpPosition" value="question"> 帮助问号</span>
+            <span class="plan-help-position-preview question"></span>
+          </label>
+          <label class="plan-help-position-item">
+            <span><input type="radio" name="planHelpPosition" value="below"> 字段下方</span>
+            <span class="plan-help-position-preview below"></span>
+          </label>
+        </div>
+      </div>
+      <div class="plan-field-help-row">
+        <span>帮助提示</span>
+        <div class="textarea-box">
+          <textarea class="plan-field-help-textarea" id="planFieldHelpText" maxlength="255" placeholder="请输入帮助提示"></textarea>
+          <span class="counter" id="planFieldHelpCount">0/255</span>
+        </div>
+      </div>
+    </div>
+    <div class="import-foot">
+      <button class="btn" type="button" id="cancelPlanFieldHelp">取消</button>
+      <button class="btn primary" type="button" id="confirmPlanFieldHelp">确定</button>
+    </div>
+  </section>
+  <section class="plan-language-modal" id="planLanguageModal" aria-modal="true" role="dialog">
+    <div class="modal-head">
+      <h3 id="planLanguageTitle">多语言设置</h3>
+      <button class="close" type="button" id="closePlanLanguage" aria-label="关闭">×</button>
+    </div>
+    <div class="plan-language-body">
+      <label class="plan-language-field">
+        <span>简体中文</span>
+        <input id="planLanguageZh" maxlength="255" placeholder="请输入简体中文内容">
+      </label>
+      <label class="plan-language-field">
+        <span>English</span>
+        <input id="planLanguageEn" maxlength="255" placeholder="Please enter English content">
+      </label>
+      <label class="plan-language-field">
+        <span>繁體中文</span>
+        <input id="planLanguageHk" maxlength="255" placeholder="請輸入繁體中文內容">
+      </label>
+    </div>
+    <div class="import-foot">
+      <button class="btn" type="button" id="cancelPlanLanguage">取消</button>
+      <button class="btn primary" type="button" id="confirmPlanLanguage">确定</button>
+    </div>
+  </section>
+  <section class="plan-message-preview-modal" id="planMessagePreviewModal" aria-modal="true" role="dialog">
+    <div class="modal-head">
+      <h3 id="planMessagePreviewTitle">消息通知模板预览</h3>
+      <button class="close" type="button" id="closePlanMessagePreview" aria-label="关闭">×</button>
+    </div>
+    <div class="plan-message-preview-body">
+      <div class="plan-message-preview-tabs" id="planMessagePreviewTabs"></div>
+      <div class="plan-message-preview-pane" id="planMessagePreviewPane"></div>
+    </div>
+    <div class="plan-message-preview-foot">
+      <button class="btn" type="button" id="cancelPlanMessagePreview">取消</button>
+      <button class="btn primary" type="button" id="confirmPlanMessagePreview">确定</button>
+    </div>
+  </section>
   <div class="plan-scope-menu" id="planScopeMenu" hidden>
     <button type="button" data-plan-scope-mode="常规条件">常规条件</button>
     <button type="button" data-plan-scope-mode="高级公式">高级公式</button>
@@ -18548,14 +19457,7 @@
     <div class="collect-notify-body">
       <div class="collect-notify-field">
         <label>通知人员</label>
-        <div class="collect-notify-recipients" role="textbox" aria-readonly="true" aria-label="通知人员">
-          <span class="collect-notify-person-chip" title="测试234">测试234</span>
-          <span class="collect-notify-person-chip" title="电子签2">电子签2</span>
-          <span class="collect-notify-person-chip" title="测试待入职01">测试待入职01</span>
-          <span class="collect-notify-person-chip" title="李明（研发中心）">李明（研发中心）</span>
-          <span class="collect-notify-person-chip" title="王晓玲（人力资源部）">王晓玲（人力资源部）</span>
-          <span class="collect-notify-more" title="还有 4 人未展开显示">+4</span>
-        </div>
+        <div class="collect-notify-recipients" id="collectNotifyRecipients" role="textbox" aria-readonly="true" aria-label="通知人员"></div>
       </div>
       <div class="collect-notify-field">
         <label>通知方式</label>
@@ -20155,6 +21057,7 @@
     const approvalTodoTaskPageSize = 20;
     let approvalTodoModalAttachments = [];
     const collectNotifyModal = document.querySelector("#collectNotifyModal");
+    let collectNotifyRecipients = ["测试234", "电子签2", "测试待入职01", "李明（研发中心）", "王晓玲（人力资源部）", "胡亮", "大庆-测试", "吴琪兴2", "Lam ZT"];
     const collectReturnModal = document.querySelector("#collectReturnModal");
     const drawerMask = document.querySelector("#drawerMask");
     const modal = document.querySelector("#relationModal");
@@ -20193,6 +21096,8 @@
     let activePlanStep = "template";
     let activePlanGroupIndex = 0;
     let activePlanTodoIndex = 0;
+    let planOrgFilterIds = [];
+    let activePlanHelpEditIndex = null;
     let planPickerContext = null;
     let planPickerOptions = [];
     let planPickerSearchText = "";
@@ -20202,6 +21107,8 @@
     let planGroupSearchText = "";
     let planGroupManagerCollapsed = false;
     let planScopeMenuContext = null;
+    let activePlanLanguageField = null;
+    let activePlanMessagePreviewChannel = "邮件通知";
     let draggedPlanGroupIndex = null;
     let draggedPlanFieldIndex = null;
     let draggedPlanTodoIndex = null;
@@ -21764,9 +22671,23 @@
       renderApprovalTodoTasks();
     }
 
+    function renderCollectNotifyRecipients() {
+      const box = document.querySelector("#collectNotifyRecipients");
+      if (!box) return;
+      box.innerHTML = collectNotifyRecipients.length
+        ? collectNotifyRecipients.map((person, index) => `
+          <span class="collect-notify-person-chip" title="${escapeHtml(person)}">
+            <span>${escapeHtml(person)}</span>
+            <button class="collect-notify-remove" type="button" data-collect-notify-remove="${index}" aria-label="删除${escapeHtml(person)}">×</button>
+          </span>
+        `).join("")
+        : `<span class="collect-notify-empty">暂无通知人员</span>`;
+    }
+
     function openCollectNotifyModal(options = {}) {
       const title = options.urge ? "催办填写资料" : "信息采集通知";
       document.querySelector("#collectNotifyTitle").textContent = title;
+      renderCollectNotifyRecipients();
       collectNotifyModal.classList.add("show");
       modalMask.classList.add("show");
       setTimeout(() => document.querySelector("#collectNotifyMethods input")?.focus(), 0);
@@ -23040,9 +23961,10 @@
       return `<div class="prepare-row-actions">${actionButton("process", "去处理")}${actionButton("transfer", "转交")}${actionButton("more", "更多")}</div>`;
     }
 
-    function renderPrepareFlatTable(entries = []) {
+    function renderPrepareFlatTable(entries = [], options = {}) {
       const selected = getSelectedPrepareTodoIndexes();
       const allSelected = entries.length > 0 && entries.every(({ index }) => selected.includes(index));
+      const emptyText = options.emptyText || "暂无符合条件的准备事项";
       const cell = value => {
         const display = formatPrepareTableCell(value);
         return `<span class="prepare-cell-ellipsis ${display === prepareEmptyValue ? "prepare-table-muted" : ""}" title="${escapeHtml(display)}">${escapeHtml(display)}</span>`;
@@ -23076,7 +23998,7 @@
                     <td>${cell(todo.owner)}</td><td>${cell(todo.remark)}</td><td>${cell(completed)}</td><td>${cell(todo.doneDate)}</td><td>${cell(todo.completionNote)}</td><td>${cell(todo.processNo || todo.billNo)}</td><td>${cell(todo.officeArea)}</td><td>${cell(todo.device)}</td><td>${cell(todo.seat)}</td><td>${cell(todo.createdAt)}</td>
                     <td class="sticky-action">${renderPrepareRowActions(todo, index)}</td>
                   </tr>`;
-                }).join("") || `<tr><td colspan="16"><div class="prepare-empty"><p>暂无符合条件的准备事项</p></div></td></tr>`}
+                }).join("") || `<tr><td class="prepare-empty-cell" colspan="16">${escapeHtml(emptyText)}</td></tr>`}
               </tbody>
             </table>
           </div>
@@ -23091,7 +24013,7 @@
       if (!content) return;
       if (!todos.length) {
         renderPrepareQueryBar([]);
-        content.innerHTML = `<div class="prepare-empty"><p>${status === "未发起" ? "暂无数据" : "暂无准备事项"}</p></div>`;
+        content.innerHTML = renderPrepareFlatTable([], { emptyText: status === "未发起" ? "暂无数据" : "暂无准备事项" });
         updatePrepareTodoToolState();
         return;
       }
@@ -23161,7 +24083,7 @@
       closeMaterialDetailCreatePanel();
       drawer?.classList.add("page-mode");
       drawer?.classList.toggle("completed-mode", ["已完成", "进行中", "未发起"].includes(status));
-      drawer?.classList.toggle("unlaunched-mode", status === "未发起");
+      drawer?.classList.remove("unlaunched-mode");
       drawer?.classList.remove("material-mode", "material-receive-mode", "remind-mode", "transfer-mode");
       prepareActionMode = null;
       prepareQueryState.item = "全部";
@@ -23371,10 +24293,11 @@
 
     function updatePrepareTodoToolState() {
       const hasTodos = Boolean(prepareDetailContext?.template?.todos?.length);
+      const keepUnlaunchedToolsVisible = prepareDetailContext?.status === "未发起" && !hasTodos;
       const selectedIndexes = getSelectedPrepareTodoIndexes();
       const selectedTodos = selectedIndexes.map(index => prepareDetailContext?.template?.todos?.[index]).filter(Boolean);
       const hasCompletedSelection = selectedTodos.some(todo => !isPrepareTodoOperable(todo));
-      const disabled = !hasTodos || hasCompletedSelection;
+      const disabled = (!hasTodos && !keepUnlaunchedToolsVisible) || hasCompletedSelection;
       const disabledHint = hasCompletedSelection ? "存在已完成的任务，请重试" : "暂无可操作的任务";
       const remindButton = document.querySelector("#prepareRemindOwner");
       const createButton = document.querySelector("#openPrepareTodoCreate");
@@ -24287,6 +25210,206 @@
       return [`<option value="">请选择组织</option>`, ...options.map(option => `<option value="${escapeHtml(option)}" ${option === selected ? "selected" : ""}>${escapeHtml(option)}</option>`)].join("");
     }
 
+    const planOrganizationTree = [
+      {
+        id: "org-ztn",
+        name: "纵腾网络",
+        children: [
+          { id: "org-ztn-hr", name: "人力资源部" },
+          { id: "org-ztn-fbu", name: "FBU仓储事业部" },
+          { id: "org-ztn-rd", name: "产品研发部" },
+          { id: "org-ztn-east", name: "华东销售中心" }
+        ]
+      }
+    ];
+
+    function getPlanOrgLeafIds(node) {
+      if (!node?.children?.length) return node?.id ? [node.id] : [];
+      return node.children.flatMap(getPlanOrgLeafIds);
+    }
+
+    function getPlanOrgLeafOrder() {
+      return planOrganizationTree.flatMap(getPlanOrgLeafIds);
+    }
+
+    function findPlanOrgNode(id, nodes = planOrganizationTree) {
+      for (const node of nodes) {
+        if (node.id === id) return node;
+        const nested = findPlanOrgNode(id, node.children || []);
+        if (nested) return nested;
+      }
+      return null;
+    }
+
+    function getLegacyPlanOrgIds(org = "") {
+      const value = String(org || "").trim();
+      if (!value) return [];
+      if (value === "纵腾网络") return getPlanOrgLeafOrder();
+      const matched = planOrganizationTree
+        .flatMap(node => node.children || [])
+        .find(node => value === node.name || value.endsWith(` / ${node.name}`));
+      return matched ? getPlanOrgLeafIds(matched) : [];
+    }
+
+    function normalizePlanOrgIds(value) {
+      const valid = new Set(getPlanOrgLeafOrder());
+      const source = Array.isArray(value) ? value : [];
+      const selected = new Set();
+      source.forEach(id => {
+        const node = findPlanOrgNode(id);
+        getPlanOrgLeafIds(node).forEach(leafId => {
+          if (valid.has(leafId)) selected.add(leafId);
+        });
+      });
+      return getPlanOrgLeafOrder().filter(id => selected.has(id));
+    }
+
+    function getPlanOrgTagNodes(orgIds = []) {
+      const selected = new Set(normalizePlanOrgIds(orgIds));
+      const collect = node => {
+        const leaves = getPlanOrgLeafIds(node);
+        if (leaves.length && leaves.every(id => selected.has(id))) {
+          return [{ id: node.id, label: node.name, leafIds: leaves }];
+        }
+        return (node.children || []).flatMap(collect);
+      };
+      return planOrganizationTree.flatMap(collect);
+    }
+
+    function getPlanOrgSummary(orgIds = [], fallback = "") {
+      const labels = getPlanOrgTagNodes(orgIds).map(item => item.label);
+      return labels.length ? labels.join("、") : fallback;
+    }
+
+    function normalizePlanStatus(status) {
+      return status === "启用" ? "启用" : "禁用";
+    }
+
+    function normalizePlanPayload(plan) {
+      if (!plan) return plan;
+      const orgIds = normalizePlanOrgIds(plan.orgIds?.length ? plan.orgIds : getLegacyPlanOrgIds(plan.org));
+      plan.orgIds = orgIds;
+      plan.org = getPlanOrgSummary(orgIds, plan.org || "");
+      plan.status = normalizePlanStatus(plan.status);
+      getPlanI18nField(plan, "name");
+      getPlanI18nField(plan, "desc");
+      (plan.collectGroups || []).forEach(group => {
+        (group.fields || []).forEach(field => {
+          field.showHelp = Boolean(field.showHelp);
+          field.helpText = field.helpText || "";
+          field.helpPosition = field.helpPosition === "below" ? "below" : "question";
+          if (!Array.isArray(field.options)) field.options = getPlanFieldOptions(field);
+        });
+      });
+      return plan;
+    }
+
+    function getPlanOrgNodeState(node, selectedIds) {
+      const leaves = getPlanOrgLeafIds(node);
+      const count = leaves.filter(id => selectedIds.includes(id)).length;
+      if (count === leaves.length) return "checked";
+      if (count > 0) return "mixed";
+      return "unchecked";
+    }
+
+    function renderPlanOrgTree(nodes, selectedIds, depth = 0) {
+      return nodes.map(node => {
+        const state = getPlanOrgNodeState(node, selectedIds);
+        return `
+          <div class="plan-org-tree-node">
+            <label class="plan-org-tree-row ${depth ? "child" : ""}">
+              <span class="tree-branch">${node.children?.length ? "⌄" : ""}</span>
+              <input type="checkbox" data-plan-org-node-id="${escapeHtml(node.id)}" data-plan-org-state="${state}" ${state === "checked" ? "checked" : ""}>
+              <span>${escapeHtml(node.name)}</span>
+            </label>
+            ${node.children?.length ? renderPlanOrgTree(node.children, selectedIds, depth + 1) : ""}
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderPlanOrgTriggerTags(selectedIds) {
+      const tags = getPlanOrgTagNodes(selectedIds);
+      if (!tags.length) return `<span class="plan-org-placeholder">请选择组织</span>`;
+      const visible = tags.slice(0, 2);
+      const overflow = tags.length - visible.length;
+      return `
+        ${visible.map(tag => `<span class="plan-org-tag" title="${escapeHtml(tag.label)}"><span>${escapeHtml(tag.label)}</span></span>`).join("")}
+        ${overflow > 0 ? `<span class="plan-org-summary">+${overflow}</span>` : ""}
+      `;
+    }
+
+    function renderPlanOrgMultiSelect(context, selectedIds = [], disabled = false) {
+      const selected = normalizePlanOrgIds(selectedIds);
+      const tags = getPlanOrgTagNodes(selected);
+      return `
+        <div class="plan-org-multi ${disabled ? "disabled" : ""}" data-plan-org-context="${escapeHtml(context)}">
+          <button class="plan-org-trigger" type="button" data-plan-org-trigger aria-haspopup="dialog" aria-expanded="false" ${disabled ? "disabled" : ""}>
+            <span class="plan-org-trigger-content">${renderPlanOrgTriggerTags(selected)}</span>
+            <span class="plan-org-trigger-arrow" aria-hidden="true"></span>
+          </button>
+          <div class="plan-org-menu" role="dialog" aria-label="选择适用组织">
+            <div class="plan-org-tree">${renderPlanOrgTree(planOrganizationTree, selected)}</div>
+            <div class="plan-org-selected">
+              <span class="plan-org-selected-title">已选组织</span>
+              <div class="plan-org-selected-tags">
+                ${tags.length ? tags.map(tag => `
+                  <button class="plan-org-selected-tag" type="button" data-plan-org-remove="${escapeHtml(tag.id)}" title="删除${escapeHtml(tag.label)}">
+                    <span>${escapeHtml(tag.label)}</span><em aria-hidden="true">×</em>
+                  </button>
+                `).join("") : `<span class="plan-org-selected-empty">暂未选择组织</span>`}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function syncPlanOrgTreeIndeterminate(scope = document) {
+      scope.querySelectorAll("[data-plan-org-state='mixed']").forEach(input => {
+        input.indeterminate = true;
+      });
+    }
+
+    function refreshPlanOrgMultiSelect(context) {
+      const host = context === "filter"
+        ? document.querySelector("#planOrgFilter")
+        : document.querySelector("#planOrg");
+      if (!host) return;
+      const plan = getActivePlan();
+      const selected = context === "filter" ? planOrgFilterIds : normalizePlanOrgIds(plan?.orgIds || []);
+      const disabled = context !== "filter" && isPlanReadonly();
+      host.innerHTML = renderPlanOrgMultiSelect(context, selected, disabled);
+      syncPlanOrgTreeIndeterminate(host);
+    }
+
+    function closePlanOrgMultiSelects(except = null) {
+      document.querySelectorAll(".plan-org-multi.open").forEach(item => {
+        if (item !== except) {
+          item.classList.remove("open");
+          item.querySelector("[data-plan-org-trigger]")?.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
+
+    function setPlanOrgSelection(context, selectedIds) {
+      const next = normalizePlanOrgIds(selectedIds);
+      if (context === "filter") {
+        planOrgFilterIds = next;
+      } else {
+        const plan = getActivePlan();
+        if (!plan) return;
+        plan.orgIds = next;
+        plan.org = getPlanOrgSummary(next);
+      }
+      refreshPlanOrgMultiSelect(context);
+      const wrapper = document.querySelector(`[data-plan-org-context="${context}"]`);
+      if (wrapper) {
+        wrapper.classList.add("open");
+        wrapper.querySelector("[data-plan-org-trigger]")?.setAttribute("aria-expanded", "true");
+      }
+    }
+
     function enterSchemeConfig(mode = "edit", index = null) {
       activeSchemeMode = mode;
       activeSchemeIndex = mode === "create" ? null : index;
@@ -24478,6 +25601,211 @@
       document.querySelector("#planHelpPopover")?.classList.remove("show");
     }
 
+    function openPlanFieldHelpEdit(index) {
+      const field = getActivePlanGroup()?.fields?.[Number(index)];
+      if (!field) return;
+      activePlanHelpEditIndex = Number(index);
+      document.querySelector("#planFieldHelpTitle").textContent = `编辑帮助-${field.displayName || field.name}`;
+      document.querySelector("#planFieldHelpText").value = field.helpText || "";
+      document.querySelector("#planFieldHelpCount").textContent = `${(field.helpText || "").length}/255`;
+      document.querySelectorAll("input[name='planHelpPosition']").forEach(input => {
+        input.checked = input.value === (field.helpPosition === "below" ? "below" : "question");
+      });
+      document.querySelector("#planFieldHelpMask").classList.add("show");
+      document.querySelector("#planFieldHelpModal").classList.add("show");
+    }
+
+    function closePlanFieldHelpEdit() {
+      document.querySelector("#planFieldHelpModal").classList.remove("show");
+      document.querySelector("#planFieldHelpMask").classList.remove("show");
+      activePlanHelpEditIndex = null;
+    }
+
+    function confirmPlanFieldHelpEdit() {
+      const field = getActivePlanGroup()?.fields?.[activePlanHelpEditIndex];
+      if (!field) return;
+      const position = document.querySelector("input[name='planHelpPosition']:checked")?.value;
+      field.helpText = document.querySelector("#planFieldHelpText").value.trim();
+      field.helpPosition = position === "below" ? "below" : "question";
+      field.showHelp = true;
+      closePlanFieldHelpEdit();
+      renderPlanFieldConfig();
+      applyPlanReadonly();
+    }
+
+    function getPlanPreviewFieldKind(field) {
+      const secondType = getPlanFieldType(field);
+      if (secondType.includes("图片") || secondType.includes("文件")) return "文件上传";
+      if (secondType === "日期" || secondType === "日期时间") return "时间日期";
+      if (secondType === "文本区") return "内容框";
+      if (["是否", "是/否"].includes(secondType)) return "单选框";
+      if (secondType.includes("单选") || secondType.includes("下拉")) return "下拉框";
+      return "文本框";
+    }
+
+    function getPlanPreviewValue(field, fieldType, secondType) {
+      if (fieldType === "时间日期") return "2026-08-06";
+      if (fieldType === "文件上传") return secondType.includes("图片") ? ["示例图片.jpg"] : ["示例附件.pdf"];
+      if (fieldType === "单选框" && ["是否", "是/否"].includes(secondType)) return "是";
+      return "示例文本";
+    }
+
+    function getPlanEducationPreviewFields() {
+      return [
+        { id: "preview-edu-start", name: "开始日期", displayName: "开始日期", secondType: "日期", required: true, editable: "可编辑", defaultValue: "", value: "2023-07-20" },
+        { id: "preview-edu-end", name: "结束日期", displayName: "结束日期", secondType: "日期", required: true, editable: "可编辑", defaultValue: "", value: "2026-09-24" },
+        { id: "preview-edu-school", name: "毕业学校名称", displayName: "毕业学校名称", secondType: "单行文本", required: true, editable: "可编辑", defaultValue: "", value: "示例文本" },
+        { id: "preview-edu-major", name: "专业", displayName: "专业", secondType: "单行文本", required: true, editable: "可编辑", defaultValue: "", value: "示例文本" },
+        { id: "preview-edu-degree-level", name: "学历", displayName: "学历", secondType: "单选列表", required: true, editable: "可编辑", defaultValue: "", value: "示例文本", options: ["示例文本", "博士", "硕士", "本科", "大专", "高中"] },
+        { id: "preview-edu-degree", name: "学位", displayName: "学位", secondType: "单选列表", required: true, editable: "可编辑", defaultValue: "", value: "示例文本", options: ["示例文本", "博士", "硕士", "学士", "EMBA", "无"] },
+        { id: "preview-edu-study-mode", name: "学习形式", displayName: "学习形式", secondType: "单选列表", required: true, editable: "可编辑", defaultValue: "", value: "示例文本", options: ["示例文本", "普通全日制", "开放教育", "成人教育", "自考"] },
+        { id: "preview-edu-train-mode", name: "培养方式", displayName: "培养方式", secondType: "单选列表", required: true, editable: "可编辑", defaultValue: "", value: "示例文本", options: ["示例文本", "统招", "委培", "定向", "非定向"] },
+        { id: "preview-edu-highest", name: "是否最高学历", displayName: "是否最高学历", secondType: "单选列表", required: true, editable: "可编辑", defaultValue: "", value: "示例文本", options: ["示例文本", "是", "否"] },
+        { id: "preview-edu-diploma", name: "学历证书附件", displayName: "学历证书附件", secondType: "多图片上传", required: true, editable: "可编辑", defaultValue: "", value: "示例图片.png" },
+        { id: "preview-edu-certificate", name: "学位证书附件", displayName: "学位证书附件", secondType: "多图片上传", required: true, editable: "可编辑", defaultValue: "", value: "示例图片2.png" }
+      ];
+    }
+
+    function getPlanEducationPreviewRows() {
+      return [{
+        开始日期: "2023-07-20",
+        结束日期: "2026-09-24",
+        毕业学校名称: "示例文本",
+        专业: "示例文本",
+        学历: "示例文本",
+        学位: "示例文本",
+        学习形式: "示例文本",
+        培养方式: "示例文本",
+        是否最高学历: "示例文本",
+        学历证书附件: "示例图片.png",
+        学位证书附件: "示例图片2.png"
+      }];
+    }
+
+    function getPlanEducationPreviewValue(label = "") {
+      const valueMap = {
+        开始日期: "2023-07-20",
+        结束日期: "2026-09-24",
+        毕业学校名称: "示例文本",
+        专业: "示例文本",
+        学历: "示例文本",
+        学位: "示例文本",
+        学习形式: "示例文本",
+        培养方式: "示例文本",
+        是否最高学历: "示例文本",
+        学历证书附件: "示例图片.png",
+        学位证书附件: "示例图片2.png"
+      };
+      if (Object.prototype.hasOwnProperty.call(valueMap, label)) return valueMap[label];
+      return Object.entries(valueMap)
+        .sort(([left], [right]) => right.length - left.length)
+        .find(([key]) => label.includes(key) || key.includes(label))?.[1];
+    }
+
+    function applyPlanEducationPreviewValues(fields) {
+      const row = {};
+      fields.forEach(field => {
+        const value = getPlanEducationPreviewValue(field.label);
+        if (value === undefined) return;
+        if (field.label === "学历证书附件" || field.label === "学位证书附件") {
+          field.fieldType = "文件上传";
+          field.secondType = "多图片上传";
+        }
+        if (!field.options?.includes?.("示例文本") && !field.label.includes("日期") && !field.label.includes("附件")) {
+          field.options = ["示例文本", ...(field.options || [])];
+        }
+        field.value = value;
+        row[field.key] = value;
+        row[field.label] = value;
+      });
+      return Object.keys(row).length ? [row] : getPlanEducationPreviewRows();
+    }
+
+    function isPlanEducationGroup(group = {}) {
+      return String(group.name || "").includes("教育经历");
+    }
+
+    function buildPlanPreviewFieldPayload(field, groupIndex, fieldIndex) {
+      const secondType = getPlanFieldType(field);
+      const fieldType = getPlanPreviewFieldKind(field);
+      const options = Array.from(new Set([
+        ...(getPlanFieldOptions(field) || []),
+        ...(fieldType === "下拉框" ? ["示例文本"] : []),
+        ...(fieldType === "单选框" && ["是否", "是/否"].includes(secondType) ? ["是", "否"] : [])
+      ].filter(Boolean)));
+      const label = field.displayName || field.name || "未命名字段";
+      return {
+        id: field.id || `preview-field-${groupIndex + 1}-${fieldIndex + 1}`,
+        key: field.id || field.name || `preview-field-${groupIndex + 1}-${fieldIndex + 1}`,
+        label,
+        fieldType,
+        secondType,
+        required: Boolean(field.required),
+        editable: field.editable !== "只读",
+        placeholder: field.placeholder || "请输入",
+        defaultValue: field.defaultValue || "",
+        value: Object.prototype.hasOwnProperty.call(field, "value") ? field.value : getPlanPreviewValue(field, fieldType, secondType),
+        options,
+        help: field.showHelp ? field.helpText || "" : "",
+        helpPosition: field.helpPosition === "below" ? "below" : "question"
+      };
+    }
+
+    function buildPlanPreviewPayload() {
+      syncActivePlanGroupMeta();
+      const plan = syncPlanDraftFromBasicForm({ validate: false });
+      if (!plan) return null;
+      normalizePlanPayload(plan);
+      return {
+        version: 1,
+        planName: plan.name || "入职信息采集",
+        candidate: {
+          name: "示例文本",
+          organization: getPlanOrgSummary(plan.orgIds, "纵腾网络"),
+          email: "example@hrone.com",
+          mobile: "13800000000"
+        },
+        groups: (plan.collectGroups || []).map((group, groupIndex) => {
+          const sourceFields = (group.fields || []).filter(field => field.editable !== "隐藏");
+          const fieldsForPreview = isPlanEducationGroup(group) && !sourceFields.length ? getPlanEducationPreviewFields() : sourceFields;
+          const fields = fieldsForPreview.map((field, fieldIndex) => buildPlanPreviewFieldPayload(field, groupIndex, fieldIndex));
+          const rows = isPlanEducationGroup(group) ? applyPlanEducationPreviewValues(fields) : [];
+          return {
+            id: group.id || `preview-group-${groupIndex + 1}`,
+            name: group.name || `信息分组${groupIndex + 1}`,
+            tip: group.tip || "",
+            required: Boolean(group.required),
+            rows,
+            fields
+          };
+        })
+      };
+    }
+
+    function openPlanCollectionPreview(terminal) {
+      const payload = buildPlanPreviewPayload();
+      if (!payload) return;
+      const modal = document.querySelector("#planPreviewModal");
+      const frame = document.querySelector("#planPreviewFrame");
+      const title = terminal === "mobile" ? "预览手机样式" : "预览电脑样式";
+      const target = terminal === "mobile" ? "信息采集-移动端.html" : "填写个人信息-PC端.html";
+      const query = `preview=1&previewData=${encodeURIComponent(JSON.stringify(payload))}`;
+      document.querySelector("#planPreviewTitle").textContent = title;
+      frame.title = title;
+      modal.classList.toggle("mobile", terminal === "mobile");
+      frame.src = `${target}?${query}`;
+      document.querySelector("#planPreviewMask").classList.add("show");
+      modal.classList.add("show");
+    }
+
+    function closePlanCollectionPreview() {
+      const modal = document.querySelector("#planPreviewModal");
+      const frame = document.querySelector("#planPreviewFrame");
+      modal.classList.remove("show", "mobile");
+      document.querySelector("#planPreviewMask").classList.remove("show");
+      frame.src = "about:blank";
+    }
+
     function normalizePlanLinkageValues(value) {
       return Array.from(new Set((Array.isArray(value) ? value : value ? [value] : []).map(item => String(item).trim()).filter(Boolean)));
     }
@@ -24649,6 +25977,7 @@
         placeholder: "请输入",
         showHelp: false,
         helpText: "",
+        helpPosition: "question",
         options: Array.isArray(field?.options) ? field.options : getCollectDefaultOptions(name, secondType)
       };
     }
@@ -24665,12 +25994,17 @@
       return {
         name: "",
         org: "",
+        orgIds: [],
         version: "00001",
         employmentType: "正式员工",
         matchModes: ["人员类型"],
         personTypes: [],
         employeeTypes: ["正式员工"],
         desc: "",
+        i18n: {
+          name: { zh: "", en: "", hk: "" },
+          desc: { zh: "", en: "", hk: "" }
+        },
         status: "启用",
         operator: "",
         time: "",
@@ -24723,13 +26057,9 @@
 
     function getFilteredPlans() {
       const name = document.querySelector("#planNameFilter")?.value.trim() || "";
-      const org = document.querySelector("#planOrgFilter")?.value || "";
-      const status = document.querySelector("#planStatusFilter")?.value || "";
       return onboardingPlans.filter(item => {
-        const matchName = !name || item.name.includes(name);
-        const matchOrg = !org || item.org === org;
-        const matchStatus = !status || item.status === status;
-        return matchName && matchOrg && matchStatus;
+        normalizePlanPayload(item);
+        return !name || item.name.includes(name);
       });
     }
 
@@ -24752,16 +26082,19 @@
       const filtered = getFilteredPlans();
       planRows.innerHTML = "";
       filtered.forEach((item, index) => {
+        normalizePlanPayload(item);
         const realIndex = onboardingPlans.indexOf(item);
         const employmentTypeText = getPlanEmploymentTypeText(item);
+        const orgText = getPlanOrgSummary(item.orgIds, item.org || "--");
+        const status = normalizePlanStatus(item.status);
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${index + 1}</td>
           <td title="${escapeHtml(item.name)}"><button class="link" type="button" data-plan-action="view" data-index="${realIndex}">${escapeHtml(item.name || "--")}</button></td>
-          <td title="${escapeHtml(item.org)}">${escapeHtml(item.org || "--")}</td>
+          <td title="${escapeHtml(orgText)}">${escapeHtml(orgText || "--")}</td>
           <td title="${escapeHtml(employmentTypeText)}">${escapeHtml(employmentTypeText)}</td>
           <td title="${escapeHtml(item.desc || "--")}">${escapeHtml(item.desc || "--")}</td>
-          <td><span class="status-tag ${item.status === "停用" ? "off" : ""}">${escapeHtml(item.status || "启用")}</span></td>
+          <td><span class="status-tag ${status === "禁用" ? "off" : ""}">${escapeHtml(status)}</span></td>
           <td title="${escapeHtml(item.operator || "--")}">${escapeHtml(item.operator || "--")}</td>
           <td>${escapeHtml(item.time || "--")}</td>
           <td>
@@ -24770,6 +26103,7 @@
               <button class="plan-action-icon" type="button" data-plan-action="copy" data-index="${realIndex}" data-tooltip="复制" aria-label="复制">${planActionIcon("copy")}</button>
               <button class="plan-action-icon" type="button" data-plan-more-toggle data-tooltip="更多" aria-label="更多">${planActionIcon("more")}</button>
               <span class="plan-action-menu" role="menu">
+                <button class="link" type="button" role="menuitem" data-plan-action="toggle" data-index="${realIndex}">禁用</button>
                 <button class="link" type="button" role="menuitem" data-plan-action="delete" data-index="${realIndex}">删除</button>
               </span>
             </div>
@@ -24782,8 +26116,30 @@
 
     function closePlanActionMenus(except = null) {
       document.querySelectorAll("#planRows .plan-row-actions.open").forEach(actions => {
-        if (actions !== except) actions.classList.remove("open");
+        if (actions !== except) {
+          actions.classList.remove("open");
+          resetPlanActionMenu(actions.querySelector(".plan-action-menu"));
+        }
       });
+    }
+
+    function resetPlanActionMenu(menu) {
+      if (!menu) return;
+      menu.classList.remove("is-floating");
+      menu.style.left = "";
+      menu.style.top = "";
+    }
+
+    function placePlanActionMenu(trigger, menu) {
+      if (!trigger || !menu) return;
+      const rect = trigger.getBoundingClientRect();
+      const width = 88;
+      const gutter = 8;
+      const left = Math.min(window.innerWidth - width - gutter, Math.max(gutter, rect.right - width));
+      const top = Math.min(window.innerHeight - 74, rect.bottom + 4);
+      menu.classList.add("is-floating");
+      menu.style.left = `${left}px`;
+      menu.style.top = `${Math.max(gutter, top)}px`;
     }
 
     function enterPlanConfig(mode = "edit", index = null) {
@@ -24803,6 +26159,7 @@
           activePlanIndex = null;
         }
       }
+      normalizePlanPayload(activePlanDraft);
       showWorkspace("onboardingPlanConfig");
       renderPlanConfig();
     }
@@ -24811,7 +26168,7 @@
       const plan = getActivePlan();
       if (!plan || !document.querySelector("#planName")) return null;
       const name = document.querySelector("#planName").value.trim();
-      const org = document.querySelector("#planOrg").value;
+      const orgIds = normalizePlanOrgIds(plan.orgIds || []);
       const status = document.querySelector("#planStatus").value;
       const employmentTypes = syncPlanEmploymentTypeMulti();
       if (options.validate) {
@@ -24819,7 +26176,7 @@
           alert("请填写方案名称");
           return null;
         }
-        if (!org) {
+        if (!orgIds.length) {
           alert("请选择适用组织");
           return null;
         }
@@ -24829,11 +26186,14 @@
         }
       }
       plan.name = name;
-      plan.org = org;
-      plan.status = status;
+      plan.orgIds = orgIds;
+      plan.org = getPlanOrgSummary(orgIds);
+      plan.status = normalizePlanStatus(status);
       plan.employeeTypes = employmentTypes;
       plan.employmentType = employmentTypes[0] || "";
       plan.desc = document.querySelector("#planDesc").value.trim();
+      getPlanI18nField(plan, "name").zh = plan.name;
+      getPlanI18nField(plan, "desc").zh = plan.desc;
       return plan;
     }
 
@@ -24854,18 +26214,28 @@
       const menu = wrapper.querySelector(".plan-pc-select-menu");
       const selectedOption = select.options[select.selectedIndex];
       const text = selectedOption?.textContent?.trim() || "";
+      const isMessageTemplate = select.hasAttribute("data-plan-message-template-select");
       if (valueText) {
         valueText.textContent = text || "请选择";
         valueText.classList.toggle("placeholder", !select.value);
       }
-      if (trigger) trigger.disabled = select.disabled;
+      if (trigger) trigger.disabled = select.disabled && !isMessageTemplate;
       if (menu) {
-        menu.innerHTML = Array.from(select.options).map((option, index) => `
-          <button class="plan-pc-select-option ${index === select.selectedIndex ? "active" : ""}" type="button" data-plan-pc-select-option="${index}" ${option.disabled ? "disabled" : ""}>${escapeHtml(option.textContent || "")}</button>
-        `).join("");
+        menu.innerHTML = Array.from(select.options).map((option, index) => {
+          const label = option.textContent || "";
+          if (isMessageTemplate && option.value) {
+            return `
+              <div class="plan-pc-select-option-row">
+                <button class="plan-pc-select-option ${index === select.selectedIndex ? "active" : ""}" type="button" data-plan-pc-select-option="${index}" ${option.disabled ? "disabled" : ""}>${escapeHtml(label)}</button>
+                <button class="plan-message-option-preview" type="button" data-plan-message-option-preview="${escapeHtml(select.id)}" data-plan-message-template-name="${escapeHtml(option.value)}">预览</button>
+              </div>
+            `;
+          }
+          return `<button class="plan-pc-select-option ${index === select.selectedIndex ? "active" : ""}" type="button" data-plan-pc-select-option="${index}" ${option.disabled ? "disabled" : ""}>${escapeHtml(label)}</button>`;
+        }).join("");
       }
       wrapper.classList.toggle("disabled", select.disabled);
-      if (select.disabled) wrapper.classList.remove("open");
+      if (select.disabled && !isMessageTemplate) wrapper.classList.remove("open");
     }
 
     function enhancePlanPcSelects() {
@@ -24895,6 +26265,75 @@
       });
     }
 
+    function renderPlanLanguageIcon() {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="8"></circle>
+          <path d="M4 12h16"></path>
+          <path d="M12 4a12 12 0 0 1 0 16"></path>
+          <path d="M12 4a12 12 0 0 0 0 16"></path>
+        </svg>
+      `;
+    }
+
+    function renderPlanLanguageInput({ id, field, value, placeholder, maxlength = 255 }) {
+      return `
+        <div class="plan-language-wrap">
+          <input id="${escapeHtml(id)}" maxlength="${maxlength}" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(value || "")}">
+          <span class="plan-language-btn" title="多语言设置" aria-hidden="true">
+            ${renderPlanLanguageIcon()}
+          </span>
+        </div>
+      `;
+    }
+
+    function getPlanI18nField(plan, field) {
+      if (!plan.i18n) plan.i18n = {};
+      if (!plan.i18n[field]) plan.i18n[field] = { zh: plan[field] || "", en: "", hk: "" };
+      if (!plan.i18n[field].zh && plan[field]) plan.i18n[field].zh = plan[field];
+      return plan.i18n[field];
+    }
+
+    function openPlanLanguageModal(field) {
+      const plan = getActivePlan();
+      if (!plan || isPlanReadonly()) return;
+      activePlanLanguageField = field;
+      const fieldLabels = { name: "方案名称", desc: "说明" };
+      const values = getPlanI18nField(plan, field);
+      document.querySelector("#planLanguageTitle").textContent = `${fieldLabels[field] || "文本"} · 多语言设置`;
+      document.querySelector("#planLanguageZh").value = values.zh || plan[field] || "";
+      document.querySelector("#planLanguageEn").value = values.en || "";
+      document.querySelector("#planLanguageHk").value = values.hk || "";
+      document.querySelector("#planFieldHelpMask").classList.add("show");
+      document.querySelector("#planLanguageModal").classList.add("show");
+      document.querySelector("#planLanguageZh").focus();
+    }
+
+    function closePlanLanguageModal() {
+      document.querySelector("#planLanguageModal")?.classList.remove("show");
+      document.querySelector("#planFieldHelpMask")?.classList.remove("show");
+      activePlanLanguageField = null;
+    }
+
+    function confirmPlanLanguageModal() {
+      const plan = getActivePlan();
+      if (!plan || !activePlanLanguageField) return;
+      const values = {
+        zh: document.querySelector("#planLanguageZh").value.trim(),
+        en: document.querySelector("#planLanguageEn").value.trim(),
+        hk: document.querySelector("#planLanguageHk").value.trim()
+      };
+      if (!plan.i18n) plan.i18n = {};
+      plan.i18n[activePlanLanguageField] = values;
+      if (values.zh) {
+        plan[activePlanLanguageField] = values.zh;
+        const input = document.querySelector(activePlanLanguageField === "name" ? "#planName" : "#planDesc");
+        if (input) input.value = values.zh;
+      }
+      syncPlanDraftFromBasicForm();
+      closePlanLanguageModal();
+    }
+
     function renderPlanBasicInfo() {
       const plan = getActivePlan();
       const basic = document.querySelector("#planBasicInfo");
@@ -24902,11 +26341,11 @@
       basic.innerHTML = `
         <div class="scheme-basic-edit-item">
           <label class="required" for="planName">方案名称</label>
-          <input id="planName" maxlength="50" placeholder="请输入方案名称" value="${escapeHtml(plan.name || "")}">
+          ${renderPlanLanguageInput({ id: "planName", field: "name", value: plan.name || "", placeholder: "请输入方案名称", maxlength: 50 })}
         </div>
         <div class="scheme-basic-edit-item">
-          <label class="required" for="planOrg">适用组织</label>
-          <select id="planOrg">${getSchemeOrgOptions(plan.org || "")}</select>
+          <label class="required">适用组织</label>
+          <div id="planOrg">${renderPlanOrgMultiSelect("config", plan.orgIds || [], isPlanReadonly())}</div>
         </div>
         <div class="scheme-basic-edit-item">
           <label class="required" for="planEmploymentType">用工形式</label>
@@ -24914,14 +26353,14 @@
         </div>
         <div class="scheme-basic-edit-item">
           <label class="required" for="planStatus">状态</label>
-          <select id="planStatus">
-            <option value="启用" ${plan.status !== "停用" ? "selected" : ""}>启用</option>
-            <option value="停用" ${plan.status === "停用" ? "selected" : ""}>停用</option>
+          <select id="planStatus" disabled>
+            <option value="启用" ${normalizePlanStatus(plan.status) === "启用" ? "selected" : ""}>启用</option>
+            <option value="禁用" ${normalizePlanStatus(plan.status) === "禁用" ? "selected" : ""}>禁用</option>
           </select>
         </div>
         <div class="scheme-basic-edit-item full-wide">
           <label for="planDesc">说明</label>
-          <input id="planDesc" maxlength="255" placeholder="请输入说明，便于区分不同入职场景" value="${escapeHtml(plan.desc || "")}">
+          ${renderPlanLanguageInput({ id: "planDesc", field: "desc", value: plan.desc || "", placeholder: "请输入说明，便于区分不同入职场景", maxlength: 255 })}
         </div>
       `;
     }
@@ -24933,6 +26372,7 @@
         renderOnboardingPlans();
         return;
       }
+      normalizePlanPayload(plan);
       document.querySelector("#planConfigTitle").textContent = `${plan.name || (activePlanMode === "create" ? "新增方案" : "复制方案")} · 入职方案管理`;
       renderPlanBasicInfo();
       syncPlanStepper();
@@ -24961,7 +26401,16 @@
       page.querySelectorAll("[data-plan-field-linkage-marker]").forEach(control => {
         control.disabled = false;
       });
+      page.querySelectorAll("#openPlanPcPreview, #openPlanMobilePreview").forEach(control => {
+        control.disabled = false;
+      });
       enhancePlanPcSelects();
+      refreshPlanOrgMultiSelect("config");
+      const statusSelect = page.querySelector("#planStatus");
+      if (statusSelect) {
+        statusSelect.disabled = true;
+        syncPlanPcSelect(statusSelect);
+      }
     }
 
     function syncPlanStepper() {
@@ -25062,7 +26511,11 @@
             <td><select data-plan-field-prop="editable" data-index="${index}">${optionHtml(["隐藏", "只读", "可编辑"], field.editable || "可编辑")}</select></td>
             <td>${renderPlanDefaultValueControl(field, index)}</td>
             <td><input value="${escapeHtml(field.placeholder || "")}" placeholder="请输入提示语" data-plan-field-prop="placeholder" data-index="${index}"></td>
-            <td><input value="${escapeHtml(field.helpText || "")}" placeholder="请输入帮助说明" data-plan-field-prop="helpText" data-index="${index}"></td>
+            <td>
+              <span class="plan-table-help-cell">
+                <input value="${escapeHtml(field.helpText || "")}" placeholder="请输入帮助说明" data-plan-field-prop="helpText" data-index="${index}" aria-label="输入${escapeHtml(field.displayName || field.name)}帮助说明">
+              </span>
+            </td>
             <td><button class="link danger" type="button" data-plan-field-delete="${index}">删除</button></td>
           </tr>
         `;
@@ -25297,7 +26750,7 @@
         <div class="plan-channel-select" data-plan-channel-field="${escapeHtml(field)}">
           <button class="plan-channel-trigger" type="button" data-plan-channel-toggle>${escapeHtml(text)}</button>
           <div class="plan-channel-menu" hidden>
-            ${["邮件", "短信"].map(channel => `
+            ${["邮件", "短信", "飞书", "站内信"].map(channel => `
               <label>
                 <input type="checkbox" value="${escapeHtml(channel)}" data-plan-notify-channel data-plan-channel-field="${escapeHtml(field)}" ${selected.has(channel) ? "checked" : ""}>
                 <span>${escapeHtml(channel)}</span>
@@ -25313,7 +26766,7 @@
         <div class="plan-message-config-row">
           <label class="plan-message-config-field">
             <span>消息通知模板</span>
-            <select id="${escapeHtml(templateId)}">${optionHtml(notificationTemplates, templateValue || notificationTemplates[0])}</select>
+            <select id="${escapeHtml(templateId)}" data-plan-message-template-select>${optionHtml(notificationTemplates, templateValue || notificationTemplates[0])}</select>
           </label>
           <label class="plan-message-config-field">
             <span>通知渠道</span>
@@ -25321,6 +26774,85 @@
           </label>
         </div>
       `;
+    }
+
+    function renderPlanMessagePreviewTabs() {
+      const channels = ["邮件通知", "短信通知", "飞书消息", "站内信"];
+      const tabs = document.querySelector("#planMessagePreviewTabs");
+      if (!tabs) return;
+      tabs.innerHTML = channels.map(channel => `
+        <button class="${channel === activePlanMessagePreviewChannel ? "active" : ""}" type="button" data-plan-preview-channel="${escapeHtml(channel)}">${escapeHtml(channel)}</button>
+      `).join("");
+    }
+
+    function getPlanPreviewMessageText(templateName = "") {
+      const plan = getActivePlan();
+      const company = getPlanOrgSummary(plan?.orgIds || [], "福建纵腾网络有限公司") || "福建纵腾网络有限公司";
+      const name = "东升";
+      const url = "https://bsurl.cn/v2/xc5RlyCQ";
+      if (String(templateName).includes("催办")) {
+        return `尊敬的${name}：您好，您的入职信息采集尚未提交，请尽快完成资料填写。如已完成请忽略本提醒。${url}`;
+      }
+      if (String(templateName).includes("退回")) {
+        return `尊敬的${name}：您好，您的入职信息采集已退回，请根据退回说明补充或修正信息后重新提交。${url}`;
+      }
+      return `尊敬的${name}：您好，欢迎您加入【测试】${company}，为了方便您的入职，需要在入职前对您个人的相关信息进行采集，请尽快完成。请复制下方网页地址到浏览器地址栏中打开：${url}`;
+    }
+
+    function renderPlanMailPreview(templateName) {
+      return `
+        <div class="plan-preview-editor-toolbar" aria-hidden="true">
+          <span>HTML</span><span>|</span><span>↶</span><span>↷</span><span>|</span><span>B</span><span>I</span><span>U</span><span>S</span>
+          <span>|</span><span>A⌄</span><span>|</span><span>☷</span><span>☰</span><span>|</span><span>▣</span><span>◇</span><span>|</span><span>字...⌄</span><span>字...⌄</span>
+          <span>☰</span><span>☷</span><span>↕</span>
+        </div>
+        <div class="plan-preview-mail-paper">
+          <h4>入职信息采集</h4>
+          <p>尊敬的<span class="green">东升</span>：</p>
+          <p style="text-indent:2em">您好，欢迎您加入 <span class="green">【测试】福建纵腾网络有限公司</span>，为了方便您的入职，需要在入职前对您个人的相关信息进行采集，请尽快完成。</p>
+          <p style="text-indent:2em"><strong>集团劳动合同、保密协议、竞业限制协议、薪酬确认书、廉洁自律承诺书以及其他入职相关文件会以电子签的方式签署。</strong></p>
+          <p style="text-indent:2em"><strong>如您不同意以电子签的方式签署，请在办理入职手续的当天将意见反馈给办理入职的HR，非常感谢您的配合！</strong></p>
+          <p style="text-indent:2em"><strong>公司仅接受【公立二级甲等以上医院三个月以内】的体检证明原件或电子件，不接受其他体检机构的结果。</strong></p>
+          <p style="text-indent:2em"><strong>无犯罪证明必须在入职当天系统提交，否则无法办理入职。</strong></p>
+          <p>Dear<span class="green">东升</span>，</p>
+        </div>
+      `;
+    }
+
+    function renderPlanShortMessagePreview(templateName, channel) {
+      return `
+        <div class="plan-preview-message-stage">
+          <div class="plan-preview-phone-frame">
+            <div class="plan-preview-phone-card">
+              ${escapeHtml(getPlanPreviewMessageText(templateName))}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPlanMessagePreviewPane(templateName) {
+      const pane = document.querySelector("#planMessagePreviewPane");
+      if (!pane) return;
+      pane.innerHTML = activePlanMessagePreviewChannel === "邮件通知"
+        ? renderPlanMailPreview(templateName)
+        : renderPlanShortMessagePreview(templateName, activePlanMessagePreviewChannel);
+      renderPlanMessagePreviewTabs();
+    }
+
+    function openPlanMessagePreview(templateId, templateNameOverride = "") {
+      const select = document.querySelector(`#${CSS.escape(templateId)}`);
+      const templateName = templateNameOverride || select?.value || notificationTemplates[0] || "消息通知模板";
+      activePlanMessagePreviewChannel = "邮件通知";
+      document.querySelector("#planMessagePreviewTitle").textContent = `${templateName} · 预览`;
+      document.querySelector("#planFieldHelpMask").classList.add("show");
+      document.querySelector("#planMessagePreviewModal").classList.add("show");
+      renderPlanMessagePreviewPane(templateName);
+    }
+
+    function closePlanMessagePreview() {
+      document.querySelector("#planMessagePreviewModal")?.classList.remove("show");
+      document.querySelector("#planFieldHelpMask")?.classList.remove("show");
     }
 
     function renderPlanCollectRuleStep() {
@@ -25731,34 +27263,81 @@
       return getTodoRoleTypes().find(type => (todoRoleOptionsByType[type] || []).includes(role)) || "组织角色";
     }
 
+    function normalizePlanOwnerPeople(value) {
+      return Array.from(new Set((Array.isArray(value) ? value : value ? [value] : [])
+        .map(item => String(item).trim())
+        .filter(Boolean)));
+    }
+
+    function syncPlanOwnerPersonTrigger(wrapper) {
+      if (!wrapper) return [];
+      const selected = Array.from(wrapper.querySelectorAll("[data-plan-owner-person-option]:checked")).map(input => input.value);
+      const text = selected.length ? selected.join("、") : "请选择";
+      const value = wrapper.querySelector(".plan-owner-person-value");
+      const trigger = wrapper.querySelector(".plan-owner-person-trigger");
+      if (value) {
+        value.textContent = text;
+        value.classList.toggle("placeholder", !selected.length);
+      }
+      if (trigger) trigger.title = text;
+      return selected;
+    }
+
+    function renderPlanOwnerPersonMulti(rule, index) {
+      const selected = normalizePlanOwnerPeople(rule.ownerRole);
+      const text = selected.length ? selected.join("、") : "请选择";
+      return `
+        <div class="plan-owner-person-multi" data-plan-owner-person-multi="${index}">
+          <button class="plan-owner-person-trigger" type="button" data-plan-owner-person-toggle="${index}" title="${escapeHtml(text)}">
+            <span class="plan-owner-person-value ${selected.length ? "" : "placeholder"}">${escapeHtml(text)}</span>
+          </button>
+          <div class="plan-owner-person-menu">
+            ${(todoOwnerOptions["指定人"] || []).map(person => `
+              <label title="${escapeHtml(person)}">
+                <input type="checkbox" value="${escapeHtml(person)}" data-plan-owner-person-option data-index="${index}" ${selected.includes(person) ? "checked" : ""}>
+                <span>${escapeHtml(person)}</span>
+              </label>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
     function normalizePlanTodoRuleOwner(rule = {}) {
-      if ((rule.ownerType || "指定角色") === "指定角色") {
+      if (!rule.ownerType) {
+        rule.ownerRole = "";
+        delete rule.ownerRoleType;
+        return rule;
+      }
+      if (rule.ownerType === "指定角色") {
         const roleType = rule.ownerRoleType && todoRoleOptionsByType[rule.ownerRoleType]
           ? rule.ownerRoleType
           : getTodoRoleTypeByRole(rule.ownerRole);
         const roleOptions = todoRoleOptionsByType[roleType] || [];
         rule.ownerRoleType = roleType;
-        if (!roleOptions.includes(rule.ownerRole)) rule.ownerRole = roleOptions[0] || "";
+        if (rule.ownerRole && !roleOptions.includes(rule.ownerRole)) rule.ownerRole = "";
       } else {
-        const personOptions = todoOwnerOptions["指定人"] || [];
         delete rule.ownerRoleType;
-        if (!personOptions.includes(rule.ownerRole)) rule.ownerRole = personOptions[0] || "";
+        rule.ownerRole = normalizePlanOwnerPeople(rule.ownerRole);
       }
       return rule;
     }
 
     function renderPlanTodoOwnerControl(rule, index) {
       normalizePlanTodoRuleOwner(rule);
-      if ((rule.ownerType || "指定角色") !== "指定角色") {
-        return `<select data-plan-todo-rule-prop="ownerRole" data-index="${index}">${optionHtml(todoOwnerOptions["指定人"] || [], rule.ownerRole || "")}</select>`;
+      if (!rule.ownerType) {
+        return `<select class="placeholder" data-plan-todo-rule-prop="ownerRole" data-index="${index}" disabled>${optionHtml([], "", "请选择")}</select>`;
+      }
+      if (rule.ownerType !== "指定角色") {
+        return renderPlanOwnerPersonMulti(rule, index);
       }
       const roleType = rule.ownerRoleType || getTodoRoleTypeByRole(rule.ownerRole);
       const roleOptions = todoRoleOptionsByType[roleType] || [];
-      const displayText = `${roleType} / ${rule.ownerRole || roleOptions[0] || ""}`;
+      const displayText = rule.ownerRole ? `${roleType} / ${rule.ownerRole}` : "请选择";
       return `
         <div class="plan-owner-cascade" data-plan-owner-cascade="${index}">
           <button class="plan-owner-cascade-trigger" type="button" data-plan-owner-cascade-toggle="${index}" title="${escapeHtml(displayText)}">
-            <span class="plan-owner-cascade-value">${escapeHtml(displayText)}</span>
+            <span class="plan-owner-cascade-value ${rule.ownerRole ? "" : "placeholder"}">${escapeHtml(displayText)}</span>
           </button>
           <div class="plan-owner-cascade-menu" role="listbox">
             <div class="plan-owner-type-list">
@@ -25781,6 +27360,14 @@
         if (cascade === except) return;
         cascade.classList.remove("open");
         resetFloatingMenu(cascade.querySelector(".plan-owner-cascade-menu"));
+      });
+    }
+
+    function closePlanOwnerPersonMultis(except = null) {
+      document.querySelectorAll(".plan-owner-person-multi.open").forEach(multi => {
+        if (multi === except) return;
+        multi.classList.remove("open");
+        resetFloatingMenu(multi.querySelector(".plan-owner-person-menu"));
       });
     }
 
@@ -25862,12 +27449,12 @@
       const rules = todo.rules || [];
       tbody.innerHTML = rules.length ? rules.map((rule, index) => {
         normalizePlanTodoRuleOwner(rule);
-        const todoType = rule.todoType || (rule.oaFlow === "是" ? "流程" : "待办");
+        const todoType = rule.todoType ?? (rule.oaFlow === "是" ? "流程" : "待办");
         return `
           <tr>
             <td>${renderPlanTodoScopeTrigger(rule, index)}</td>
-            <td><select data-plan-todo-rule-prop="todoType" data-index="${index}">${optionHtml(todoTypeOptions, todoType)}</select></td>
-            <td><select data-plan-todo-rule-prop="ownerType" data-index="${index}">${optionHtml(["指定人", "指定角色"], rule.ownerType || "指定角色")}</select></td>
+            <td><select data-plan-todo-rule-prop="todoType" data-index="${index}">${optionHtml(todoTypeOptions, todoType, "请选择")}</select></td>
+            <td><select data-plan-todo-rule-prop="ownerType" data-index="${index}">${optionHtml(["指定人", "指定角色"], rule.ownerType || "", "请选择")}</select></td>
             <td>${renderPlanTodoOwnerControl(rule, index)}</td>
             <td><button class="link danger" type="button" data-plan-todo-rule-delete="${index}">删除</button></td>
           </tr>
@@ -25877,8 +27464,10 @@
 
     function savePlanConfigToList() {
       syncPlanCollectRuleFromForm();
+      syncActivePlanGroupMeta();
       const plan = syncPlanDraftFromBasicForm({ validate: true });
       if (!plan) return;
+      normalizePlanPayload(plan);
       const payload = {
         ...clonePlanPayload(plan),
         operator: "当前用户",
@@ -25907,7 +27496,7 @@
     function togglePlanStatus(index) {
       const plan = onboardingPlans[index];
       if (!plan) return;
-      plan.status = plan.status === "启用" ? "停用" : "启用";
+      plan.status = "禁用";
       plan.operator = "当前用户";
       plan.time = formatNow();
       renderOnboardingPlans();
@@ -26178,7 +27767,7 @@
       const todo = getActivePlanTodo();
       if (!todo) return;
       if (!todo.rules) todo.rules = [];
-      todo.rules.push({ scope: "", scopeMode: "", todoType: "待办", ownerType: "指定角色", ownerRoleType: "组织角色", ownerRole: "部门负责人" });
+      todo.rules.push({ scope: "", scopeMode: "", todoType: "", ownerType: "", ownerRole: "" });
       renderPlanTodoRules();
       applyPlanReadonly();
     }
@@ -26200,7 +27789,7 @@
           getPlanTodoScopeMode(rule) === "高级公式" ? "高级公式" : (rule.scope || ""),
           rule.todoType || (rule.oaFlow === "是" ? "流程" : "待办"),
           rule.ownerType || "",
-          rule.ownerRole || ""
+          Array.isArray(rule.ownerRole) ? rule.ownerRole.join("、") : (rule.ownerRole || "")
         ])
       ];
       const csv = csvRows.map(row => row.map(value => `"${String(value ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
@@ -26720,7 +28309,7 @@
       if (page !== "prepareDetail") {
         const prepareDetail = document.querySelector("#prepareDetailDrawer");
         if (prepareDetail?.classList.contains("page-mode")) {
-          prepareDetail.classList.remove("show", "page-mode", "completed-mode", "remind-mode");
+          prepareDetail.classList.remove("show", "page-mode", "completed-mode", "unlaunched-mode", "remind-mode");
         }
       }
       document.querySelector("#onboardingRulesPage").hidden = page !== "onboardingRules";
@@ -28756,6 +30345,12 @@
       if (event.target.closest("#openCollectUrgeModal")) openCollectUrgeModal();
       if (event.target.closest("#openCollectNotifyModal")) openCollectNotifyModal();
     });
+    document.querySelector("#collectNotifyRecipients").addEventListener("click", event => {
+      const remove = event.target.closest("[data-collect-notify-remove]");
+      if (!remove) return;
+      collectNotifyRecipients.splice(Number(remove.dataset.collectNotifyRemove), 1);
+      renderCollectNotifyRecipients();
+    });
     document.querySelector("#closeCollectNotifyModal").addEventListener("click", closeCollectNotifyModal);
     document.querySelector("#cancelCollectNotifyModal").addEventListener("click", closeCollectNotifyModal);
     document.querySelector("#sendCollectNotifyModal").addEventListener("click", sendCollectNotifyModal);
@@ -28775,6 +30370,7 @@
     });
     document.querySelector("#planResetBtn").addEventListener("click", () => {
       document.querySelector("#planNameFilter").value = "";
+      planOrgFilterIds = [];
       document.querySelector("#planOrgFilter").value = "";
       document.querySelector("#planStatusFilter").value = "";
       renderOnboardingPlans();
@@ -28786,6 +30382,9 @@
         const willOpen = !actions.classList.contains("open");
         closePlanActionMenus(actions);
         actions.classList.toggle("open", willOpen);
+        const menu = actions.querySelector(".plan-action-menu");
+        if (willOpen) placePlanActionMenu(moreToggle, menu);
+        else resetPlanActionMenu(menu);
         event.stopPropagation();
         return;
       }
@@ -28819,10 +30418,48 @@
         applyPlanReadonly();
       }
     });
+    document.addEventListener("change", event => {
+      const checkbox = event.target.closest("[data-plan-org-node-id]");
+      if (!checkbox) return;
+      const wrapper = checkbox.closest("[data-plan-org-context]");
+      const context = wrapper?.dataset.planOrgContext;
+      const node = findPlanOrgNode(checkbox.dataset.planOrgNodeId);
+      if (!context || !node) return;
+      const current = context === "filter" ? planOrgFilterIds : getActivePlan()?.orgIds || [];
+      const next = new Set(normalizePlanOrgIds(current));
+      getPlanOrgLeafIds(node).forEach(id => {
+        if (checkbox.checked) next.add(id);
+        else next.delete(id);
+      });
+      setPlanOrgSelection(context, [...next]);
+    });
     document.addEventListener("click", event => {
       const planHelpTip = event.target.closest("[data-plan-help-tip]");
       if (planHelpTip) {
         showPlanHelpTip(planHelpTip.dataset.planHelpTip, planHelpTip);
+        return;
+      }
+      const planOrgRemove = event.target.closest("[data-plan-org-remove]");
+      if (planOrgRemove) {
+        const wrapper = planOrgRemove.closest("[data-plan-org-context]");
+        const context = wrapper?.dataset.planOrgContext;
+        const node = findPlanOrgNode(planOrgRemove.dataset.planOrgRemove);
+        if (!context || !node) return;
+        const current = context === "filter" ? planOrgFilterIds : getActivePlan()?.orgIds || [];
+        const removeIds = new Set(getPlanOrgLeafIds(node));
+        setPlanOrgSelection(context, normalizePlanOrgIds(current).filter(id => !removeIds.has(id)));
+        event.stopPropagation();
+        return;
+      }
+      const planOrgTrigger = event.target.closest("[data-plan-org-trigger]");
+      if (planOrgTrigger) {
+        const wrapper = planOrgTrigger.closest("[data-plan-org-context]");
+        if (!wrapper || planOrgTrigger.disabled) return;
+        const willOpen = !wrapper.classList.contains("open");
+        closePlanOrgMultiSelects(wrapper);
+        wrapper.classList.toggle("open", willOpen);
+        planOrgTrigger.setAttribute("aria-expanded", String(willOpen));
+        event.stopPropagation();
         return;
       }
       const linkageMultiTrigger = event.target.closest("[data-plan-linkage-multi-trigger]");
@@ -28859,6 +30496,14 @@
         else resetFloatingMenu(wrapper.querySelector(".plan-pc-select-menu"));
         return;
       }
+      const optionPreview = event.target.closest("[data-plan-message-option-preview]");
+      if (optionPreview) {
+        const wrapper = optionPreview.closest(".plan-pc-select");
+        closePlanPcSelects();
+        openPlanMessagePreview(optionPreview.dataset.planMessageOptionPreview, optionPreview.dataset.planMessageTemplateName || "");
+        event.stopPropagation();
+        return;
+      }
       const option = event.target.closest("[data-plan-pc-select-option]");
       if (option) {
         const wrapper = option.closest(".plan-pc-select");
@@ -28873,9 +30518,11 @@
         return;
       }
       if (!event.target.closest(".plan-pc-select")) closePlanPcSelects();
+      if (!event.target.closest(".plan-org-multi")) closePlanOrgMultiSelects();
       if (!event.target.closest(".plan-multi-select")) closePlanMultiSelects();
       if (!event.target.closest(".plan-linkage-multi")) closePlanLinkageMultiSelects();
       if (!event.target.closest(".plan-owner-cascade")) closePlanOwnerCascades();
+      if (!event.target.closest(".plan-owner-person-multi")) closePlanOwnerPersonMultis();
       if (!event.target.closest(".plan-row-actions")) closePlanActionMenus();
       if (!event.target.closest("#planScopeMenu") && !event.target.closest("[data-plan-todo-scope-open]")) closePlanScopeMenu();
       if (!event.target.closest("#planHelpPopover") && !event.target.closest("[data-plan-help-tip]") && !event.target.closest("[data-plan-field-linkage-marker]")) hidePlanHelpTip();
@@ -28887,10 +30534,28 @@
         trigger.click();
       }
       if (event.key === "Escape") {
+        if (document.querySelector("#planPreviewModal")?.classList.contains("show")) {
+          closePlanCollectionPreview();
+          return;
+        }
+        if (document.querySelector("#planMessagePreviewModal")?.classList.contains("show")) {
+          closePlanMessagePreview();
+          return;
+        }
+        if (document.querySelector("#planLanguageModal")?.classList.contains("show")) {
+          closePlanLanguageModal();
+          return;
+        }
+        if (document.querySelector("#planFieldHelpModal")?.classList.contains("show")) {
+          closePlanFieldHelpEdit();
+          return;
+        }
         closePlanPcSelects();
+        closePlanOrgMultiSelects();
         closePlanMultiSelects();
         closePlanLinkageMultiSelects();
         closePlanOwnerCascades();
+        closePlanOwnerPersonMultis();
         closePlanActionMenus();
         closePlanScopeMenu();
       }
@@ -28923,6 +30588,51 @@
     });
     document.querySelector("#exportPlanFields").addEventListener("click", exportActivePlanFields);
     document.querySelector("#openPlanLinkage").addEventListener("click", openPlanLinkageModal);
+    document.querySelector("#openPlanPcPreview").addEventListener("click", () => openPlanCollectionPreview("pc"));
+    document.querySelector("#openPlanMobilePreview").addEventListener("click", () => openPlanCollectionPreview("mobile"));
+    document.querySelector("#closePlanPreview").addEventListener("click", closePlanCollectionPreview);
+    document.querySelector("#planPreviewMask").addEventListener("click", closePlanCollectionPreview);
+    window.addEventListener("message", event => {
+      const frame = document.querySelector("#planPreviewFrame");
+      if (event.data?.type !== "hr-one-plan-preview-close" || event.source !== frame?.contentWindow) return;
+      closePlanCollectionPreview();
+    });
+    document.querySelector("#closePlanFieldHelp").addEventListener("click", closePlanFieldHelpEdit);
+    document.querySelector("#cancelPlanFieldHelp").addEventListener("click", closePlanFieldHelpEdit);
+    document.querySelector("#confirmPlanFieldHelp").addEventListener("click", confirmPlanFieldHelpEdit);
+    document.querySelector("#planFieldHelpMask").addEventListener("click", () => {
+      if (document.querySelector("#planMessagePreviewModal")?.classList.contains("show")) {
+        closePlanMessagePreview();
+        return;
+      }
+      if (document.querySelector("#planLanguageModal")?.classList.contains("show")) {
+        closePlanLanguageModal();
+        return;
+      }
+      closePlanFieldHelpEdit();
+    });
+    document.querySelector("#closePlanLanguage").addEventListener("click", closePlanLanguageModal);
+    document.querySelector("#cancelPlanLanguage").addEventListener("click", closePlanLanguageModal);
+    document.querySelector("#confirmPlanLanguage").addEventListener("click", confirmPlanLanguageModal);
+    document.querySelector("#closePlanMessagePreview").addEventListener("click", closePlanMessagePreview);
+    document.querySelector("#cancelPlanMessagePreview").addEventListener("click", closePlanMessagePreview);
+    document.querySelector("#confirmPlanMessagePreview").addEventListener("click", closePlanMessagePreview);
+    document.querySelector("#planMessagePreviewTabs").addEventListener("click", event => {
+      const tab = event.target.closest("[data-plan-preview-channel]");
+      if (!tab) return;
+      activePlanMessagePreviewChannel = tab.dataset.planPreviewChannel;
+      const title = document.querySelector("#planMessagePreviewTitle").textContent;
+      renderPlanMessagePreviewPane(title.replace(/ · 预览$/, ""));
+    });
+    document.querySelector("#planFieldHelpText").addEventListener("input", event => {
+      document.querySelector("#planFieldHelpCount").textContent = `${event.target.value.length}/255`;
+    });
+    document.querySelectorAll("[data-plan-help-tip]").forEach(trigger => {
+      trigger.addEventListener("mouseenter", () => showPlanHelpTip(trigger.dataset.planHelpTip, trigger));
+      trigger.addEventListener("mouseleave", hidePlanHelpTip);
+      trigger.addEventListener("focus", () => showPlanHelpTip(trigger.dataset.planHelpTip, trigger));
+      trigger.addEventListener("blur", hidePlanHelpTip);
+    });
     document.querySelector("#openPlanFieldPicker").addEventListener("click", () => {
       const group = getActivePlanGroup();
       const existing = new Set((group?.fields || []).map(field => field.name));
@@ -29052,8 +30762,13 @@
       const field = group?.fields?.[Number(input.dataset.index)];
       if (!field) return;
       const prop = input.dataset.planFieldProp;
+      if (prop === "helpText") {
+        field.helpText = input.value;
+        field.showHelp = Boolean(input.value.trim());
+        if (!field.helpPosition) field.helpPosition = "question";
+        return;
+      }
       field[prop] = input.type === "checkbox" ? input.checked : input.value;
-      if (prop === "helpText") field.showHelp = Boolean(String(field.helpText || "").trim());
     });
     document.querySelector("#planFieldRows").addEventListener("change", event => {
       const input = event.target.closest("[data-plan-field-prop]");
@@ -29062,14 +30777,28 @@
       const field = group?.fields?.[Number(input.dataset.index)];
       if (!field) return;
       const prop = input.dataset.planFieldProp;
+      if (prop === "helpText") {
+        field.helpText = input.value;
+        field.showHelp = Boolean(input.value.trim());
+        if (!field.helpPosition) field.helpPosition = "question";
+        return;
+      }
       field[prop] = input.type === "checkbox" ? input.checked : input.value;
-      if (prop === "helpText") field.showHelp = Boolean(String(field.helpText || "").trim());
+      if (prop === "showHelp") {
+        renderPlanFieldConfig();
+        applyPlanReadonly();
+      }
     });
     document.querySelector("#planFieldRows").addEventListener("click", event => {
       const marker = event.target.closest("[data-plan-field-linkage-marker]");
       if (marker) {
         event.stopPropagation();
         showPlanFieldLinkageTip(marker.dataset.planFieldLinkageMarker, marker);
+        return;
+      }
+      const editHelp = event.target.closest("[data-plan-field-edit-help]");
+      if (editHelp) {
+        openPlanFieldHelpEdit(editHelp.dataset.planFieldEditHelp);
         return;
       }
       const button = event.target.closest("[data-plan-field-delete]");
@@ -29205,6 +30934,14 @@
       applyPlanReadonly();
     });
     document.querySelector("#planTodoRuleRows").addEventListener("change", event => {
+      const personOption = event.target.closest("[data-plan-owner-person-option]");
+      if (personOption) {
+        const todo = getActivePlanTodo();
+        const rule = todo?.rules?.[Number(personOption.dataset.index)];
+        if (!rule) return;
+        rule.ownerRole = syncPlanOwnerPersonTrigger(personOption.closest(".plan-owner-person-multi"));
+        return;
+      }
       const control = event.target.closest("[data-plan-todo-rule-prop]");
       if (!control) return;
       const todo = getActivePlanTodo();
@@ -29214,10 +30951,13 @@
       if (control.dataset.planTodoRuleProp === "ownerType") {
         if (control.value === "指定角色") {
           rule.ownerRoleType = "组织角色";
-          rule.ownerRole = todoRoleOptionsByType[rule.ownerRoleType][0] || "";
+          rule.ownerRole = "";
+        } else if (control.value === "指定人") {
+          delete rule.ownerRoleType;
+          rule.ownerRole = [];
         } else {
           delete rule.ownerRoleType;
-          rule.ownerRole = (todoOwnerOptions["指定人"] || [])[0] || "";
+          rule.ownerRole = "";
         }
         renderPlanTodoRules();
         applyPlanReadonly();
@@ -29238,6 +30978,18 @@
       rule[control.dataset.planTodoRuleProp] = control.value;
     });
     document.querySelector("#planTodoRuleRows").addEventListener("click", event => {
+      const personToggle = event.target.closest("[data-plan-owner-person-toggle]");
+      if (personToggle) {
+        const multi = personToggle.closest(".plan-owner-person-multi");
+        const willOpen = !multi.classList.contains("open");
+        closePlanOwnerPersonMultis(multi);
+        multi.classList.toggle("open", willOpen);
+        const menu = multi.querySelector(".plan-owner-person-menu");
+        if (willOpen) placeFloatingMenu(personToggle, menu, { minWidth: 240, maxHeight: 260 });
+        else resetFloatingMenu(menu);
+        event.stopPropagation();
+        return;
+      }
       const ownerToggle = event.target.closest("[data-plan-owner-cascade-toggle]");
       if (ownerToggle) {
         const cascade = ownerToggle.closest(".plan-owner-cascade");
