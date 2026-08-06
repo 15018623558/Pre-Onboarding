@@ -15133,10 +15133,8 @@ function handlePanoramaMobileJump(){
   var target = params.get('panorama');
   if(!target) return;
   setTimeout(function(){
-    if(target === 'notification'){
-      switchTab(0);
-      openDetail('dt-message');
-    }else if(target === 'todo-detail'){
+    switchTab(2);
+    if(target === 'todo-detail'){
       openOnboardingTaskDetail(params.get('task') || 'ob-office-wang-xiaohong-todo-pending');
     }else if(target === 'todo-merged'){
       openDetail('dt-onboarding-task-list');

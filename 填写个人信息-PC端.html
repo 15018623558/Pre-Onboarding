@@ -217,7 +217,7 @@
       height: 52px;
       padding: 0 24px;
       border-bottom: 1px solid var(--c2);
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: space-between;
       background: rgba(255,255,255,.96);
@@ -227,6 +227,7 @@
     .brand-mark { width: 28px; height: 28px; border-radius: 6px; display: grid; place-items: center; color: #fff; background: var(--pr); font-weight: 800; }
     .top-user { display: inline-flex; align-items: center; gap: 10px; color: var(--c5); font-size: 13px; }
     .top-avatar { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: var(--pr); font-size: 12px; font-weight: 700; }
+    body.collection-preview .detail-topbar { display: none; }
 
     .collect-detail-page { padding: 18px 24px 24px; }
     .collect-detail-layout {
@@ -359,6 +360,12 @@
     .collect-info-item { min-height: 44px; display: grid; align-content: start; gap: 5px; color: #344054; font-size: 12px; }
     .collect-info-item > span { color: #5f6875; line-height: 18px; }
     .collect-info-item strong { min-width: 0; display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; color: #344054; font-weight: 600; overflow: visible; white-space: normal; line-height: 20px; }
+    .collect-info-label { display: inline-flex; align-items: center; gap: 4px; }
+    .collect-preview-help-button { width: 16px; height: 16px; padding: 0; border-radius: 50%; display: inline-grid; place-items: center; color: #fff; background: #98a2b3; font-size: 10px; font-weight: 700; line-height: 1; }
+    .collect-preview-help-button:hover { background: var(--pr); }
+    .collect-preview-help-below { color: #667085; font-size: 11px; font-weight: 400; line-height: 1.5; }
+    .collect-preview-help-popover { position: fixed; z-index: 180; width: min(320px, calc(100vw - 32px)); padding: 9px 11px; border: 1px solid #dbeafe; border-radius: 5px; display: none; color: #344054; background: #fff; box-shadow: 0 8px 24px rgba(15,23,42,.12); font-size: 12px; line-height: 1.5; }
+    .collect-preview-help-popover.show { display: block; }
     .collect-value-wrap { min-width: 0; display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; }
 
     .collect-file-list, .collect-image-list { min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
@@ -376,8 +383,9 @@
       line-height: 1;
       vertical-align: middle;
     }
-    .collect-file-icon { width: 14px; height: 14px; border-radius: 2px; display: inline-grid; place-items: center; color: #1677ff; background: #e8f2ff; font-size: 10px; flex: 0 0 auto; }
+    .collect-file-icon { width: 14px; height: 14px; border-radius: 2px; display: inline-grid; place-items: center; color: #1677ff; background: #e8f2ff; flex: 0 0 auto; }
     .collect-file-icon.image { color: #0f766e; background: #e6fffb; }
+    .collect-file-icon svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .collect-file-name { min-width: 0; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .collect-file-action { width: 18px; height: 18px; border-left: 1px solid #dfe4eb; display: inline-grid; place-items: center; color: #98a2b3; flex: 0 0 auto; font-size: 13px; }
     .collect-file-action.delete { color: #667085; font-size: 12px; }
@@ -396,7 +404,7 @@
 
     .collect-anchor {
       position: sticky;
-      top: 68px;
+      top: 18px;
       align-self: start;
       grid-column: 2;
       padding: 10px 8px 10px 18px;
@@ -656,6 +664,7 @@
     </div>
   </section>
   <div class="toast" id="toast"></div>
+  <div class="collect-preview-help-popover" id="collectPreviewHelpPopover" role="tooltip"></div>
 
   <script>
     const $ = selector => document.querySelector(selector);
@@ -679,6 +688,21 @@
       showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
     }
 
+    const previewParams = new URLSearchParams(window.location.search);
+    const isCollectionPreview = previewParams.get("preview") === "1";
+    document.body.classList.toggle("collection-preview", isCollectionPreview);
+
+    function parseCollectionPreviewPayload() {
+      if (!isCollectionPreview) return null;
+      try {
+        const raw = previewParams.get("previewData");
+        const parsed = raw ? JSON.parse(raw) : null;
+        return parsed && Array.isArray(parsed.groups) ? parsed : null;
+      } catch (_error) {
+        return null;
+      }
+    }
+
     function collectField(label, fieldType, secondType, requiredText, editableText, defaultValue = "", extra = {}) {
       return {
         key: extra.key || label,
@@ -692,6 +716,8 @@
         defaultValue,
         value: Object.prototype.hasOwnProperty.call(extra, "value") ? extra.value : defaultValue,
         options: extra.options || getCollectDefaultOptions(label, secondType),
+        help: extra.help || "",
+        helpPosition: extra.helpPosition === "below" ? "below" : "question",
         wide: Boolean(extra.wide) || fieldType === "内容框" || secondType === "文本区"
       };
     }
@@ -894,6 +920,53 @@
       }
     ];
 
+    function normalizePreviewCollectField(source, groupIndex, fieldIndex) {
+      const label = source?.label || "未命名字段";
+      const fieldType = source?.fieldType || "文本框";
+      const secondType = source?.secondType || "单行文本";
+      const options = Array.isArray(source?.options) ? source.options.filter(Boolean) : [];
+      return collectField(
+        label,
+        fieldType,
+        secondType,
+        source?.required ? "是" : "否",
+        source?.editable === false ? "否" : "是",
+        source?.defaultValue || "",
+        {
+          key: source?.key || source?.id || `preview-${groupIndex}-${fieldIndex}`,
+          value: Object.prototype.hasOwnProperty.call(source || {}, "value") ? source.value : source?.defaultValue || "",
+          options,
+          help: source?.help || "",
+          helpPosition: source?.helpPosition,
+          wide: fieldType === "内容框" || secondType === "文本区"
+        }
+      );
+    }
+
+    function applyCollectionPreviewPayload(payload) {
+      if (!payload) return;
+      const candidate = payload.candidate || {};
+      collectDetailCandidate.name = candidate.name || "示例文本";
+      collectDetailCandidate.organization = candidate.organization || "";
+      collectDetailCandidate.email = candidate.email || "";
+      collectDetailCandidate.mobile = candidate.mobile || "";
+      const groups = payload.groups.map((group, groupIndex) => ({
+        id: group.id || `preview-group-${groupIndex + 1}`,
+        title: group.name || `信息分组${groupIndex + 1}`,
+        type: Array.isArray(group.rows) && group.rows.length ? "table" : "info",
+        required: Boolean(group.required),
+        hint: group.tip || "",
+        collapsed: false,
+        rows: Array.isArray(group.rows) ? group.rows : [],
+        fields: (group.fields || []).map((field, fieldIndex) => normalizePreviewCollectField(field, groupIndex, fieldIndex))
+      }));
+      collectDetailSections.splice(0, collectDetailSections.length, ...groups);
+      collectEmployeeFields.splice(0, collectEmployeeFields.length, ...(groups[0]?.fields || []));
+    }
+
+    const collectionPreviewPayload = parseCollectionPreviewPayload();
+    applyCollectionPreviewPayload(collectionPreviewPayload);
+
     let collectRecordDraft = null;
 
     function getCollectSection(sectionId) {
@@ -903,6 +976,8 @@
     function renderCollectDetail() {
       $("#collectCandidateName").textContent = collectDetailCandidate.name;
       $(".collect-avatar").textContent = collectDetailCandidate.name.slice(0, 1);
+      $(".top-user > span:first-child").textContent = collectDetailCandidate.name;
+      $(".top-avatar").textContent = collectDetailCandidate.name.slice(0, 1);
       $(".collect-profile-meta").innerHTML = [collectDetailCandidate.organization, collectDetailCandidate.email, collectDetailCandidate.mobile]
         .map(item => `<span>${escapeHtml(item)}</span>`)
         .join("");
@@ -921,25 +996,28 @@
 
     function renderCollectInfoSection(section) {
       const requiredMark = section.required ? `<span class="collect-section-required">*</span>` : "";
+      const infoFields = section.fields || collectEmployeeFields;
       return `
         <section class="collect-section ${section.collapsed ? "collapsed" : ""}" id="collect-section-${section.id}" data-collect-section="${section.id}">
           <div class="collect-section-head">
             <div class="collect-section-head-main">
               <div class="collect-section-title">${requiredMark}${escapeHtml(section.title)}</div>
               <div class="collect-section-actions">
-                <button type="button" data-collect-action="edit-employee">编辑</button>
+                <button type="button" data-collect-action="edit-info" data-section-id="${section.id}">编辑</button>
                 <button type="button" data-collect-action="toggle-section" data-section-id="${section.id}">${section.collapsed ? "展开⌄" : "收起⌃"}</button>
               </div>
             </div>
+            ${section.hint ? `<div class="collect-section-hint">${escapeHtml(section.hint)}</div>` : ""}
           </div>
           <div class="collect-section-body">
             <div class="collect-info-grid">
-              ${collectEmployeeFields.map(field => {
+              ${infoFields.map(field => {
                 const value = getCollectDisplayValue(field);
                 return `
                   <div class="collect-info-item">
-                    <span>${escapeHtml(field.label)}：</span>
+                    ${renderCollectInfoLabel(field)}
                     <strong title="${escapeHtml(getCollectValueTitle(value))}">${renderCollectValue(field, value)}</strong>
+                    ${field.help && field.helpPosition === "below" ? `<small class="collect-preview-help-below">${escapeHtml(field.help)}</small>` : ""}
                   </div>
                 `;
               }).join("")}
@@ -947,6 +1025,27 @@
           </div>
         </section>
       `;
+    }
+
+    function renderCollectInfoLabel(field) {
+      const help = field.help && field.helpPosition !== "below"
+        ? `<button class="collect-preview-help-button" type="button" data-collect-preview-help="${escapeHtml(field.help)}" aria-label="查看${escapeHtml(field.label)}帮助">?</button>`
+        : "";
+      return `<span class="collect-info-label">${escapeHtml(field.label)}：${help}</span>`;
+    }
+
+    function showCollectPreviewHelp(button) {
+      const popover = $("#collectPreviewHelpPopover");
+      if (!button || !popover) return;
+      const rect = button.getBoundingClientRect();
+      popover.textContent = button.dataset.collectPreviewHelp || "暂无帮助说明";
+      popover.style.left = `${Math.min(window.innerWidth - 332, Math.max(12, rect.left - 12))}px`;
+      popover.style.top = `${Math.min(window.innerHeight - 80, rect.bottom + 8)}px`;
+      popover.classList.add("show");
+    }
+
+    function hideCollectPreviewHelp() {
+      $("#collectPreviewHelpPopover")?.classList.remove("show");
     }
 
     function renderCollectTableSection(section) {
@@ -1021,7 +1120,7 @@
         <span class="${isImage ? "collect-image-list" : "collect-file-list"}">
           ${files.map((file, index) => `
             <span class="collect-file-chip ${index >= visibleLimit ? "collect-file-extra" : ""}" data-file-name="${escapeHtml(file)}" title="${escapeHtml(file)}">
-              <span class="collect-file-icon ${isImage ? "image" : ""}">${isImage ? "图" : "文"}</span>
+              <span class="collect-file-icon ${isImage ? "image" : ""}">${renderCollectFileTypeIcon(isImage)}</span>
               <span class="collect-file-name">${escapeHtml(file)}</span>
               <button class="collect-file-action" type="button" aria-label="下载${escapeHtml(file)}">↓</button>
               ${editable ? `<button class="collect-file-action delete" type="button" data-upload-remove="${escapeHtml(file)}" aria-label="删除${escapeHtml(file)}">×</button>` : ""}
@@ -1031,6 +1130,13 @@
       `;
     }
 
+    function renderCollectFileTypeIcon(isImage) {
+      if (isImage) {
+        return `<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.2" y="2.2" width="11.6" height="11.6" rx="1.6"></rect><circle cx="5.4" cy="5.4" r="1"></circle><path d="m3.6 12 3.1-3.1 2.1 2.1 1.4-1.4 2.2 2.4"></path></svg>`;
+      }
+      return `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 1.9h4.1L12.5 5v8.6a.8.8 0 0 1-.8.8H5a.8.8 0 0 1-.8-.8V2.7a.8.8 0 0 1 .8-.8Z"></path><path d="M9 1.9V5h3.5"></path><path d="M6.3 8.2h3.4M6.3 10.5h3.4"></path></svg>`;
+    }
+
     function normalizeCollectFiles(value) {
       if (Array.isArray(value)) return value.filter(Boolean);
       return String(value).split(/[,，、]/).map(item => item.trim()).filter(Boolean);
@@ -1038,7 +1144,7 @@
 
     function renderCollectUploadPreview(field, value, editable = false) {
       const files = normalizeCollectFiles(value);
-      if (!files.length) return "暂未上传";
+      if (!files.length) return "";
       return renderCollectFileChips(field, files, editable);
     }
 
@@ -1079,15 +1185,22 @@
       return "text";
     }
 
+    function getCollectSectionFields(sectionId) {
+      const section = getCollectSection(sectionId);
+      return section?.fields || (sectionId === "employee" ? collectEmployeeFields : []);
+    }
+
     function openCollectRecordModal(sectionId, rowIndex = null) {
-      const isEmployee = sectionId === "employee";
-      const section = isEmployee ? { id: "employee", title: "员工信息", fields: collectEmployeeFields } : getCollectSection(sectionId);
+      const sourceSection = getCollectSection(sectionId);
+      const isEmployee = sectionId === "employee" && !sourceSection?.fields;
+      const section = sourceSection || (isEmployee ? { id: "employee", title: "员工信息", type: "info", fields: collectEmployeeFields } : null);
       if (!section) return;
-      collectRecordDraft = { sectionId, rowIndex };
-      const isEdit = isEmployee || rowIndex !== null;
+      const isInfo = section.type === "info" || isEmployee;
+      collectRecordDraft = { sectionId, rowIndex, isInfo };
+      const isEdit = isInfo || rowIndex !== null;
       $("#collectRecordTitle").textContent = `${isEdit ? "编辑" : "新增"}-${section.title}`;
-      const source = isEmployee
-        ? Object.fromEntries(collectEmployeeFields.map(field => [field.key, field.value]))
+      const source = isInfo
+        ? Object.fromEntries(section.fields.map(field => [field.key, field.value]))
         : (section.rows?.[rowIndex] || {});
       $("#collectRecordForm").innerHTML = section.fields.map(field => renderCollectRecordField(field, source[field.key])).join("");
       $("#modalMask").classList.add("show");
@@ -1139,7 +1252,7 @@
                 <span>＋</span>${escapeHtml(uploadText)}
                 <input type="file" data-collect-field="${escapeHtml(field.key)}" data-current="${escapeHtml(currentValue)}"${accept}${multiple}${disabled}>
               </label>
-              <div class="collect-upload-preview" data-upload-preview>${renderCollectUploadPreview(field, currentValue, true)}</div>
+              <div class="collect-upload-preview" data-upload-preview>${renderCollectUploadPreview(field, currentValue, field.editable !== false)}</div>
             </div>
           </div>
         `;
@@ -1180,12 +1293,12 @@
     function saveCollectRecord({ close = true, draft = false } = {}) {
       if (!collectRecordDraft) return;
       const values = readCollectRecordValues();
-      if (collectRecordDraft.sectionId === "employee") {
-        collectEmployeeFields.forEach(field => {
+      if (collectRecordDraft.isInfo) {
+        const fields = getCollectSectionFields(collectRecordDraft.sectionId);
+        fields.forEach(field => {
           if (Object.prototype.hasOwnProperty.call(values, field.key)) field.value = values[field.key];
         });
         collectDetailCandidate.name = values["姓名"] || collectDetailCandidate.name;
-        collectDetailCandidate.gender = values["性别"] || collectDetailCandidate.gender;
         collectDetailCandidate.email = values["公司邮箱"] || collectDetailCandidate.email;
         collectDetailCandidate.mobile = values["手机号码"] || collectDetailCandidate.mobile;
       } else {
@@ -1333,8 +1446,7 @@
       const input = event.target.closest("input[type='file'][data-collect-field]");
       if (!input) return;
       const sectionId = collectRecordDraft?.sectionId;
-      const section = sectionId === "employee" ? { fields: collectEmployeeFields } : getCollectSection(sectionId);
-      const field = section?.fields?.find(item => item.key === input.dataset.collectField);
+      const field = getCollectSectionFields(sectionId).find(item => item.key === input.dataset.collectField);
       if (!field) return;
       const selectedFiles = Array.from(input.files || []).map(file => file.name);
       const current = selectedFiles.length ? selectedFiles : input.dataset.current;
@@ -1344,6 +1456,12 @@
     });
 
     document.addEventListener("click", event => {
+      const previewHelp = event.target.closest("[data-collect-preview-help]");
+      if (previewHelp) {
+        showCollectPreviewHelp(previewHelp);
+        return;
+      }
+      if (!event.target.closest("#collectPreviewHelpPopover")) hideCollectPreviewHelp();
       const selectTrigger = event.target.closest("[data-collect-select-trigger]");
       if (selectTrigger) {
         const select = selectTrigger.closest("[data-collect-select]");
@@ -1378,8 +1496,7 @@
         const input = box?.querySelector("input[type='file'][data-collect-field]");
         if (!input) return;
         const sectionId = collectRecordDraft?.sectionId;
-        const section = sectionId === "employee" ? { fields: collectEmployeeFields } : getCollectSection(sectionId);
-        const field = section?.fields?.find(item => item.key === input.dataset.collectField);
+        const field = getCollectSectionFields(sectionId).find(item => item.key === input.dataset.collectField);
         if (!field) return;
         const files = normalizeCollectFiles(input.dataset.current).filter(file => file !== remove.dataset.uploadRemove);
         input.dataset.current = files.join("、");
@@ -1404,6 +1521,7 @@
         section.collapsed = !section.collapsed;
         renderCollectDetail();
       }
+      if (collectAction === "edit-info") openCollectRecordModal(sectionId, null);
       if (collectAction === "edit-employee") openCollectRecordModal("employee", null);
       if (collectAction === "add-row") openCollectRecordModal(sectionId, null);
       if (collectAction === "edit-row") openCollectRecordModal(sectionId, Number(rowIndex));
@@ -1411,6 +1529,12 @@
     });
 
     document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && isCollectionPreview) {
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: "hr-one-plan-preview-close" }, "*");
+        }
+        return;
+      }
       const openSelect = document.querySelector("[data-collect-select].open");
       if (!openSelect) return;
       const options = Array.from(openSelect.querySelectorAll("[data-collect-select-option]"));
@@ -1437,6 +1561,13 @@
         }
       }
     });
+
+    if (isCollectionPreview) {
+      $("#loginView").hidden = true;
+      $("#detailView").hidden = false;
+      $(".collect-return-notice").hidden = true;
+      renderCollectDetail();
+    }
   </script>
 </body>
 </html>
