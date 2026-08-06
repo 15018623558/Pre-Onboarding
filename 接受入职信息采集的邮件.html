@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>接收入职信息采集的邮件</title>
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --sf: #ffffff;
+      --c9: #15171a;
+      --c7: #2f343b;
+      --c5: #7b838c;
+      --c4: #a8aeb6;
+      --c2: #e4e7eb;
+      --link: #2d8cae;
+      --green: #5a982c;
+      --green-dark: #477d21;
+      --shadow: 0 10px 30px rgba(15, 23, 42, .1);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #dde2e8;
+      color: var(--c9);
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .phone {
+      position: relative;
+      width: min(100vw, 430px);
+      height: 100vh;
+      min-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: var(--sf);
+      box-shadow: var(--shadow);
+    }
+
+    .status-bar {
+      height: 42px;
+      padding: 10px 18px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      color: #24272c;
+      background: var(--sf);
+      font-size: 15px;
+      font-weight: 650;
+      line-height: 1;
+    }
+
+    .status-left,
+    .status-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .location-dot {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 3px solid transparent;
+      border-bottom: 8px solid #6f8db8;
+      transform: rotate(42deg);
+      opacity: .9;
+    }
+
+    .more-dot {
+      display: inline-flex;
+      gap: 3px;
+      padding-left: 5px;
+    }
+
+    .more-dot i {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #202226;
+    }
+
+    .signal-group {
+      display: inline-grid;
+      grid-template-columns: repeat(4, 3px);
+      gap: 2px;
+      align-items: end;
+      height: 13px;
+    }
+
+    .signal-group i {
+      width: 3px;
+      background: #25282d;
+      border-radius: 1px;
+    }
+
+    .signal-group i:nth-child(1) { height: 4px; }
+    .signal-group i:nth-child(2) { height: 7px; }
+    .signal-group i:nth-child(3) { height: 10px; }
+    .signal-group i:nth-child(4) { height: 13px; }
+
+    .network {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      color: #2c3035;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .battery {
+      min-width: 26px;
+      height: 18px;
+      padding: 2px 4px;
+      border-radius: 8px;
+      display: inline-grid;
+      place-items: center;
+      color: #334155;
+      background: #e8eef5;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .mail-top {
+      height: 54px;
+      padding: 0 17px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--sf);
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border: 0;
+      padding: 0;
+      display: inline-grid;
+      place-items: center;
+      background: transparent;
+      color: #05070a;
+      cursor: pointer;
+    }
+
+    .chevron-left,
+    .chevron-up,
+    .chevron-down {
+      width: 18px;
+      height: 18px;
+      display: block;
+      border-color: currentColor;
+      border-style: solid;
+      border-width: 0 0 3px 3px;
+    }
+
+    .chevron-left {
+      transform: rotate(45deg);
+    }
+
+    .chevron-up {
+      transform: rotate(135deg);
+    }
+
+    .chevron-down {
+      transform: rotate(-45deg);
+    }
+
+    .mail-nav-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .mail-meta {
+      padding: 0 32px 14px 72px;
+      border-bottom: 1px solid rgba(228, 231, 235, .65);
+      color: #9aa0a7;
+      background: var(--sf);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .mail-meta strong {
+      color: #7d858e;
+      font-weight: 500;
+    }
+
+    .mail-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 8px 10px 14px;
+      margin-bottom: calc(76px + env(safe-area-inset-bottom));
+      background: #fbfbfc;
+    }
+
+    .mail-card {
+      min-height: 100%;
+      padding: 7px 5px 30px;
+      border: 1px solid #d9d9d9;
+      background: var(--sf);
+    }
+
+    .mail-title {
+      margin: 0;
+      padding: 5px 0 12px;
+      border-bottom: 1px solid #cfcfcf;
+      text-align: center;
+      color: #111;
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.4;
+    }
+
+    .mail-body {
+      padding: 17px 0 0;
+      color: #111;
+      font-size: 12px;
+      line-height: 1.72;
+      word-break: break-word;
+    }
+
+    .mail-body p {
+      margin: 0 0 8px;
+    }
+
+    .mail-body .indent {
+      text-indent: 2em;
+    }
+
+    .mail-body .strong {
+      font-weight: 750;
+    }
+
+    .mail-body .step {
+      margin-top: 8px;
+      font-weight: 750;
+    }
+
+    .qr-wrap {
+      margin: 18px auto 7px;
+      width: 86px;
+      height: 86px;
+      display: grid;
+      place-items: center;
+      background: #fff;
+    }
+
+    .qr {
+      width: 86px;
+      height: 86px;
+      display: grid;
+      grid-template-columns: repeat(29, 1fr);
+      grid-template-rows: repeat(29, 1fr);
+      background: #fff;
+    }
+
+    .qr-cell.dark {
+      background: #050505;
+    }
+
+    .enter-area {
+      margin: 16px 0 23px;
+      text-align: center;
+    }
+
+    .enter-btn {
+      min-width: 82px;
+      height: 33px;
+      border: 0;
+      border-radius: 3px;
+      padding: 0 16px;
+      color: #fff;
+      background: var(--green);
+      font-size: 12px;
+      font-weight: 650;
+      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .12);
+      cursor: pointer;
+    }
+
+    .enter-btn:active {
+      background: var(--green-dark);
+    }
+
+    .plain-link {
+      color: var(--link);
+      text-decoration: underline;
+    }
+
+    .mail-footer-note {
+      margin-top: 56px;
+      text-align: center;
+      color: #d4d4d4;
+      font-size: 12px;
+    }
+
+    .bottom-toolbar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: calc(76px + env(safe-area-inset-bottom));
+      padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      border-top: 1px solid #e8ebef;
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .toolbar-item {
+      border: 0;
+      padding: 0;
+      display: grid;
+      justify-items: center;
+      align-content: start;
+      gap: 3px;
+      color: #111827;
+      background: transparent;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .tool-icon {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      color: #111827;
+    }
+
+    .tool-icon svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      stroke: currentColor;
+      stroke-width: 1.55;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .tool-icon.more svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .toolbar-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0;
+      color: inherit;
+    }
+
+    .home-indicator {
+      position: absolute;
+      left: 50%;
+      bottom: calc(4px + env(safe-area-inset-bottom));
+      width: 70px;
+      height: 3px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: #c8ccd2;
+      opacity: .75;
+    }
+
+    @media (max-width: 360px) {
+      .mail-meta {
+        padding-left: 52px;
+        font-size: 15px;
+      }
+
+      .mail-scroll {
+        padding-inline: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone" role="application" aria-label="接收入职信息采集的邮件">
+    <header class="status-bar" aria-label="手机状态栏">
+      <div class="status-left">
+        <span>19:15</span>
+        <span class="location-dot" aria-hidden="true"></span>
+        <span class="more-dot" aria-hidden="true"><i></i><i></i><i></i></span>
+      </div>
+      <div class="status-right">
+        <span class="network">5G <span class="signal-group" aria-hidden="true"><i></i><i></i><i></i><i></i></span></span>
+        <span class="network">4G <span class="signal-group" aria-hidden="true"><i></i><i></i><i></i><i></i></span></span>
+        <span class="battery">87</span>
+      </div>
+    </header>
+
+    <div class="mail-top" aria-label="邮件顶部操作">
+      <button class="icon-btn" type="button" aria-label="返回">
+        <span class="chevron-left" aria-hidden="true"></span>
+      </button>
+      <div class="mail-nav-actions">
+        <button class="icon-btn" type="button" aria-label="上一封">
+          <span class="chevron-up" aria-hidden="true"></span>
+        </button>
+        <button class="icon-btn" type="button" aria-label="下一封">
+          <span class="chevron-down" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+
+    <section class="mail-meta" aria-label="邮件信息">
+      <div>1079028588@qq.com</div>
+      <div><strong>时间：</strong> 2026年6月9日 16:22</div>
+    </section>
+
+    <main class="mail-scroll">
+      <article class="mail-card">
+        <h1 class="mail-title">入职信息采集</h1>
+        <div class="mail-body">
+          <p>尊敬的<span style="color:#25a063;">刘观福</span>：</p>
+          <p class="indent">您好，欢迎您加入纵腾集团，为了方便您的入职，需要在入职前对您个人的相关信息进行采集，请尽快完成。</p>
+          <p class="indent strong">集团劳动合同、保密协议、竞业限制协议、薪酬确认书、廉洁自律承诺书以及其他入职相关文件会以电子签的方式签署。如您不同意以电子签的方式签署，请在办理入职手续的当天将意见反馈给办理入职的HR，非常感谢您的配合！</p>
+          <p class="indent strong">公司仅接受【公立二级甲等以上医院三个月以内】的体检证明原件或电子件，不接受其他体检机构的结果。</p>
+          <p class="indent step">第一步： 完成背调信息采集</p>
+          <p class="indent">请扫描以下二维码填写个人身份信息并且进行背调授权，请在入职前务必完成，注:已完成背调人员、实习生、未毕业管培生无需核查！！</p>
+
+          <div class="qr-wrap" aria-label="背调信息采集二维码">
+            <div class="qr" id="qrCode" aria-hidden="true"></div>
+          </div>
+
+          <p class="indent step">第二步： 完成个人信息采集</p>
+          <p class="indent">点击下方按钮进入信息采集页面。</p>
+          <p>（对于非中国大陆地区入职的同事，HR将与您联系进行信息采集，谢谢！）</p>
+
+          <p>Dear<span style="color:#25a063;">刘观福</span>,</p>
+          <p>Welcome to Zongteng Group ! Please click the button below "Enter" to provide your detailed information so that we can further proceed the on-boarding process.</p>
+          <p class="strong">Step 1: Complete background check information collection</p>
+          <p>Please scan the following QR code to fill in your personal identity information and authorize the background check. It must be completed before starting work. Note: Background-checked personnel, interns, and undergraduate management trainees do not need to be verified!!</p>
+          <p class="strong">Step 2: Complete Personal Information Collection</p>
+          <p>Click the button below to enter the information collection page.</p>
+          <p>(For those employed outside of mainland China, your information will be collected by HR directly, thank you!)</p>
+
+          <div class="enter-area">
+            <button class="enter-btn" type="button">点击进入Enter</button>
+          </div>
+
+          <p>如果点击无效，请复制下方网页地址到浏览器地址栏中打开：</p>
+          <p>( If it appears invalid after clicking "Enter", please copy the link below and open in another webpage browser)</p>
+          <p style="margin-top: 25px;"><a class="plain-link" href="https://bsurl.cn/v2/br0dvMjC">https://bsurl.cn/v2/br0dvMjC</a></p>
+
+          <p class="mail-footer-note">本邮件是系统代表发件人发出的，请勿直接回复</p>
+        </div>
+      </article>
+    </main>
+
+    <nav class="bottom-toolbar" aria-label="邮件底部操作">
+      <button class="toolbar-item" type="button">
+        <span class="tool-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 7h16"></path>
+            <path d="M9 7V4h6v3"></path>
+            <path d="M6 7l1 13h10l1-13"></path>
+            <path d="M10 11v5"></path>
+            <path d="M14 11v5"></path>
+          </svg>
+        </span>
+        <span class="toolbar-label">删除</span>
+      </button>
+      <button class="toolbar-item" type="button">
+        <span class="tool-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 16V3"></path>
+            <path d="M8 7l4-4 4 4"></path>
+            <path d="M5 12.5v5A1.5 1.5 0 0 0 6.5 19h11A1.5 1.5 0 0 0 19 17.5v-5"></path>
+          </svg>
+        </span>
+        <span class="toolbar-label">分享</span>
+      </button>
+      <button class="toolbar-item" type="button">
+        <span class="tool-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 8H6a4 4 0 0 0-4 4v1"></path>
+            <path d="M12 5l-5 5 5 5"></path>
+            <path d="M12 10h4a5 5 0 0 1 5 5v1"></path>
+          </svg>
+        </span>
+        <span class="toolbar-label">回复转发</span>
+      </button>
+      <button class="toolbar-item" type="button">
+        <span class="tool-icon more" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <circle cx="5" cy="12" r="1.8"></circle>
+            <circle cx="12" cy="12" r="1.8"></circle>
+            <circle cx="19" cy="12" r="1.8"></circle>
+          </svg>
+        </span>
+        <span class="toolbar-label">更多</span>
+      </button>
+      <span class="home-indicator" aria-hidden="true"></span>
+    </nav>
+  </div>
+
+  <script>
+    function paintFinder(cells, size, startRow, startCol) {
+      for (let row = 0; row < 7; row += 1) {
+        for (let col = 0; col < 7; col += 1) {
+          const edge = row === 0 || row === 6 || col === 0 || col === 6;
+          const core = row >= 2 && row <= 4 && col >= 2 && col <= 4;
+          cells[(startRow + row) * size + startCol + col] = edge || core;
+        }
+      }
+    }
+
+    function renderQr() {
+      const qr = document.querySelector("#qrCode");
+      if (!qr) return;
+      const size = 29;
+      const cells = Array.from({ length: size * size }, () => false);
+      paintFinder(cells, size, 0, 0);
+      paintFinder(cells, size, 0, size - 7);
+      paintFinder(cells, size, size - 7, 0);
+
+      for (let row = 0; row < size; row += 1) {
+        for (let col = 0; col < size; col += 1) {
+          const inFinder = (row < 8 && col < 8) || (row < 8 && col > size - 9) || (row > size - 9 && col < 8);
+          if (inFinder) continue;
+          const value = (row * 17 + col * 31 + row * col * 7 + row % 3 + col % 5) % 11;
+          cells[row * size + col] = value === 0 || value === 2 || value === 3 || value === 7 || (row % 6 === 0 && col % 2 === 0);
+        }
+      }
+
+      qr.innerHTML = cells.map(isDark => `<span class="qr-cell${isDark ? " dark" : ""}"></span>`).join("");
+    }
+
+    renderQr();
+  </script>
+</body>
+</html>

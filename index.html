@@ -15927,14 +15927,8 @@
                   <div class="terminal-tags"><span class="terminal-tag pc">PC</span><span class="terminal-tag mobile">手机</span></div>
                 </div>
                 <div class="scenario-card">
-                  <div class="scenario-title">继续补充信息</div>
-                  <div class="scenario-desc">回到采集页面补充缺失内容。</div>
-                  <span class="scenario-arrow">→</span>
-                  <div class="terminal-tags"><span class="terminal-tag pc">PC</span><span class="terminal-tag mobile">手机</span></div>
-                </div>
-                <div class="scenario-card">
-                  <div class="scenario-title">提交补充信息</div>
-                  <div class="scenario-desc">提交补充后的信息并等待审核。</div>
+                  <div class="scenario-title">继续补充信息、提交补充信息</div>
+                  <div class="scenario-desc">回到采集页面补充缺失内容并提交，等待审核。</div>
                   <span class="scenario-arrow">→</span>
                   <div class="terminal-tags"><span class="terminal-tag pc">PC</span><span class="terminal-tag mobile">手机</span></div>
                 </div>
@@ -16139,7 +16133,7 @@
                   <div class="scenario-title">接收扫码报道提醒</div>
                   <div class="scenario-desc">候选人扫码报道后，HRBP 接收入职提醒。</div>
                   <span class="scenario-arrow">→</span>
-                  <div class="terminal-tags"><span class="terminal-tag pc">PC</span></div>
+                  <div class="terminal-tags"><span class="terminal-tag pc">PC</span><span class="terminal-tag mobile">手机</span></div>
                 </div>
                 <div class="scenario-card compact">
                   <div class="scenario-title">扫码报道跟踪</div>
@@ -16164,7 +16158,7 @@
                   <div class="scenario-title">接收扫码报道提醒</div>
                   <div class="scenario-desc">候选人已扫码报道，提醒上级关注接待和准备事项。</div>
                   <span class="scenario-arrow">→</span>
-                  <div class="terminal-tags"><span class="terminal-tag pc">PC</span></div>
+                  <div class="terminal-tags"><span class="terminal-tag pc">PC</span><span class="terminal-tag mobile">手机</span></div>
                 </div>
               </div>
             </article>
@@ -16202,7 +16196,7 @@
                   <div class="scenario-title">接收取消入职通知</div>
                   <div class="scenario-desc">接收候选人取消入职的消息通知。</div>
                   <span class="scenario-arrow">→</span>
-                  <div class="terminal-tags"><span class="terminal-tag pc">PC</span></div>
+                  <div class="terminal-tags"><span class="terminal-tag pc">PC</span><span class="terminal-tag mobile">手机</span></div>
                 </div>
               </div>
               <div class="role-group" data-panorama-role="owner">
@@ -16211,7 +16205,7 @@
                   <div class="scenario-title">接收取消入职通知</div>
                   <div class="scenario-desc">接收候选人取消入职的消息通知。</div>
                   <span class="scenario-arrow">→</span>
-                  <div class="terminal-tags"><span class="terminal-tag pc">PC</span></div>
+                  <div class="terminal-tags"><span class="terminal-tag pc">PC</span><span class="terminal-tag mobile">手机</span></div>
                 </div>
               </div>
             </article>
@@ -28531,12 +28525,12 @@
     }
 
     function openPanoramaSingleTodoDetail(role, terminal) {
-      const taskId = role === "leader" ? "ob-office-zhou-nan-flow-pending" : "ob-office-wang-xiaohong-todo-pending";
+      const taskId = "ob-office-zhou-nan-flow-pending";
       if (terminal === "mobile") {
         openPanoramaFile("移动端自助.html", `panorama=todo-detail&task=${taskId}`);
         return;
       }
-      openApprovalSingleTodoPage(role === "leader" ? 0 : 1);
+      openApprovalSingleTodoPage(0);
     }
 
     function openPanoramaMergedTodoDetail(terminal) {
@@ -28547,12 +28541,16 @@
       openApprovalTodoTaskPage();
     }
 
-    function openPanoramaNotification() {
+    function openPanoramaNotification(terminal = "pc") {
+      if (terminal === "mobile") {
+        openPanoramaFile("移动端自助.html", "panorama=notification");
+        return;
+      }
       showWorkspace("approvalNotification");
     }
 
     function openPanoramaCandidateCollect(terminal) {
-      openPanoramaFile(terminal === "mobile" ? "候选人/信息采集-移动端.html" : "候选人/填写个人信息-PC端.html");
+      openPanoramaFile(terminal === "mobile" ? "信息采集-移动端.html" : "填写个人信息-PC端.html");
     }
 
     function handlePanoramaCardClick(event) {
@@ -28582,11 +28580,11 @@
           return;
         }
         if (stageTitle === "扫码报道提醒") {
-          title === "扫码报道跟踪" ? openPanoramaOnboardingList() : openPanoramaNotification();
+          title === "扫码报道跟踪" ? openPanoramaOnboardingList() : openPanoramaNotification(terminal);
           return;
         }
         if (stageTitle === "取消入职") {
-          title === "取消入职" ? openPanoramaOnboardingList() : openPanoramaNotification();
+          title === "取消入职" ? openPanoramaOnboardingList() : openPanoramaNotification(terminal);
           return;
         }
       }
@@ -28594,21 +28592,22 @@
       if (role === "candidate") {
         if (stageTitle === "接收采集填写通知") {
           title === "接收采集填写通知"
-            ? openPanoramaFile("候选人/接收入职信息采集的邮件.html")
+            ? openPanoramaFile("接受入职信息采集的邮件.html")
             : openPanoramaCandidateCollect(terminal);
           return;
         }
         if (stageTitle === "接收催办通知") {
           title === "接收催办通知"
-            ? openPanoramaFile("候选人/入职信息采集-催办.html")
+            ? openPanoramaFile("入职信息采集-催办.html")
             : openPanoramaCandidateCollect(terminal);
           return;
         }
         if (stageTitle === "扫码报道") {
-          openPanoramaFile("候选人/扫码报道-移动端.html");
+          openPanoramaFile("扫码报道-移动端.html");
           return;
         }
         if (stageTitle === "接收退回通知") {
+          if (title === "接收退回通知") return;
           openPanoramaCandidateCollect(terminal);
           return;
         }
@@ -28628,7 +28627,7 @@
           return;
         }
         if (stageTitle === "接收扫码报道提醒" || stageTitle === "接收取消入职通知") {
-          openPanoramaNotification();
+          openPanoramaNotification(terminal);
         }
       }
     }
