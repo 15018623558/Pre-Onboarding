@@ -5032,7 +5032,7 @@
     }
 
     .plan-table {
-      min-width: 1460px;
+      min-width: 1740px;
     }
 
     .plan-table th,
@@ -10536,6 +10536,7 @@
     .employment-table.plan-table {
       border-collapse: separate;
       border-spacing: 0;
+      min-width: 1740px;
     }
 
     .employment-table.plan-table th:first-child,
@@ -17249,6 +17250,8 @@
                 <col style="width: 90px">
                 <col style="width: 120px">
                 <col style="width: 170px">
+                <col style="width: 120px">
+                <col style="width: 170px">
                 <col style="width: 140px">
               </colgroup>
               <thead>
@@ -17259,8 +17262,10 @@
                   <th>用工形式</th>
                   <th>说明</th>
                   <th>状态</th>
-                  <th>最近修改人</th>
-                  <th>最近修改时间</th>
+                  <th>创建人</th>
+                  <th>创建时间</th>
+                  <th>更新人</th>
+                  <th>更新时间</th>
                   <th>操作</th>
                 </tr>
               </thead>
@@ -18911,11 +18916,11 @@
           </colgroup>
           <thead>
             <tr>
-              <th>当字段</th>
-              <th>符合</th>
-              <th>字段值</th>
-              <th>类型</th>
-              <th>字段名称</th>
+              <th>源字段</th>
+              <th>运算符</th>
+              <th>源值</th>
+              <th>规则类型</th>
+              <th>目标字段</th>
               <th>操作</th>
             </tr>
           </thead>
@@ -20204,6 +20209,8 @@
         employeeTypes: ["正式员工"],
         desc: "覆盖正式员工入职采集、材料收集和准备发起",
         status: "启用",
+        creator: "CoreHR实施账号2",
+        createdAt: "2026-07-20 10:22:18",
         operator: "CoreHR实施账号2",
         time: "2026-07-20 10:22:18",
         collectGroups: [
@@ -20292,6 +20299,8 @@
         employeeTypes: ["正式员工", "实习生"],
         desc: "研发岗位入职前自动触发账号、设备和材料准备",
         status: "停用",
+        creator: "北森顾问_王晓玲",
+        createdAt: "2026-07-18 15:46:02",
         operator: "北森顾问_王晓玲",
         time: "2026-07-18 15:46:02",
         collectGroups: [
@@ -25291,6 +25300,8 @@
       plan.orgIds = orgIds;
       plan.org = getPlanOrgSummary(orgIds, plan.org || "");
       plan.status = normalizePlanStatus(plan.status);
+      plan.creator = plan.creator || plan.operator || "--";
+      plan.createdAt = plan.createdAt || plan.time || "--";
       getPlanI18nField(plan, "name");
       getPlanI18nField(plan, "desc");
       (plan.collectGroups || []).forEach(group => {
@@ -25829,35 +25840,35 @@
           sourceField: "最高学历",
           operator: "等于",
           value: ["本科", "硕士研究生", "MBA", "博士研究生", "EMBA", "MPA"],
-          action: "显示并必填",
+          action: "显示且必填",
           targetField: ["最高学位", "学位"]
         },
         {
           sourceField: "工作地区",
           operator: "等于",
           value: ["中国大陆"],
-          action: "显示并必填",
+          action: "显示且必填",
           targetField: ["外语水平", "计算机水平"]
         },
         {
           sourceField: "是否有亲属/亲密朋友在本司任职",
           operator: "等于",
           value: ["是"],
-          action: "显示并必填",
+          action: "显示且必填",
           targetField: ["本司任职亲属/亲密朋友姓名"]
         },
         {
           sourceField: "是否有亲属/亲密朋友在本司任职",
           operator: "等于",
           value: ["是"],
-          action: "显示并必填",
+          action: "显示且必填",
           targetField: ["亲属/亲密关系"]
         },
         {
           sourceField: "外语水平",
           operator: "不等于",
           value: ["无"],
-          action: "显示并选填",
+          action: "显示且选填",
           targetField: ["语言", "是否母语", "掌握程度", "书写能力", "阅读能力", "口语能力"]
         }
       ];
@@ -26006,6 +26017,8 @@
           desc: { zh: "", en: "", hk: "" }
         },
         status: "启用",
+        creator: "",
+        createdAt: "",
         operator: "",
         time: "",
         collectGroups: [
@@ -26095,6 +26108,8 @@
           <td title="${escapeHtml(employmentTypeText)}">${escapeHtml(employmentTypeText)}</td>
           <td title="${escapeHtml(item.desc || "--")}">${escapeHtml(item.desc || "--")}</td>
           <td><span class="status-tag ${status === "禁用" ? "off" : ""}">${escapeHtml(status)}</span></td>
+          <td title="${escapeHtml(item.creator || "--")}">${escapeHtml(item.creator || "--")}</td>
+          <td>${escapeHtml(item.createdAt || "--")}</td>
           <td title="${escapeHtml(item.operator || "--")}">${escapeHtml(item.operator || "--")}</td>
           <td>${escapeHtml(item.time || "--")}</td>
           <td>
@@ -26604,7 +26619,8 @@
     function getPlanFieldLinkageActionText(rule, fieldName) {
       const targets = normalizePlanLinkageValues(rule.targetField);
       if (targets.includes(fieldName)) {
-        return rule.action === "显示并选填" ? "此字段可编辑且选填" : "此字段可编辑且必填";
+        if (rule.action === "隐藏") return "此字段隐藏";
+        return rule.action === "显示且选填" ? "此字段可编辑且选填" : "此字段可编辑且必填";
       }
       return `刷新联动字段：${targets.join("、") || "--"}`;
     }
@@ -26656,8 +26672,14 @@
       plan.linkageRules.forEach(rule => {
         rule.value = normalizePlanLinkageValues(rule.value);
         rule.targetField = normalizePlanLinkageValues(rule.targetField);
-        rule.operator = rule.operator || "等于";
-        rule.action = rule.action || "显示并必填";
+        rule.operator = rule.operator === "不等于" ? "不等于" : "等于";
+        rule.action = rule.action === "显示并选填"
+          ? "显示且选填"
+          : rule.action === "显示并必填"
+            ? "显示且必填"
+            : ["显示且必填", "显示且选填", "隐藏"].includes(rule.action)
+              ? rule.action
+              : "显示且必填";
       });
       return plan.linkageRules;
     }
@@ -26683,12 +26705,11 @@
       tbody.innerHTML = filtered.length ? filtered.map(({ rule, index }) => `
         <tr data-plan-linkage-index="${index}">
           <td><select data-plan-linkage-prop="sourceField">${planOptionHtml(getPlanLinkageFieldNames(), rule.sourceField, "请选择")}</select></td>
-          <td><select data-plan-linkage-prop="operator">${optionHtml(["等于", "不等于", "包含", "不包含"], rule.operator || "等于")}</select></td>
+          <td><select data-plan-linkage-prop="operator">${optionHtml(["等于", "不等于"], rule.operator || "等于")}</select></td>
           <td>${renderPlanLinkageMultiControl(index, "value", getPlanLinkageValueOptions(rule.sourceField).map(value => ({ value, label: value })), rule.value, "请选择")}</td>
-          <td><select data-plan-linkage-prop="action">${optionHtml(["显示并必填", "显示并选填"], rule.action || "显示并必填")}</select></td>
+          <td><select data-plan-linkage-prop="action">${optionHtml(["显示且必填", "显示且选填", "隐藏"], rule.action || "显示且必填")}</select></td>
           <td>${renderPlanLinkageMultiControl(index, "targetField", getPlanLinkageFieldNames().map(value => ({ value, label: value })), rule.targetField, "请选择")}</td>
           <td>
-            <button class="link" type="button" data-plan-linkage-edit="${index}">编辑</button>
             <button class="link danger" type="button" data-plan-linkage-delete="${index}">删除</button>
           </td>
         </tr>
@@ -26729,7 +26750,7 @@
         sourceField: fields[0] || "",
         operator: "等于",
         value: ["是"],
-        action: "显示并必填",
+        action: "显示且必填",
         targetField: [fields[1] || fields[0] || ""]
       });
       renderPlanLinkageRules();
@@ -27468,12 +27489,16 @@
       const plan = syncPlanDraftFromBasicForm({ validate: true });
       if (!plan) return;
       normalizePlanPayload(plan);
+      const now = formatNow();
+      const isExistingPlan = activePlanMode === "edit" && activePlanIndex !== null;
       const payload = {
         ...clonePlanPayload(plan),
+        creator: isExistingPlan ? plan.creator || "当前用户" : "当前用户",
+        createdAt: isExistingPlan ? plan.createdAt || now : now,
         operator: "当前用户",
-        time: formatNow()
+        time: now
       };
-      if (activePlanMode === "edit" && activePlanIndex !== null) {
+      if (isExistingPlan) {
         onboardingPlans[activePlanIndex] = payload;
       } else {
         onboardingPlans.unshift(payload);
@@ -30747,10 +30772,6 @@
       if (remove) {
         ensurePlanLinkageRules().splice(Number(remove.dataset.planLinkageDelete), 1);
         renderPlanLinkageRules();
-        return;
-      }
-      if (event.target.closest("[data-plan-linkage-edit]")) {
-        event.target.closest("tr")?.querySelector("select, input, [data-plan-linkage-multi-trigger]")?.focus();
       }
     });
     document.querySelector("#planBlockTip").addEventListener("input", syncActivePlanGroupMeta);
