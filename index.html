@@ -5157,7 +5157,7 @@
       padding: 0 18px;
       border-bottom: 1px solid #eef1f6;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       align-items: center;
       gap: 18px;
       background: #fbfcfe;
@@ -5939,7 +5939,8 @@
 
     .plan-split-workspace.group-collapsed .plan-side-tools,
     .plan-split-workspace.group-collapsed .plan-side-list,
-    .plan-split-workspace.group-collapsed #openPlanGroupPicker {
+    .plan-split-workspace.group-collapsed #openPlanGroupPicker,
+    .plan-split-workspace.group-collapsed #openPlanTodoPicker {
       display: none;
     }
 
@@ -17313,7 +17314,8 @@
           <div class="plan-stepper" id="planStepper">
             <button class="active" type="button" data-plan-step="template" data-step-index="1">配置信息采集模板</button>
             <button type="button" data-plan-step="prepare" data-step-index="2">配置入职准备事项</button>
-            <button type="button" data-plan-step="rule" data-step-index="3">配置入职管理规则</button>
+            <button type="button" data-plan-step="prepareRule" data-step-index="3">配置入职准备规则</button>
+            <button type="button" data-plan-step="collectRule" data-step-index="4">配置入职采集规则</button>
           </div>
           <div class="plan-template-actions" id="planTemplateActions">
             <button class="employment-btn" type="button" id="openPlanLinkage">⌘ 联动设置</button>
@@ -17386,18 +17388,20 @@
               </section>
             </div>
           </div>
-          <div class="plan-step-panel" id="planRulePanel" hidden>
-            <section class="plan-rule-card">
-              <div class="plan-panel-head">
-                <strong>入职管理规则</strong>
-              </div>
-              <div class="plan-rule-grid" id="planCollectRuleForm"></div>
-            </section>
+          <div class="plan-step-panel" id="planPrepareRulePanel" hidden>
             <section class="plan-rule-card">
               <div class="plan-panel-head">
                 <strong>入职准备发起规则配置</strong>
               </div>
               <div class="plan-rule-grid" id="planPrepareLaunchForm"></div>
+            </section>
+          </div>
+          <div class="plan-step-panel" id="planCollectRulePanel" hidden>
+            <section class="plan-rule-card">
+              <div class="plan-panel-head">
+                <strong>入职管理规则</strong>
+              </div>
+              <div class="plan-rule-grid" id="planCollectRuleForm"></div>
             </section>
           </div>
           <div class="plan-step-panel" id="planPreparePanel" hidden>
@@ -17406,6 +17410,7 @@
                 <div class="plan-side-head">
                   <strong>事项管理</strong>
                   <div class="plan-side-actions">
+                    <button class="plan-side-collapse" type="button" id="togglePlanTodoManager" title="收起事项管理" aria-label="收起事项管理">‹</button>
                     <button class="plan-icon-btn" type="button" id="openPlanTodoPicker" title="新增事项类别">＋</button>
                   </div>
                 </div>
@@ -20243,6 +20248,8 @@
           reminderEnabled: true,
           reminderTemplate: "入职信息采集催办通知模板",
           reminderChannels: ["邮件", "短信"],
+          candidateSubmitTemplate: "候选人提交入职采集信息通知模板",
+          candidateSubmitChannels: ["邮件", "短信"],
           returnCollectTemplate: "退回采集信息通知模板",
           returnCollectChannels: ["邮件", "短信"],
           reminderDays: 3,
@@ -20264,6 +20271,10 @@
             autoReminder: "是",
             reminderTemplate: "入职准备事项催办通知模板",
             prepareReminderChannels: ["邮件", "短信"],
+            singleTodoCompleteTemplate: "待入职员工单任务完成通知模板",
+            singleTodoCompleteChannels: ["邮件", "短信"],
+            allTodoCompleteTemplate: "待入职员工所有任务完成通知模板",
+            allTodoCompleteChannels: ["邮件", "短信"],
             reminderDays: 1,
             reminderInterval: 1,
             reminderTime: "09:00"
@@ -20325,6 +20336,8 @@
           reminderEnabled: true,
           reminderTemplate: "入职信息采集催办通知模板",
           reminderChannels: ["邮件"],
+          candidateSubmitTemplate: "候选人提交入职采集信息通知模板",
+          candidateSubmitChannels: ["邮件"],
           returnCollectTemplate: "退回采集信息通知模板",
           returnCollectChannels: ["邮件"],
           reminderDays: 3,
@@ -20346,6 +20359,10 @@
             autoReminder: "是",
             reminderTemplate: "入职准备事项催办通知模板",
             prepareReminderChannels: ["邮件"],
+            singleTodoCompleteTemplate: "待入职员工单任务完成通知模板",
+            singleTodoCompleteChannels: ["邮件"],
+            allTodoCompleteTemplate: "待入职员工所有任务完成通知模板",
+            allTodoCompleteChannels: ["邮件"],
             reminderDays: 1,
             reminderInterval: 1,
             reminderTime: "09:00"
@@ -20941,10 +20958,13 @@
       "待入职资料填写提醒模板",
       "劳务转正式信息采集通知模板",
       "入职信息采集催办通知模板",
+      "候选人提交入职采集信息通知模板",
       "退回采集信息通知模板",
       "单条入职准备事项待办通知模板",
       "合并入职准备事项待办通知模板",
-      "入职准备事项催办通知模板"
+      "入职准备事项催办通知模板",
+      "待入职员工单任务完成通知模板",
+      "待入职员工所有任务完成通知模板"
     ];
     const planEmploymentTypeOptions = ["正式员工", "实习生", "劳务派遣", "兼职员工", "返聘人员"];
     const collectLoginOptions = [
@@ -21115,6 +21135,7 @@
     let planLinkageSnapshot = null;
     let planGroupSearchText = "";
     let planGroupManagerCollapsed = false;
+    let planTodoManagerCollapsed = false;
     let planScopeMenuContext = null;
     let activePlanLanguageField = null;
     let activePlanMessagePreviewChannel = "邮件通知";
@@ -26034,6 +26055,8 @@
           reminderEnabled: true,
           reminderTemplate: "入职信息采集催办通知模板",
           reminderChannels: ["邮件"],
+          candidateSubmitTemplate: "候选人提交入职采集信息通知模板",
+          candidateSubmitChannels: ["邮件"],
           returnCollectTemplate: "退回采集信息通知模板",
           returnCollectChannels: ["邮件"],
           reminderDays: 3,
@@ -26055,6 +26078,10 @@
             autoReminder: "是",
             reminderTemplate: "入职准备事项催办通知模板",
             prepareReminderChannels: ["邮件"],
+            singleTodoCompleteTemplate: "待入职员工单任务完成通知模板",
+            singleTodoCompleteChannels: ["邮件"],
+            allTodoCompleteTemplate: "待入职员工所有任务完成通知模板",
+            allTodoCompleteChannels: ["邮件"],
             reminderDays: 1,
             reminderInterval: 1,
             reminderTime: "09:00"
@@ -26163,6 +26190,8 @@
       activePlanStep = "template";
       activePlanGroupIndex = 0;
       activePlanTodoIndex = 0;
+      planGroupManagerCollapsed = false;
+      planTodoManagerCollapsed = false;
       if (mode === "create") {
         activePlanDraft = createEmptyPlan();
       } else {
@@ -26413,6 +26442,9 @@
       page.querySelectorAll("#planStepper button, #backPlanList, #togglePlanGroupManager").forEach(control => {
         control.disabled = false;
       });
+      page.querySelectorAll("#togglePlanTodoManager").forEach(control => {
+        control.disabled = false;
+      });
       page.querySelectorAll("[data-plan-field-linkage-marker]").forEach(control => {
         control.disabled = false;
       });
@@ -26435,7 +26467,8 @@
       document.querySelector("#planTemplatePanel").hidden = activePlanStep !== "template";
       document.querySelector("#planTemplateActions").hidden = activePlanStep !== "template";
       document.querySelector("#planPrepareActions").hidden = activePlanStep !== "prepare";
-      document.querySelector("#planRulePanel").hidden = activePlanStep !== "rule";
+      document.querySelector("#planPrepareRulePanel").hidden = activePlanStep !== "prepareRule";
+      document.querySelector("#planCollectRulePanel").hidden = activePlanStep !== "collectRule";
       document.querySelector("#planPreparePanel").hidden = activePlanStep !== "prepare";
     }
 
@@ -26460,6 +26493,16 @@
       workspace.classList.toggle("group-collapsed", planGroupManagerCollapsed);
       toggle.textContent = planGroupManagerCollapsed ? "›" : "‹";
       toggle.title = planGroupManagerCollapsed ? "展开分组管理" : "收起分组管理";
+      toggle.setAttribute("aria-label", toggle.title);
+    }
+
+    function syncPlanTodoManagerState() {
+      const workspace = document.querySelector("#planPreparePanel .prepare-workspace");
+      const toggle = document.querySelector("#togglePlanTodoManager");
+      if (!workspace || !toggle) return;
+      workspace.classList.toggle("group-collapsed", planTodoManagerCollapsed);
+      toggle.textContent = planTodoManagerCollapsed ? "›" : "‹";
+      toggle.title = planTodoManagerCollapsed ? "展开事项管理" : "收起事项管理";
       toggle.setAttribute("aria-label", toggle.title);
     }
 
@@ -26960,6 +27003,19 @@
 
         <div class="plan-form-block">
           <div class="plan-form-block-head">
+            <span class="plan-form-block-title">候选人提交入职采集信息通知模板</span>
+            <span class="plan-form-block-desc">可设置候选人提交入职采集信息后使用的通知模板，系统会自动向相关人员发送提交完成通知</span>
+          </div>
+          ${renderPlanMessageConfigRow({
+            templateId: "planCandidateSubmitTemplate",
+            templateValue: rule.candidateSubmitTemplate || "候选人提交入职采集信息通知模板",
+            rule,
+            channelField: "candidateSubmitChannels"
+          })}
+        </div>
+
+        <div class="plan-form-block">
+          <div class="plan-form-block-head">
             <span class="plan-form-block-title">退回采集信息通知模板</span>
             <span class="plan-form-block-desc">可设置退回采集信息时使用的通知模板，系统会自动给待入职员工发送退回采集信息通知</span>
           </div>
@@ -27109,6 +27165,28 @@
             </div>
           ` : ""}
         </div>
+        <div class="plan-form-block">
+          <div class="plan-form-block-head">
+            <span class="plan-form-block-title">待办完成消息通知模板</span>
+            <span class="plan-form-block-desc">入职准备事项完成后，系统会根据完成范围向相关人员发送通知</span>
+          </div>
+          <div class="plan-message-config-group">
+            <div class="plan-message-config-title">待入职员工单任务完成消息模板</div>
+            ${renderPlanMessageConfigRow({
+              templateId: "planSingleTodoCompleteTemplate",
+              templateValue: rule.singleTodoCompleteTemplate || "待入职员工单任务完成通知模板",
+              rule,
+              channelField: "singleTodoCompleteChannels"
+            })}
+            <div class="plan-message-config-title">待入职员工所有任务完成消息模板</div>
+            ${renderPlanMessageConfigRow({
+              templateId: "planAllTodoCompleteTemplate",
+              templateValue: rule.allTodoCompleteTemplate || "待入职员工所有任务完成通知模板",
+              rule,
+              channelField: "allTodoCompleteChannels"
+            })}
+          </div>
+        </div>
       `;
       updatePlanRuleControlStates();
     }
@@ -27236,6 +27314,7 @@
       const plan = getActivePlan();
       const list = document.querySelector("#planTodoList");
       if (!plan || !list) return;
+      syncPlanTodoManagerState();
       if (!Array.isArray(plan.prepareItems)) plan.prepareItems = [];
       list.innerHTML = plan.prepareItems.map((item, index) => `
         <div class="plan-side-item ${index === activePlanTodoIndex ? "active" : ""}" data-plan-todo-index="${index}" draggable="${!isPlanReadonly()}">
@@ -27548,10 +27627,13 @@
       };
       const notifyChannels = getChannelValues("notifyChannels", previousCollectRule.notifyChannels || ["邮件"]);
       const reminderChannels = getChannelValues("reminderChannels", previousCollectRule.reminderChannels || ["邮件"]);
+      const candidateSubmitChannels = getChannelValues("candidateSubmitChannels", previousCollectRule.candidateSubmitChannels || ["邮件"]);
       const returnCollectChannels = getChannelValues("returnCollectChannels", previousCollectRule.returnCollectChannels || ["邮件"]);
       const singleTodoChannels = getChannelValues("singleTodoChannels", previousPrepareRule.singleTodoChannels || ["邮件"]);
       const mergedTodoChannels = getChannelValues("mergedTodoChannels", previousPrepareRule.mergedTodoChannels || ["邮件"]);
       const prepareReminderChannels = getChannelValues("prepareReminderChannels", previousPrepareRule.prepareReminderChannels || previousPrepareRule.reminderChannels || ["邮件"]);
+      const singleTodoCompleteChannels = getChannelValues("singleTodoCompleteChannels", previousPrepareRule.singleTodoCompleteChannels || ["邮件"]);
+      const allTodoCompleteChannels = getChannelValues("allTodoCompleteChannels", previousPrepareRule.allTodoCompleteChannels || ["邮件"]);
       const notifyConfig = getPlanTimingConfig("notify");
       const notifyModeEl = document.querySelector("input[name='planNotifyTimingMode']:checked");
       const notifyDaysEl = document.querySelector("[data-plan-notify-days]");
@@ -27574,6 +27656,8 @@
         reminderEnabled: document.querySelector("#planReminderEnabled").checked,
         reminderTemplate: document.querySelector("#planReminderTemplate")?.value || previousCollectRule.reminderTemplate || "入职信息采集催办通知模板",
         reminderChannels,
+        candidateSubmitTemplate: document.querySelector("#planCandidateSubmitTemplate")?.value || previousCollectRule.candidateSubmitTemplate || "候选人提交入职采集信息通知模板",
+        candidateSubmitChannels,
         returnCollectTemplate: document.querySelector("#planReturnCollectTemplate")?.value || previousCollectRule.returnCollectTemplate || "退回采集信息通知模板",
         returnCollectChannels,
         reminderDays: Number(document.querySelector("#planReminderDays")?.value ?? previousCollectRule.reminderDays ?? 3),
@@ -27594,6 +27678,10 @@
           autoReminder: document.querySelector("#planPrepareReminderEnabled").checked ? "是" : "否",
           reminderTemplate: document.querySelector("#planPrepareReminderTemplate")?.value || previousPrepareRule.reminderTemplate || "入职准备事项催办通知模板",
           prepareReminderChannels,
+          singleTodoCompleteTemplate: document.querySelector("#planSingleTodoCompleteTemplate")?.value || previousPrepareRule.singleTodoCompleteTemplate || "待入职员工单任务完成通知模板",
+          singleTodoCompleteChannels,
+          allTodoCompleteTemplate: document.querySelector("#planAllTodoCompleteTemplate")?.value || previousPrepareRule.allTodoCompleteTemplate || "待入职员工所有任务完成通知模板",
+          allTodoCompleteChannels,
           reminderDays: Number(document.querySelector("#planPrepareReminderDays")?.value ?? previousPrepareRule.reminderDays ?? 1),
           reminderInterval: Number(document.querySelector("#planPrepareReminderInterval")?.value ?? previousPrepareRule.reminderInterval ?? 1),
           reminderTime: document.querySelector("#planPrepareReminderTime")?.value || previousPrepareRule.reminderTime || "09:00"
@@ -30592,7 +30680,8 @@
       syncActivePlanGroupMeta();
       activePlanStep = button.dataset.planStep;
       syncPlanStepper();
-      if (activePlanStep === "rule") renderPlanCollectRuleStep();
+      if (activePlanStep === "prepareRule") renderPlanPrepareLaunchRules();
+      if (activePlanStep === "collectRule") renderPlanCollectRuleStep();
       if (activePlanStep === "prepare") renderPlanPrepareStep();
       applyPlanReadonly();
     });
@@ -30605,6 +30694,11 @@
       event.stopPropagation();
       planGroupManagerCollapsed = !planGroupManagerCollapsed;
       syncPlanGroupManagerState();
+    });
+    document.querySelector("#togglePlanTodoManager").addEventListener("click", event => {
+      event.stopPropagation();
+      planTodoManagerCollapsed = !planTodoManagerCollapsed;
+      syncPlanTodoManagerState();
     });
     document.querySelector("#planGroupSearch").addEventListener("input", event => {
       planGroupSearchText = event.target.value.trim();
