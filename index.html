@@ -5152,6 +5152,79 @@
       stroke-linejoin: round;
     }
 
+    .plan-config-page.readonly-mode .scheme-basic-edit-item label.required::before,
+    .plan-config-page.readonly-mode .plan-required-mark,
+    .plan-config-page.readonly-mode .rule-required::before,
+    .plan-config-page.readonly-mode .plan-language-btn,
+    .plan-config-page.readonly-mode #openPlanGroupPicker,
+    .plan-config-page.readonly-mode #openPlanFieldPicker,
+    .plan-config-page.readonly-mode #exportPlanFields,
+    .plan-config-page.readonly-mode #openPlanTodoPicker,
+    .plan-config-page.readonly-mode #addPlanTodoRule,
+    .plan-config-page.readonly-mode #exportPlanTodos,
+    .plan-config-page.readonly-mode .plan-side-drag,
+    .plan-config-page.readonly-mode .plan-side-row-actions,
+    .plan-config-page.readonly-mode .plan-block-meta label:has(#planBlockRequired) {
+      display: none;
+    }
+
+    .plan-linkage-modal.readonly-mode #addPlanLinkageRule,
+    .plan-linkage-modal.readonly-mode #savePlanLinkage {
+      display: none;
+    }
+
+    .plan-config-page.readonly-mode .scheme-basic-edit-item input:disabled,
+    .plan-config-page.readonly-mode .scheme-basic-edit-item select:disabled,
+    .plan-config-page.readonly-mode .scheme-basic-edit-item textarea:disabled,
+    .plan-config-page.readonly-mode .plan-config-table input:disabled,
+    .plan-config-page.readonly-mode .plan-config-table select:disabled {
+      background: #f6f7f9;
+      color: #8b95a1;
+      cursor: not-allowed;
+    }
+
+    .plan-config-page.readonly-mode .plan-language-wrap input {
+      padding-right: 9px;
+    }
+
+    .plan-config-page.readonly-mode .plan-org-trigger,
+    .plan-config-page.readonly-mode .plan-pc-select-trigger,
+    .plan-config-page.readonly-mode .plan-multi-trigger,
+    .plan-config-page.readonly-mode .plan-channel-trigger,
+    .plan-config-page.readonly-mode .plan-timing-trigger,
+    .plan-config-page.readonly-mode .plan-owner-cascade-trigger,
+    .plan-config-page.readonly-mode .plan-owner-person-trigger,
+    .plan-config-page.readonly-mode .plan-scope-trigger {
+      border-color: #dfe4eb;
+      color: #8b95a1;
+      background: #f6f7f9;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .plan-config-page.readonly-mode .plan-pc-select-trigger::after,
+    .plan-config-page.readonly-mode .plan-multi-trigger::after,
+    .plan-config-page.readonly-mode .plan-channel-trigger::after,
+    .plan-config-page.readonly-mode .plan-timing-trigger::after,
+    .plan-config-page.readonly-mode .plan-scope-trigger::after,
+    .plan-config-page.readonly-mode .plan-org-trigger-arrow {
+      display: none;
+    }
+
+    .plan-config-page.readonly-mode .plan-org-tag,
+    .plan-config-page.readonly-mode .plan-org-selected-tag {
+      color: #8b95a1;
+      background: transparent;
+      padding-left: 0;
+    }
+
+    .plan-config-page.readonly-mode .plan-org-remove,
+    .plan-config-page.readonly-mode .plan-pc-select-menu,
+    .plan-config-page.readonly-mode .plan-multi-menu,
+    .plan-config-page.readonly-mode .plan-channel-menu {
+      display: none !important;
+    }
+
     .plan-stepper {
       height: 54px;
       padding: 0 18px;
@@ -6304,6 +6377,15 @@
     .plan-todo-detail-config input:focus {
       border-color: #1677ff;
       box-shadow: 0 0 0 2px rgba(22,119,255,.12);
+    }
+
+    .plan-todo-detail-config input:disabled,
+    .plan-config-page.readonly-mode .plan-todo-detail-config input {
+      border-color: #dfe4eb;
+      color: #8b95a1;
+      background: #f6f7f9;
+      box-shadow: none;
+      cursor: not-allowed;
     }
 
     .plan-owner-cascade {
@@ -15053,6 +15135,21 @@
       display: none;
     }
 
+    .collect-section-tip {
+      margin: 10px 14px 0;
+      padding: 9px 12px;
+      border-radius: 4px;
+      color: #48617a;
+      background: #f7f9fc;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .collect-record-tip {
+      grid-column: 1 / -1;
+      margin: 0 0 18px;
+    }
+
     .collect-info-grid {
       padding: 20px 22px 24px;
       display: grid;
@@ -17315,7 +17412,7 @@
             <button class="active" type="button" data-plan-step="template" data-step-index="1">配置信息采集模板</button>
             <button type="button" data-plan-step="prepare" data-step-index="2">配置入职准备事项</button>
             <button type="button" data-plan-step="prepareRule" data-step-index="3">配置入职准备规则</button>
-            <button type="button" data-plan-step="collectRule" data-step-index="4">配置入职采集规则</button>
+            <button type="button" data-plan-step="collectRule" data-step-index="4">配置入职相关规则</button>
           </div>
           <div class="plan-template-actions" id="planTemplateActions">
             <button class="employment-btn" type="button" id="openPlanLinkage">⌘ 联动设置</button>
@@ -17401,7 +17498,13 @@
               <div class="plan-panel-head">
                 <strong>入职管理规则</strong>
               </div>
-              <div class="plan-rule-grid" id="planCollectRuleForm"></div>
+              <div class="plan-rule-grid plan-collect-rule-form" id="planCollectRuleForm"></div>
+            </section>
+            <section class="plan-rule-card">
+              <div class="plan-panel-head">
+                <strong>取消入职通知模板配置</strong>
+              </div>
+              <div class="plan-rule-grid plan-collect-rule-form" id="planCancelRuleForm"></div>
             </section>
           </div>
           <div class="plan-step-panel" id="planPreparePanel" hidden>
@@ -19521,6 +19624,7 @@
     </div>
     <div class="collect-record-foot">
       <button class="btn" type="button" id="cancelCollectRecord">取消</button>
+      <button class="btn" type="button" id="draftCollectRecord">存草稿</button>
       <button class="btn primary" type="button" id="saveCollectRecord">保存</button>
     </div>
   </section>
@@ -20252,6 +20356,8 @@
           candidateSubmitChannels: ["邮件", "短信"],
           returnCollectTemplate: "退回采集信息通知模板",
           returnCollectChannels: ["邮件", "短信"],
+          cancelTemplate: "取消入职通知模板",
+          cancelChannels: ["邮件"],
           reminderDays: 3,
           reminderInterval: 1,
           reminderTime: "09:00",
@@ -20340,6 +20446,8 @@
           candidateSubmitChannels: ["邮件"],
           returnCollectTemplate: "退回采集信息通知模板",
           returnCollectChannels: ["邮件"],
+          cancelTemplate: "取消入职通知模板",
+          cancelChannels: ["邮件"],
           reminderDays: 3,
           reminderInterval: 2,
           reminderTime: "10:30",
@@ -20728,6 +20836,7 @@
         id: "employee",
         title: "员工信息",
         type: "info",
+        tip: "请按身份证件与个人实际情况准确填写员工信息，带 * 字段为必填项；保存草稿不会提交审核。",
         collapsed: false
       },
       {
@@ -20960,6 +21069,7 @@
       "入职信息采集催办通知模板",
       "候选人提交入职采集信息通知模板",
       "退回采集信息通知模板",
+      "取消入职通知模板",
       "单条入职准备事项待办通知模板",
       "合并入职准备事项待办通知模板",
       "入职准备事项催办通知模板",
@@ -24654,6 +24764,7 @@
             </div>
           </div>
           <div class="collect-section-body">
+            ${renderCollectSectionTip(section)}
             <div class="collect-info-grid employee-compact">
               ${collectEmployeeFields.map(field => {
                 const value = getCollectDisplayValue(field);
@@ -24669,6 +24780,12 @@
           </div>
         </section>
       `;
+    }
+
+    function renderCollectSectionTip(section, extraClass = "") {
+      const tip = section?.tip?.trim();
+      const className = extraClass ? `collect-section-tip ${extraClass}` : "collect-section-tip";
+      return tip ? `<div class="${className}">${escapeHtml(tip)}</div>` : "";
     }
 
     function renderCollectTableSection(section) {
@@ -24717,7 +24834,7 @@
               <button type="button" data-collect-action="toggle-section" data-section-id="${section.id}">${section.collapsed ? "展开⌄" : "收起⌃"}</button>
             </div>
           </div>
-          <div class="collect-section-body">${body}</div>
+          <div class="collect-section-body">${renderCollectSectionTip(section)}${body}</div>
         </section>
       `;
     }
@@ -24891,7 +25008,10 @@
 
     function openCollectRecordModal(sectionId, rowIndex = null) {
       const isEmployee = sectionId === "employee";
-      const section = isEmployee ? { id: "employee", title: "员工信息", fields: collectEmployeeFields } : getCollectSection(sectionId);
+      const baseSection = isEmployee ? getCollectSection("employee") : getCollectSection(sectionId);
+      const section = isEmployee
+        ? { ...baseSection, fields: collectEmployeeFields }
+        : baseSection;
       if (!section) return;
       collectRecordDraft = { sectionId, rowIndex };
       const isEdit = isEmployee || rowIndex !== null;
@@ -24900,7 +25020,7 @@
       const source = isEmployee
         ? Object.fromEntries(collectEmployeeFields.map(field => [field.key, field.value]))
         : (section.rows?.[rowIndex] || {});
-      form.innerHTML = section.fields.map(field => renderCollectRecordField(field, source[field.key])).join("");
+      form.innerHTML = `${renderCollectSectionTip(section, "collect-record-tip")}${section.fields.map(field => renderCollectRecordField(field, source[field.key])).join("")}`;
       modalMask.classList.add("show");
       document.querySelector("#collectRecordModal").classList.add("show");
     }
@@ -24993,7 +25113,7 @@
       modalMask.classList.remove("show");
     }
 
-    function saveCollectRecord() {
+    function saveCollectRecord(draft = false) {
       if (!collectRecordDraft) return;
       const values = {};
       document.querySelectorAll("#collectRecordForm [data-collect-field]").forEach(control => {
@@ -25023,6 +25143,7 @@
       }
       closeCollectRecordModal();
       renderCollectDetail();
+      showPrepareToast(draft ? "草稿已保存" : "已保存");
     }
 
     function deleteCollectRecord(sectionId, rowIndex) {
@@ -25522,16 +25643,17 @@
     function renderPlanEmploymentTypeMulti(plan) {
       const selected = getPlanSelectedEmploymentTypes(plan);
       const text = selected.length ? selected.join("、") : "请选择用工形式";
+      const disabled = isPlanReadonly();
       return `
-        <div class="plan-multi-select" id="planEmploymentTypeMulti">
+        <div class="plan-multi-select ${disabled ? "disabled" : ""}" id="planEmploymentTypeMulti">
           <input type="hidden" id="planEmploymentType" value="${escapeHtml(selected.join(","))}">
-          <button class="plan-multi-trigger" type="button" data-plan-multi-toggle="employmentType" title="${escapeHtml(text)}">
+          <button class="plan-multi-trigger" type="button" data-plan-multi-toggle="employmentType" title="${escapeHtml(text)}" ${disabled ? "disabled" : ""}>
             <span>${escapeHtml(text)}</span>
           </button>
           <div class="plan-multi-menu">
             ${planEmploymentTypeOptions.map(option => `
               <label>
-                <input type="checkbox" value="${escapeHtml(option)}" data-plan-employment-type ${selected.includes(option) ? "checked" : ""}>
+                <input type="checkbox" value="${escapeHtml(option)}" data-plan-employment-type ${selected.includes(option) ? "checked" : ""} ${disabled ? "disabled" : ""}>
                 <span>${escapeHtml(option)}</span>
               </label>
             `).join("")}
@@ -26059,6 +26181,8 @@
           candidateSubmitChannels: ["邮件"],
           returnCollectTemplate: "退回采集信息通知模板",
           returnCollectChannels: ["邮件"],
+          cancelTemplate: "取消入职通知模板",
+          cancelChannels: ["邮件"],
           reminderDays: 3,
           reminderInterval: 1,
           reminderTime: "09:00",
@@ -26263,23 +26387,23 @@
         valueText.textContent = text || "请选择";
         valueText.classList.toggle("placeholder", !select.value);
       }
-      if (trigger) trigger.disabled = select.disabled && !isMessageTemplate;
+      if (trigger) trigger.disabled = select.disabled;
       if (menu) {
         menu.innerHTML = Array.from(select.options).map((option, index) => {
           const label = option.textContent || "";
           if (isMessageTemplate && option.value) {
             return `
               <div class="plan-pc-select-option-row">
-                <button class="plan-pc-select-option ${index === select.selectedIndex ? "active" : ""}" type="button" data-plan-pc-select-option="${index}" ${option.disabled ? "disabled" : ""}>${escapeHtml(label)}</button>
-                <button class="plan-message-option-preview" type="button" data-plan-message-option-preview="${escapeHtml(select.id)}" data-plan-message-template-name="${escapeHtml(option.value)}">预览</button>
+                <button class="plan-pc-select-option ${index === select.selectedIndex ? "active" : ""}" type="button" data-plan-pc-select-option="${index}" ${option.disabled || select.disabled ? "disabled" : ""}>${escapeHtml(label)}</button>
+                <button class="plan-message-option-preview" type="button" data-plan-message-option-preview="${escapeHtml(select.id)}" data-plan-message-template-name="${escapeHtml(option.value)}" ${select.disabled ? "disabled" : ""}>预览</button>
               </div>
             `;
           }
-          return `<button class="plan-pc-select-option ${index === select.selectedIndex ? "active" : ""}" type="button" data-plan-pc-select-option="${index}" ${option.disabled ? "disabled" : ""}>${escapeHtml(label)}</button>`;
+          return `<button class="plan-pc-select-option ${index === select.selectedIndex ? "active" : ""}" type="button" data-plan-pc-select-option="${index}" ${option.disabled || select.disabled ? "disabled" : ""}>${escapeHtml(label)}</button>`;
         }).join("");
       }
       wrapper.classList.toggle("disabled", select.disabled);
-      if (select.disabled && !isMessageTemplate) wrapper.classList.remove("open");
+      if (select.disabled) wrapper.classList.remove("open");
     }
 
     function enhancePlanPcSelects() {
@@ -26321,12 +26445,15 @@
     }
 
     function renderPlanLanguageInput({ id, field, value, placeholder, maxlength = 255 }) {
-      return `
-        <div class="plan-language-wrap">
-          <input id="${escapeHtml(id)}" maxlength="${maxlength}" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(value || "")}">
+      const languageButton = isPlanReadonly() ? "" : `
           <span class="plan-language-btn" title="多语言设置" aria-hidden="true">
             ${renderPlanLanguageIcon()}
           </span>
+      `;
+      return `
+        <div class="plan-language-wrap">
+          <input id="${escapeHtml(id)}" maxlength="${maxlength}" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(value || "")}">
+          ${languageButton}
         </div>
       `;
     }
@@ -26422,6 +26549,7 @@
       syncPlanStepper();
       renderPlanTemplateStep();
       renderPlanCollectRuleStep();
+      renderPlanCancelRuleStep();
       renderPlanPrepareStep();
       applyPlanReadonly();
     }
@@ -26448,9 +26576,28 @@
       page.querySelectorAll("[data-plan-field-linkage-marker]").forEach(control => {
         control.disabled = false;
       });
+      page.querySelectorAll("#openPlanLinkage").forEach(control => {
+        control.disabled = false;
+      });
       page.querySelectorAll("#openPlanPcPreview, #openPlanMobilePreview").forEach(control => {
         control.disabled = false;
       });
+      page.querySelectorAll(".plan-pc-select-trigger, .plan-multi-trigger, .plan-channel-trigger, .plan-timing-trigger, .plan-owner-cascade-trigger, .plan-owner-person-trigger, .plan-scope-trigger").forEach(control => {
+        control.disabled = readonly;
+      });
+      page.querySelectorAll(".plan-pc-select, .plan-multi-select, .plan-channel-select").forEach(wrapper => {
+        wrapper.classList.toggle("disabled", readonly);
+        if (readonly) wrapper.classList.remove("open");
+      });
+      if (readonly) {
+        closePlanPcSelects();
+        closePlanMultiSelects();
+        closePlanChannelSelects();
+        closePlanTimingPickers();
+        closePlanOwnerCascades();
+        closePlanOwnerPersonMultis();
+        closePlanScopeMenu();
+      }
       enhancePlanPcSelects();
       refreshPlanOrgMultiSelect("config");
       const statusSelect = page.querySelector("#planStatus");
@@ -26510,6 +26657,7 @@
       const plan = getActivePlan();
       const groupList = document.querySelector("#planGroupList");
       if (!plan || !groupList) return;
+      const readonly = isPlanReadonly();
       syncPlanGroupManagerState();
       if (!Array.isArray(plan.collectGroups)) plan.collectGroups = [];
       const query = planGroupSearchText.trim();
@@ -26520,15 +26668,15 @@
       groupList.innerHTML = visibleGroups.length ? visibleGroups.map(({ group, index }) => {
         const active = index === activePlanGroupIndex;
         return `
-          <div class="plan-side-item ${active ? "active" : ""}" data-plan-group-name="${escapeHtml(group.name)}" data-plan-group-index="${index}" draggable="${!isPlanReadonly()}">
-            <span class="plan-side-drag" title="拖拽排序">☰</span>
+          <div class="plan-side-item ${active ? "active" : ""}" data-plan-group-name="${escapeHtml(group.name)}" data-plan-group-index="${index}" draggable="${!readonly}">
+            ${readonly ? "" : `<span class="plan-side-drag" title="拖拽排序">☰</span>`}
             <span class="plan-side-name" title="${escapeHtml(group.name)}">${escapeHtml(group.name)}</span>
             <span class="plan-side-count">${group.fields?.length || 0}</span>
-            <span class="plan-side-row-actions">
+            ${readonly ? "" : `<span class="plan-side-row-actions">
               <button class="danger" type="button" data-plan-group-row-delete="${index}" title="删除" aria-label="删除分组">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>
               </button>
-            </span>
+            </span>`}
           </div>
         `;
       }).join("") : `<div class="scheme-list-empty">暂无匹配分组</div>`;
@@ -26538,13 +26686,55 @@
     function renderPlanFieldConfig() {
       const group = getActivePlanGroup();
       const tbody = document.querySelector("#planFieldRows");
+      const readonly = isPlanReadonly();
       document.querySelector("#planFieldPanelTitle").textContent = group ? `${group.name} · 字段配置` : "字段配置";
       document.querySelector("#planFieldPanelCount").textContent = group?.fields?.length || 0;
       document.querySelector("#planBlockTip").value = group?.tip || "";
       document.querySelector("#planBlockRequired").checked = Boolean(group?.required);
       if (!tbody) return;
+      const table = tbody.closest("table");
+      if (table) {
+        table.querySelector("colgroup").innerHTML = readonly
+          ? `
+                      <col style="width: 190px">
+                      <col style="width: 190px">
+                      <col style="width: 130px">
+                      <col style="width: 210px">
+                      <col style="width: 210px">
+                      <col style="width: 210px">
+                    `
+          : `
+                      <col style="width: 170px">
+                      <col style="width: 170px">
+                      <col style="width: 76px">
+                      <col style="width: 118px">
+                      <col style="width: 190px">
+                      <col style="width: 190px">
+                      <col style="width: 190px">
+                      <col style="width: 86px">
+                    `;
+        table.querySelector("thead tr").innerHTML = readonly
+          ? `
+                        <th>字段</th>
+                        <th>显示名称</th>
+                        <th>可编辑</th>
+                        <th>默认值</th>
+                        <th>提示语<button class="th-help" type="button" data-plan-help-tip="placeholder">?</button></th>
+                        <th>显示帮助<button class="th-help" type="button" data-plan-help-tip="help">?</button></th>
+                      `
+          : `
+                        <th>字段</th>
+                        <th>显示名称</th>
+                        <th>必填项</th>
+                        <th>可编辑</th>
+                        <th>默认值</th>
+                        <th>提示语<button class="th-help" type="button" data-plan-help-tip="placeholder">?</button></th>
+                        <th>显示帮助<button class="th-help" type="button" data-plan-help-tip="help">?</button></th>
+                        <th>操作</th>
+                      `;
+      }
       if (!group) {
-        tbody.innerHTML = `<tr><td class="plan-empty-row" colspan="8">请至少添加一条数据</td></tr>`;
+        tbody.innerHTML = `<tr><td class="plan-empty-row" colspan="${readonly ? 6 : 8}">请至少添加一条数据</td></tr>`;
         return;
       }
       const rows = group.fields || [];
@@ -26557,7 +26747,7 @@
           <tr draggable="${!isPlanReadonly()}" data-plan-field-index="${index}">
             <td title="${escapeHtml(field.name)}">
               <div class="drag-field">
-                <span class="drag-handle">☰</span>
+                ${readonly ? "" : `<span class="drag-handle">☰</span>`}
                 <span class="plan-field-cell">
                   <span class="plan-field-title-line"><strong>${escapeHtml(field.name)}</strong>${linkageMark}</span>
                   <span>${escapeHtml(getPlanFieldType(field))}</span>
@@ -26565,7 +26755,7 @@
               </div>
             </td>
             <td><input value="${escapeHtml(field.displayName || field.name)}" data-plan-field-prop="displayName" data-index="${index}"></td>
-            <td><input type="checkbox" ${field.required ? "checked" : ""} data-plan-field-prop="required" data-index="${index}"></td>
+            ${readonly ? "" : `<td><input type="checkbox" ${field.required ? "checked" : ""} data-plan-field-prop="required" data-index="${index}"></td>`}
             <td><select data-plan-field-prop="editable" data-index="${index}">${optionHtml(["隐藏", "只读", "可编辑"], field.editable || "可编辑")}</select></td>
             <td>${renderPlanDefaultValueControl(field, index)}</td>
             <td><input value="${escapeHtml(field.placeholder || "")}" placeholder="请输入提示语" data-plan-field-prop="placeholder" data-index="${index}"></td>
@@ -26574,10 +26764,10 @@
                 <input value="${escapeHtml(field.helpText || "")}" placeholder="请输入帮助说明" data-plan-field-prop="helpText" data-index="${index}" aria-label="输入${escapeHtml(field.displayName || field.name)}帮助说明">
               </span>
             </td>
-            <td><button class="link danger" type="button" data-plan-field-delete="${index}">删除</button></td>
+            ${readonly ? "" : `<td><button class="link danger" type="button" data-plan-field-delete="${index}">删除</button></td>`}
           </tr>
         `;
-      }).join("") : `<tr><td class="plan-empty-row" colspan="8">请至少添加一条数据</td></tr>`;
+      }).join("") : `<tr><td class="plan-empty-row" colspan="${readonly ? 6 : 8}">请至少添加一条数据</td></tr>`;
     }
 
     function getPlanTimingConfig(type) {
@@ -26731,6 +26921,7 @@
       const tbody = document.querySelector("#planLinkageRows");
       const total = document.querySelector("#planLinkageTotal");
       if (!tbody) return;
+      const readonly = isPlanReadonly();
       const rules = ensurePlanLinkageRules();
       const filtered = rules
         .map((rule, index) => ({ rule, index }))
@@ -26745,6 +26936,41 @@
           ].join(" ");
           return joined.includes(planLinkageFilter);
         });
+      const table = tbody.closest("table");
+      if (table) {
+        table.querySelector("colgroup").innerHTML = readonly
+          ? `
+            <col style="width: 220px">
+            <col style="width: 128px">
+            <col style="width: 220px">
+            <col style="width: 160px">
+            <col style="width: 328px">
+          `
+          : `
+            <col style="width: 200px">
+            <col style="width: 118px">
+            <col style="width: 170px">
+            <col style="width: 140px">
+            <col style="width: 300px">
+            <col style="width: 128px">
+          `;
+        table.querySelector("thead tr").innerHTML = readonly
+          ? `
+              <th>源字段</th>
+              <th>运算符</th>
+              <th>源值</th>
+              <th>规则类型</th>
+              <th>目标字段</th>
+            `
+          : `
+              <th>源字段</th>
+              <th>运算符</th>
+              <th>源值</th>
+              <th>规则类型</th>
+              <th>目标字段</th>
+              <th>操作</th>
+            `;
+      }
       tbody.innerHTML = filtered.length ? filtered.map(({ rule, index }) => `
         <tr data-plan-linkage-index="${index}">
           <td><select data-plan-linkage-prop="sourceField">${planOptionHtml(getPlanLinkageFieldNames(), rule.sourceField, "请选择")}</select></td>
@@ -26752,12 +26978,23 @@
           <td>${renderPlanLinkageMultiControl(index, "value", getPlanLinkageValueOptions(rule.sourceField).map(value => ({ value, label: value })), rule.value, "请选择")}</td>
           <td><select data-plan-linkage-prop="action">${optionHtml(["显示且必填", "显示且选填", "隐藏"], rule.action || "显示且必填")}</select></td>
           <td>${renderPlanLinkageMultiControl(index, "targetField", getPlanLinkageFieldNames().map(value => ({ value, label: value })), rule.targetField, "请选择")}</td>
-          <td>
+          ${readonly ? "" : `<td>
             <button class="link danger" type="button" data-plan-linkage-delete="${index}">删除</button>
-          </td>
+          </td>`}
         </tr>
-      `).join("") : `<tr><td class="plan-empty-row" colspan="6">暂无联动规则</td></tr>`;
+      `).join("") : `<tr><td class="plan-empty-row" colspan="${readonly ? 5 : 6}">暂无联动规则</td></tr>`;
       if (total) total.textContent = `共${filtered.length}条`;
+      applyPlanLinkageReadonly();
+    }
+
+    function applyPlanLinkageReadonly() {
+      const modal = document.querySelector("#planLinkageModal");
+      if (!modal) return;
+      const readonly = isPlanReadonly();
+      modal.classList.toggle("readonly-mode", readonly);
+      modal.querySelectorAll("#planLinkageRows input, #planLinkageRows select, #planLinkageRows button").forEach(control => {
+        control.disabled = readonly;
+      });
     }
 
     function openPlanLinkageModal() {
@@ -26765,7 +27002,11 @@
       planLinkageSnapshot = clonePlanPayload(getActivePlan()?.linkageRules || []);
       renderPlanLinkageRules();
       modalMask.classList.add("show");
-      document.querySelector("#planLinkageModal").classList.add("show");
+      const modal = document.querySelector("#planLinkageModal");
+      modal.classList.toggle("readonly-mode", isPlanReadonly());
+      document.querySelector("#cancelPlanLinkage").textContent = isPlanReadonly() ? "关闭" : "取消";
+      modal.classList.add("show");
+      applyPlanLinkageReadonly();
     }
 
     function closePlanLinkageModal(options = {}) {
@@ -26787,6 +27028,7 @@
     }
 
     function addPlanLinkageRule() {
+      if (isPlanReadonly()) return;
       const rules = ensurePlanLinkageRules();
       const fields = getPlanAllFieldNames();
       rules.push({
@@ -26810,13 +27052,14 @@
     function renderPlanNotifyChannelSelect(rule = {}, field = "notifyChannels") {
       const selected = new Set(getPlanNotifyChannels(rule, field));
       const text = selected.size ? Array.from(selected).join("、") : "请选择通知渠道";
+      const disabled = isPlanReadonly();
       return `
-        <div class="plan-channel-select" data-plan-channel-field="${escapeHtml(field)}">
-          <button class="plan-channel-trigger" type="button" data-plan-channel-toggle>${escapeHtml(text)}</button>
+        <div class="plan-channel-select ${disabled ? "disabled" : ""}" data-plan-channel-field="${escapeHtml(field)}">
+          <button class="plan-channel-trigger" type="button" data-plan-channel-toggle ${disabled ? "disabled" : ""}>${escapeHtml(text)}</button>
           <div class="plan-channel-menu" hidden>
             ${["邮件", "短信", "飞书", "站内信"].map(channel => `
               <label>
-                <input type="checkbox" value="${escapeHtml(channel)}" data-plan-notify-channel data-plan-channel-field="${escapeHtml(field)}" ${selected.has(channel) ? "checked" : ""}>
+                <input type="checkbox" value="${escapeHtml(channel)}" data-plan-notify-channel data-plan-channel-field="${escapeHtml(field)}" ${selected.has(channel) ? "checked" : ""} ${disabled ? "disabled" : ""}>
                 <span>${escapeHtml(channel)}</span>
               </label>
             `).join("")}
@@ -26859,6 +27102,9 @@
       }
       if (String(templateName).includes("退回")) {
         return `尊敬的${name}：您好，您的入职信息采集已退回，请根据退回说明补充或修正信息后重新提交。${url}`;
+      }
+      if (String(templateName).includes("取消入职")) {
+        return `尊敬的${name}：您好，候选人已取消入职，请及时调整或终止相关准备工作。${url}`;
       }
       return `尊敬的${name}：您好，欢迎您加入【测试】${company}，为了方便您的入职，需要在入职前对您个人的相关信息进行采集，请尽快完成。请复制下方网页地址到浏览器地址栏中打开：${url}`;
     }
@@ -26924,7 +27170,6 @@
       const form = document.querySelector("#planCollectRuleForm");
       if (!plan || !form) return;
       const rule = plan.collectRule || {};
-      const notifyTemplateOn = rule.notifyTemplateEnabled !== false;
       const autoNotifyOn = Boolean(rule.autoNotify);
       const reminderOn = rule.reminderEnabled !== false;
       const notifyParsed = parsePlanTimingValue("notify", rule.notifyTiming);
@@ -27056,6 +27301,27 @@
       `;
       renderPlanPrepareLaunchRules();
       updatePlanRuleControlStates();
+    }
+
+    function renderPlanCancelRuleStep() {
+      const plan = getActivePlan();
+      const form = document.querySelector("#planCancelRuleForm");
+      if (!plan || !form) return;
+      const rule = plan.collectRule || {};
+      form.innerHTML = `
+        <div class="plan-form-block">
+          <div class="plan-form-block-head">
+            <span class="plan-form-block-title">取消入职通知模板配置</span>
+            <span class="plan-form-block-desc">可设置取消入职通知模板，候选人取消入职后，系统将自动告知入职准备事项责任人，及时调整或终止相关准备工作。</span>
+          </div>
+          ${renderPlanMessageConfigRow({
+            templateId: "planCancelTemplate",
+            templateValue: rule.cancelTemplate || "取消入职通知模板",
+            rule,
+            channelField: "cancelChannels"
+          })}
+        </div>
+      `;
     }
 
     function renderPlanPrepareLaunchRules() {
@@ -27223,6 +27489,7 @@
     function handlePlanChannelSelectClick(event) {
       const toggle = event.target.closest("[data-plan-channel-toggle]");
       if (toggle) {
+        if (toggle.disabled || isPlanReadonly()) return true;
         const wrapper = toggle.closest(".plan-channel-select");
         const willOpen = !wrapper.classList.contains("open");
         closePlanChannelSelects(wrapper);
@@ -27314,18 +27581,19 @@
       const plan = getActivePlan();
       const list = document.querySelector("#planTodoList");
       if (!plan || !list) return;
+      const readonly = isPlanReadonly();
       syncPlanTodoManagerState();
       if (!Array.isArray(plan.prepareItems)) plan.prepareItems = [];
       list.innerHTML = plan.prepareItems.map((item, index) => `
-        <div class="plan-side-item ${index === activePlanTodoIndex ? "active" : ""}" data-plan-todo-index="${index}" draggable="${!isPlanReadonly()}">
-          <span class="plan-side-drag" title="拖拽排序">☰</span>
+        <div class="plan-side-item ${index === activePlanTodoIndex ? "active" : ""}" data-plan-todo-index="${index}" draggable="${!readonly}">
+          ${readonly ? "" : `<span class="plan-side-drag" title="拖拽排序">☰</span>`}
           <span class="plan-side-name">${escapeHtml(item.name)}</span>
           <span class="plan-side-count">${item.rules?.length || 0}</span>
-          <span class="plan-side-row-actions">
+          ${readonly ? "" : `<span class="plan-side-row-actions">
             <button class="danger" type="button" data-plan-todo-row-delete="${index}" title="删除" aria-label="删除事项">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>
             </button>
-          </span>
+          </span>`}
         </div>
       `).join("");
       renderPlanTodoRules();
@@ -27477,6 +27745,7 @@
       if (!wrapper || !input) return;
       wrapper.hidden = !todo;
       input.value = todo?.detail || "";
+      input.disabled = isPlanReadonly();
     }
 
     function closePlanScopeMenu() {
@@ -27538,12 +27807,44 @@
     function renderPlanTodoRules() {
       const todo = getActivePlanTodo();
       const tbody = document.querySelector("#planTodoRuleRows");
+      const readonly = isPlanReadonly();
       document.querySelector("#planTodoPanelTitle").textContent = todo ? `${todo.name} · 字段配置` : "字段配置";
       document.querySelector("#planTodoPanelCount").textContent = todo?.rules?.length || 0;
       syncPlanTodoDetailConfig(todo);
       if (!tbody) return;
+      const table = tbody.closest("table");
+      if (table) {
+        table.querySelector("colgroup").innerHTML = readonly
+          ? `
+                      <col style="width: 330px">
+                      <col style="width: 140px">
+                      <col style="width: 180px">
+                      <col style="width: 300px">
+                    `
+          : `
+                      <col style="width: 300px">
+                      <col style="width: 120px">
+                      <col style="width: 160px">
+                      <col style="width: 260px">
+                      <col style="width: 90px">
+                    `;
+        table.querySelector("thead tr").innerHTML = readonly
+          ? `
+                        <th>规则适用范围</th>
+                        <th>待办类型</th>
+                        <th>负责人类型</th>
+                        <th>负责人</th>
+                      `
+          : `
+                        <th>规则适用范围</th>
+                        <th>待办类型</th>
+                        <th>负责人类型</th>
+                        <th>负责人</th>
+                        <th>操作</th>
+                      `;
+      }
       if (!todo) {
-        tbody.innerHTML = `<tr><td class="plan-empty-row" colspan="5">请先新增事项类别</td></tr>`;
+        tbody.innerHTML = `<tr><td class="plan-empty-row" colspan="${readonly ? 4 : 5}">请先新增事项类别</td></tr>`;
         return;
       }
       const rules = todo.rules || [];
@@ -27556,10 +27857,10 @@
             <td><select data-plan-todo-rule-prop="todoType" data-index="${index}">${optionHtml(todoTypeOptions, todoType, "请选择")}</select></td>
             <td><select data-plan-todo-rule-prop="ownerType" data-index="${index}">${optionHtml(["指定人", "指定角色"], rule.ownerType || "", "请选择")}</select></td>
             <td>${renderPlanTodoOwnerControl(rule, index)}</td>
-            <td><button class="link danger" type="button" data-plan-todo-rule-delete="${index}">删除</button></td>
+            ${readonly ? "" : `<td><button class="link danger" type="button" data-plan-todo-rule-delete="${index}">删除</button></td>`}
           </tr>
         `;
-      }).join("") : `<tr><td class="plan-empty-row" colspan="5">请至少添加一条数据</td></tr>`;
+      }).join("") : `<tr><td class="plan-empty-row" colspan="${readonly ? 4 : 5}">请至少添加一条数据</td></tr>`;
     }
 
     function savePlanConfigToList() {
@@ -27607,6 +27908,7 @@
     }
 
     function syncActivePlanGroupMeta() {
+      if (isPlanReadonly()) return;
       const group = getActivePlanGroup();
       if (!group || !document.querySelector("#planBlockTip")) return;
       group.tip = document.querySelector("#planBlockTip").value;
@@ -27629,6 +27931,7 @@
       const reminderChannels = getChannelValues("reminderChannels", previousCollectRule.reminderChannels || ["邮件"]);
       const candidateSubmitChannels = getChannelValues("candidateSubmitChannels", previousCollectRule.candidateSubmitChannels || ["邮件"]);
       const returnCollectChannels = getChannelValues("returnCollectChannels", previousCollectRule.returnCollectChannels || ["邮件"]);
+      const cancelChannels = getChannelValues("cancelChannels", previousCollectRule.cancelChannels || ["邮件"]);
       const singleTodoChannels = getChannelValues("singleTodoChannels", previousPrepareRule.singleTodoChannels || ["邮件"]);
       const mergedTodoChannels = getChannelValues("mergedTodoChannels", previousPrepareRule.mergedTodoChannels || ["邮件"]);
       const prepareReminderChannels = getChannelValues("prepareReminderChannels", previousPrepareRule.prepareReminderChannels || previousPrepareRule.reminderChannels || ["邮件"]);
@@ -27660,6 +27963,8 @@
         candidateSubmitChannels,
         returnCollectTemplate: document.querySelector("#planReturnCollectTemplate")?.value || previousCollectRule.returnCollectTemplate || "退回采集信息通知模板",
         returnCollectChannels,
+        cancelTemplate: document.querySelector("#planCancelTemplate")?.value || previousCollectRule.cancelTemplate || "取消入职通知模板",
+        cancelChannels,
         reminderDays: Number(document.querySelector("#planReminderDays")?.value ?? previousCollectRule.reminderDays ?? 3),
         reminderInterval: Number(document.querySelector("#planReminderInterval")?.value ?? previousCollectRule.reminderInterval ?? 1),
         reminderTime: document.querySelector("#planReminderTime")?.value || previousCollectRule.reminderTime || "09:00",
@@ -27752,6 +28057,10 @@
     }
 
     function confirmPlanPicker() {
+      if (isPlanReadonly()) {
+        closePlanPicker();
+        return;
+      }
       const values = Array.from(planPickerSelection);
       const plan = getActivePlan();
       if (!plan || !values.length || !planPickerContext) {
@@ -27806,6 +28115,7 @@
     }
 
     function movePlanGroup(direction) {
+      if (isPlanReadonly()) return;
       const plan = getActivePlan();
       const groups = plan?.collectGroups || [];
       const next = direction === "up" ? activePlanGroupIndex - 1 : activePlanGroupIndex + 1;
@@ -27817,6 +28127,7 @@
     }
 
     function movePlanTodo(direction) {
+      if (isPlanReadonly()) return;
       const plan = getActivePlan();
       const items = plan?.prepareItems || [];
       const next = direction === "up" ? activePlanTodoIndex - 1 : activePlanTodoIndex + 1;
@@ -27827,6 +28138,7 @@
     }
 
     function deleteActivePlanGroup() {
+      if (isPlanReadonly()) return;
       const plan = getActivePlan();
       if (!plan?.collectGroups?.length) return;
       plan.collectGroups.splice(activePlanGroupIndex, 1);
@@ -27835,6 +28147,7 @@
     }
 
     function deleteActivePlanTodo() {
+      if (isPlanReadonly()) return;
       const plan = getActivePlan();
       if (!plan?.prepareItems?.length) return;
       plan.prepareItems.splice(activePlanTodoIndex, 1);
@@ -27843,6 +28156,7 @@
     }
 
     function exportActivePlanFields() {
+      if (isPlanReadonly()) return;
       const plan = getActivePlan();
       const groups = plan?.collectGroups || [];
       const rows = groups.flatMap(group => (group.fields || []).map(field => ({ group, field })));
@@ -27877,6 +28191,7 @@
     }
 
     function addPlanTodoRule() {
+      if (isPlanReadonly()) return;
       const todo = getActivePlanTodo();
       if (!todo) return;
       if (!todo.rules) todo.rules = [];
@@ -27886,6 +28201,7 @@
     }
 
     function exportPlanTodos() {
+      if (isPlanReadonly()) return;
       const plan = getActivePlan();
       const items = plan?.prepareItems || [];
       const rows = items.flatMap(item => (item.rules || []).map(rule => ({ item, rule })));
@@ -30520,8 +30836,12 @@
       renderOnboardingPlans();
     });
     document.querySelector("#savePlanConfig").addEventListener("click", savePlanConfigToList);
-    document.querySelector("#planBasicInfo").addEventListener("input", () => syncPlanDraftFromBasicForm());
+    document.querySelector("#planBasicInfo").addEventListener("input", () => {
+      if (isPlanReadonly()) return;
+      syncPlanDraftFromBasicForm();
+    });
     document.querySelector("#planBasicInfo").addEventListener("change", event => {
+      if (isPlanReadonly()) return;
       if (event.target.closest("[data-plan-employment-type]")) {
         syncPlanEmploymentTypeMulti();
       }
@@ -30538,6 +30858,7 @@
       const context = wrapper?.dataset.planOrgContext;
       const node = findPlanOrgNode(checkbox.dataset.planOrgNodeId);
       if (!context || !node) return;
+      if (context !== "filter" && isPlanReadonly()) return;
       const current = context === "filter" ? planOrgFilterIds : getActivePlan()?.orgIds || [];
       const next = new Set(normalizePlanOrgIds(current));
       getPlanOrgLeafIds(node).forEach(id => {
@@ -30558,6 +30879,7 @@
         const context = wrapper?.dataset.planOrgContext;
         const node = findPlanOrgNode(planOrgRemove.dataset.planOrgRemove);
         if (!context || !node) return;
+        if (context !== "filter" && isPlanReadonly()) return;
         const current = context === "filter" ? planOrgFilterIds : getActivePlan()?.orgIds || [];
         const removeIds = new Set(getPlanOrgLeafIds(node));
         setPlanOrgSelection(context, normalizePlanOrgIds(current).filter(id => !removeIds.has(id)));
@@ -30577,6 +30899,7 @@
       }
       const linkageMultiTrigger = event.target.closest("[data-plan-linkage-multi-trigger]");
       if (linkageMultiTrigger) {
+        if (isPlanReadonly()) return;
         const wrapper = linkageMultiTrigger.closest(".plan-linkage-multi");
         const willOpen = !wrapper.classList.contains("open");
         closePlanLinkageMultiSelects(wrapper);
@@ -30587,6 +30910,7 @@
       }
       const planMultiTrigger = event.target.closest("[data-plan-multi-toggle]");
       if (planMultiTrigger) {
+        if (planMultiTrigger.disabled || isPlanReadonly()) return;
         const wrapper = planMultiTrigger.closest(".plan-multi-select");
         const willOpen = !wrapper.classList.contains("open");
         closePlanMultiSelects(wrapper);
@@ -30611,6 +30935,7 @@
       }
       const optionPreview = event.target.closest("[data-plan-message-option-preview]");
       if (optionPreview) {
+        if (optionPreview.disabled || isPlanReadonly()) return;
         const wrapper = optionPreview.closest(".plan-pc-select");
         closePlanPcSelects();
         openPlanMessagePreview(optionPreview.dataset.planMessageOptionPreview, optionPreview.dataset.planMessageTemplateName || "");
@@ -30676,16 +31001,22 @@
     document.querySelector("#planStepper").addEventListener("click", event => {
       const button = event.target.closest("[data-plan-step]");
       if (!button) return;
-      syncPlanCollectRuleFromForm();
-      syncActivePlanGroupMeta();
+      if (!isPlanReadonly()) {
+        syncPlanCollectRuleFromForm();
+        syncActivePlanGroupMeta();
+      }
       activePlanStep = button.dataset.planStep;
       syncPlanStepper();
       if (activePlanStep === "prepareRule") renderPlanPrepareLaunchRules();
-      if (activePlanStep === "collectRule") renderPlanCollectRuleStep();
+      if (activePlanStep === "collectRule") {
+        renderPlanCollectRuleStep();
+        renderPlanCancelRuleStep();
+      }
       if (activePlanStep === "prepare") renderPlanPrepareStep();
       applyPlanReadonly();
     });
     document.querySelector("#openPlanGroupPicker").addEventListener("click", () => {
+      if (isPlanReadonly()) return;
       const plan = getActivePlan();
       const existing = new Set((plan?.collectGroups || []).map(group => group.name));
       openPlanPicker("group", "选择分组", templateBlockNameOptions.map(name => ({ value: name, label: name, disabled: existing.has(name) })));
@@ -30705,7 +31036,10 @@
       renderPlanTemplateStep();
       applyPlanReadonly();
     });
-    document.querySelector("#exportPlanFields").addEventListener("click", exportActivePlanFields);
+    document.querySelector("#exportPlanFields").addEventListener("click", () => {
+      if (isPlanReadonly()) return;
+      exportActivePlanFields();
+    });
     document.querySelector("#openPlanLinkage").addEventListener("click", openPlanLinkageModal);
     document.querySelector("#openPlanPcPreview").addEventListener("click", () => openPlanCollectionPreview("pc"));
     document.querySelector("#openPlanMobilePreview").addEventListener("click", () => openPlanCollectionPreview("mobile"));
@@ -30753,6 +31087,7 @@
       trigger.addEventListener("blur", hidePlanHelpTip);
     });
     document.querySelector("#openPlanFieldPicker").addEventListener("click", () => {
+      if (isPlanReadonly()) return;
       const group = getActivePlanGroup();
       const existing = new Set((group?.fields || []).map(field => field.name));
       const catalog = getPlanFieldCatalog(group?.name || "员工信息");
@@ -30772,11 +31107,11 @@
       event.dataTransfer.effectAllowed = "move";
     });
     document.querySelector("#planGroupList").addEventListener("dragover", event => {
-      if (draggedPlanGroupIndex === null) return;
+      if (draggedPlanGroupIndex === null || isPlanReadonly()) return;
       event.preventDefault();
     });
     document.querySelector("#planGroupList").addEventListener("drop", event => {
-      if (draggedPlanGroupIndex === null) return;
+      if (draggedPlanGroupIndex === null || isPlanReadonly()) return;
       const item = event.target.closest("[data-plan-group-index]");
       const plan = getActivePlan();
       if (!item || !plan?.collectGroups) return;
@@ -30797,6 +31132,7 @@
     document.querySelector("#planGroupList").addEventListener("click", event => {
       const move = event.target.closest("[data-plan-group-row-move]");
       if (move) {
+        if (isPlanReadonly()) return;
         event.stopPropagation();
         syncActivePlanGroupMeta();
         activePlanGroupIndex = Number(move.dataset.index);
@@ -30806,6 +31142,7 @@
       }
       const remove = event.target.closest("[data-plan-group-row-delete]");
       if (remove) {
+        if (isPlanReadonly()) return;
         event.stopPropagation();
         activePlanGroupIndex = Number(remove.dataset.planGroupRowDelete);
         deleteActivePlanGroup();
@@ -30839,6 +31176,7 @@
     });
     document.querySelector("#addPlanLinkageRule").addEventListener("click", addPlanLinkageRule);
     document.querySelector("#planLinkageRows").addEventListener("change", event => {
+      if (isPlanReadonly()) return;
       const multiOption = event.target.closest("[data-plan-linkage-multi-option]");
       if (multiOption) {
         const rules = ensurePlanLinkageRules();
@@ -30862,6 +31200,7 @@
       }
     });
     document.querySelector("#planLinkageRows").addEventListener("click", event => {
+      if (isPlanReadonly()) return;
       const remove = event.target.closest("[data-plan-linkage-delete]");
       if (remove) {
         ensurePlanLinkageRules().splice(Number(remove.dataset.planLinkageDelete), 1);
@@ -30871,6 +31210,7 @@
     document.querySelector("#planBlockTip").addEventListener("input", syncActivePlanGroupMeta);
     document.querySelector("#planBlockRequired").addEventListener("change", syncActivePlanGroupMeta);
     document.querySelector("#planFieldRows").addEventListener("input", event => {
+      if (isPlanReadonly()) return;
       const input = event.target.closest("[data-plan-field-prop]");
       if (!input) return;
       const group = getActivePlanGroup();
@@ -30886,6 +31226,7 @@
       field[prop] = input.type === "checkbox" ? input.checked : input.value;
     });
     document.querySelector("#planFieldRows").addEventListener("change", event => {
+      if (isPlanReadonly()) return;
       const input = event.target.closest("[data-plan-field-prop]");
       if (!input) return;
       const group = getActivePlanGroup();
@@ -30913,11 +31254,13 @@
       }
       const editHelp = event.target.closest("[data-plan-field-edit-help]");
       if (editHelp) {
+        if (isPlanReadonly()) return;
         openPlanFieldHelpEdit(editHelp.dataset.planFieldEditHelp);
         return;
       }
       const button = event.target.closest("[data-plan-field-delete]");
       if (!button) return;
+      if (isPlanReadonly()) return;
       const group = getActivePlanGroup();
       group?.fields?.splice(Number(button.dataset.planFieldDelete), 1);
       renderPlanTemplateStep();
@@ -30925,17 +31268,17 @@
     });
     document.querySelector("#planFieldRows").addEventListener("dragstart", event => {
       const row = event.target.closest("[data-plan-field-index]");
-      if (!row) return;
+      if (!row || isPlanReadonly()) return;
       draggedPlanFieldIndex = Number(row.dataset.planFieldIndex);
       row.classList.add("dragging");
       event.dataTransfer.effectAllowed = "move";
     });
     document.querySelector("#planFieldRows").addEventListener("dragover", event => {
-      if (draggedPlanFieldIndex === null) return;
+      if (draggedPlanFieldIndex === null || isPlanReadonly()) return;
       event.preventDefault();
     });
     document.querySelector("#planFieldRows").addEventListener("drop", event => {
-      if (draggedPlanFieldIndex === null) return;
+      if (draggedPlanFieldIndex === null || isPlanReadonly()) return;
       const row = event.target.closest("[data-plan-field-index]");
       const group = getActivePlanGroup();
       if (!row || !group?.fields) return;
@@ -30951,20 +31294,23 @@
       draggedPlanFieldIndex = null;
       event.target.closest("[data-plan-field-index]")?.classList.remove("dragging");
     });
-    document.querySelector("#planCollectRuleForm").addEventListener("change", event => {
-      syncPlanCollectRuleFromForm();
-      if (event.target.matches("[data-plan-notify-channel]")) {
-        syncPlanNotifyChannelTrigger(event.target.closest(".plan-channel-select"));
-      }
-      if (event.target.id === "planNotifyTemplateEnabled" || event.target.id === "planAutoNotify" || event.target.id === "planReminderEnabled" || event.target.matches("input[name='planNotifyTimingMode']")) {
-        renderPlanCollectRuleStep();
-        applyPlanReadonly();
-      }
+    document.querySelectorAll(".plan-collect-rule-form").forEach(form => {
+      form.addEventListener("change", event => {
+        syncPlanCollectRuleFromForm();
+        if (event.target.matches("[data-plan-notify-channel]")) {
+          syncPlanNotifyChannelTrigger(event.target.closest(".plan-channel-select"));
+        }
+        if (event.target.id === "planNotifyTemplateEnabled" || event.target.id === "planAutoNotify" || event.target.id === "planReminderEnabled" || event.target.matches("input[name='planNotifyTimingMode']")) {
+          renderPlanCollectRuleStep();
+          renderPlanCancelRuleStep();
+          applyPlanReadonly();
+        }
+      });
+      form.addEventListener("click", event => {
+        handlePlanChannelSelectClick(event);
+      });
+      form.addEventListener("input", syncPlanCollectRuleFromForm);
     });
-    document.querySelector("#planCollectRuleForm").addEventListener("click", event => {
-      handlePlanChannelSelectClick(event);
-    });
-    document.querySelector("#planCollectRuleForm").addEventListener("input", syncPlanCollectRuleFromForm);
     document.querySelector("#planPrepareLaunchForm").addEventListener("change", event => {
       syncPlanCollectRuleFromForm();
       if (event.target.matches("[data-plan-notify-channel]")) {
@@ -30985,6 +31331,7 @@
     });
     document.querySelector("#exportPlanTodos").addEventListener("click", exportPlanTodos);
     document.querySelector("#openPlanTodoPicker").addEventListener("click", () => {
+      if (isPlanReadonly()) return;
       const plan = getActivePlan();
       const existing = new Set((plan?.prepareItems || []).map(item => item.category));
       const categories = Array.from(new Set(todos.map(item => item.category)));
@@ -30992,6 +31339,7 @@
     });
     document.querySelector("#addPlanTodoRule").addEventListener("click", addPlanTodoRule);
     document.querySelector("#planTodoDetailInput").addEventListener("input", event => {
+      if (isPlanReadonly()) return;
       const todo = getActivePlanTodo();
       if (!todo) return;
       todo.detail = event.target.value;
@@ -31004,11 +31352,11 @@
       event.dataTransfer.effectAllowed = "move";
     });
     document.querySelector("#planTodoList").addEventListener("dragover", event => {
-      if (draggedPlanTodoIndex === null) return;
+      if (draggedPlanTodoIndex === null || isPlanReadonly()) return;
       event.preventDefault();
     });
     document.querySelector("#planTodoList").addEventListener("drop", event => {
-      if (draggedPlanTodoIndex === null) return;
+      if (draggedPlanTodoIndex === null || isPlanReadonly()) return;
       const item = event.target.closest("[data-plan-todo-index]");
       const plan = getActivePlan();
       if (!item || !plan?.prepareItems) return;
@@ -31028,6 +31376,7 @@
     document.querySelector("#planTodoList").addEventListener("click", event => {
       const move = event.target.closest("[data-plan-todo-row-move]");
       if (move) {
+        if (isPlanReadonly()) return;
         event.stopPropagation();
         activePlanTodoIndex = Number(move.dataset.index);
         movePlanTodo(move.dataset.planTodoRowMove);
@@ -31036,6 +31385,7 @@
       }
       const remove = event.target.closest("[data-plan-todo-row-delete]");
       if (remove) {
+        if (isPlanReadonly()) return;
         event.stopPropagation();
         activePlanTodoIndex = Number(remove.dataset.planTodoRowDelete);
         deleteActivePlanTodo();
@@ -31049,6 +31399,7 @@
       applyPlanReadonly();
     });
     document.querySelector("#planTodoRuleRows").addEventListener("change", event => {
+      if (isPlanReadonly()) return;
       const personOption = event.target.closest("[data-plan-owner-person-option]");
       if (personOption) {
         const todo = getActivePlanTodo();
@@ -31085,6 +31436,7 @@
       }
     });
     document.querySelector("#planTodoRuleRows").addEventListener("input", event => {
+      if (isPlanReadonly()) return;
       const control = event.target.closest("[data-plan-todo-rule-prop]");
       if (!control) return;
       const todo = getActivePlanTodo();
@@ -31095,6 +31447,7 @@
     document.querySelector("#planTodoRuleRows").addEventListener("click", event => {
       const personToggle = event.target.closest("[data-plan-owner-person-toggle]");
       if (personToggle) {
+        if (isPlanReadonly()) return;
         const multi = personToggle.closest(".plan-owner-person-multi");
         const willOpen = !multi.classList.contains("open");
         closePlanOwnerPersonMultis(multi);
@@ -31107,6 +31460,7 @@
       }
       const ownerToggle = event.target.closest("[data-plan-owner-cascade-toggle]");
       if (ownerToggle) {
+        if (isPlanReadonly()) return;
         const cascade = ownerToggle.closest(".plan-owner-cascade");
         const willOpen = !cascade.classList.contains("open");
         closePlanOwnerCascades(cascade);
@@ -31119,6 +31473,7 @@
       }
       const roleTypeButton = event.target.closest("[data-plan-owner-role-type]");
       if (roleTypeButton) {
+        if (isPlanReadonly()) return;
         const todo = getActivePlanTodo();
         const rule = todo?.rules?.[Number(roleTypeButton.dataset.index)];
         if (!rule) return;
@@ -31144,6 +31499,7 @@
       }
       const roleButton = event.target.closest("[data-plan-owner-role]");
       if (roleButton) {
+        if (isPlanReadonly()) return;
         const todo = getActivePlanTodo();
         const rule = todo?.rules?.[Number(roleButton.dataset.index)];
         if (!rule) return;
@@ -31163,12 +31519,14 @@
       }
       const scope = event.target.closest("[data-plan-todo-scope-open]");
       if (scope) {
+        if (isPlanReadonly()) return;
         const ruleIndex = Number(scope.dataset.planTodoScopeOpen);
         openPlanScopeMenu(scope, ruleIndex);
         return;
       }
       const button = event.target.closest("[data-plan-todo-rule-delete]");
       if (!button) return;
+      if (isPlanReadonly()) return;
       const todo = getActivePlanTodo();
       todo?.rules?.splice(Number(button.dataset.planTodoRuleDelete), 1);
       renderPlanTodoRules();
@@ -31641,7 +31999,8 @@
     });
     document.querySelector("#closeCollectRecord").addEventListener("click", closeCollectRecordModal);
     document.querySelector("#cancelCollectRecord").addEventListener("click", closeCollectRecordModal);
-    document.querySelector("#saveCollectRecord").addEventListener("click", saveCollectRecord);
+    document.querySelector("#draftCollectRecord").addEventListener("click", () => saveCollectRecord(true));
+    document.querySelector("#saveCollectRecord").addEventListener("click", () => saveCollectRecord(false));
     document.querySelector("#collectRecordForm").addEventListener("change", event => {
       const radio = event.target.closest("input[type='radio'][data-collect-radio]");
       if (radio) {
