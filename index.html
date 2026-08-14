@@ -5296,6 +5296,33 @@
       display: none;
     }
 
+    .plan-template-validation {
+      margin: 8px 18px 0;
+      padding: 9px 12px;
+      border: 1px solid #ffd6dd;
+      border-radius: 6px;
+      color: #be123c;
+      background: #fff1f2;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .plan-template-validation[hidden] {
+      display: none;
+    }
+
+    .plan-template-validation strong {
+      display: block;
+      margin-bottom: 2px;
+      color: #9f1239;
+      font-size: 13px;
+    }
+
+    .plan-template-validation ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
     .plan-org-multi {
       position: relative;
       min-width: 0;
@@ -6270,7 +6297,7 @@
     }
 
     .prepare-workspace .plan-config-table {
-      min-width: 900px;
+      min-width: 960px;
     }
 
     .plan-config-table th,
@@ -7745,6 +7772,35 @@
       font-size: 12px;
     }
 
+    .plan-linkage-validation {
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border: 1px solid #ffe4e6;
+      border-radius: 6px;
+      color: #9f1239;
+      background: #fff1f2;
+      font-size: 12px;
+    }
+
+    .plan-linkage-validation[hidden] {
+      display: none;
+    }
+
+    .plan-linkage-validation strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #be123c;
+      font-size: 13px;
+    }
+
+    .plan-linkage-validation ol {
+      max-height: 116px;
+      margin: 0;
+      padding-left: 20px;
+      overflow: auto;
+      line-height: 1.65;
+    }
+
     .plan-linkage-filter input,
     .plan-linkage-table input,
     .plan-linkage-table select {
@@ -7800,6 +7856,30 @@
 
     .plan-linkage-table tr:hover td {
       background: #f8fbff;
+    }
+
+    .plan-linkage-table tr.plan-linkage-row-error > td {
+      background: #fffafb;
+    }
+
+    .plan-linkage-table td.plan-linkage-control-error select,
+    .plan-linkage-table td.plan-linkage-control-error .plan-linkage-multi-trigger {
+      border-color: #f43f5e;
+      box-shadow: 0 0 0 2px rgba(244, 63, 94, .08);
+    }
+
+    .plan-linkage-table .plan-linkage-error-detail td {
+      height: auto;
+      padding: 0 8px 8px;
+      color: #e11d48;
+      background: #fffafb;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .plan-linkage-error-detail ul {
+      margin: 0;
+      padding-left: 18px;
     }
 
     .plan-linkage-table th,
@@ -17423,6 +17503,7 @@
           <div class="plan-template-actions" id="planPrepareActions" hidden>
             <button class="employment-btn" type="button" id="exportPlanTodos">⇩ 导出</button>
           </div>
+          <div class="plan-template-validation" id="planTemplateValidation" role="alert" aria-live="assertive" hidden></div>
           <div class="plan-step-panel" id="planTemplatePanel">
             <div class="plan-split-workspace">
               <aside class="plan-side-manager">
@@ -17533,6 +17614,7 @@
                 <div class="plan-table-wrap">
                   <table class="plan-config-table">
                     <colgroup>
+                      <col style="width: 86px">
                       <col style="width: 300px">
                       <col style="width: 120px">
                       <col style="width: 160px">
@@ -17541,6 +17623,7 @@
                     </colgroup>
                     <thead>
                       <tr>
+                        <th>优先级</th>
                         <th>规则适用范围</th>
                         <th>待办类型</th>
                         <th>负责人类型</th>
@@ -19012,9 +19095,11 @@
         <button class="employment-btn primary" type="button" id="planLinkageSearch">查询</button>
         <button class="employment-btn" type="button" id="planLinkageReset">重置</button>
       </div>
+      <div class="plan-linkage-validation" id="planLinkageValidation" role="alert" aria-live="assertive" hidden></div>
       <div class="plan-linkage-table-wrap">
         <table class="plan-linkage-table">
           <colgroup>
+            <col style="width: 70px">
             <col style="width: 200px">
             <col style="width: 118px">
             <col style="width: 170px">
@@ -19024,6 +19109,7 @@
           </colgroup>
           <thead>
             <tr>
+              <th>序号</th>
               <th>源字段</th>
               <th>运算符</th>
               <th>源值</th>
@@ -20448,6 +20534,8 @@
           returnCollectChannels: ["邮件"],
           cancelTemplate: "取消入职通知模板",
           cancelChannels: ["邮件"],
+          cancelHrbpTemplate: "取消入职通知模板",
+          cancelHrbpChannels: ["邮件"],
           reminderDays: 3,
           reminderInterval: 2,
           reminderTime: "10:30",
@@ -21022,7 +21110,7 @@
     const materialRuleConditionTypes = ["部门", "划分区域", "合同主体"];
     const todoOwnerOptions = {
       "指定人": ["行政专员-林可", "IT工程师-周宁", "HR共享服务-王晓玲", "招聘顾问-陈晨"],
-      "指定角色": ["直属上级", "部门助理", "HRBP", "入职办理专员"]
+      "指定角色": ["部门负责人", "HRBP"]
     };
     const todoRoleOptionsByType = {
       "划分区域角色": ["区长", "副区长", "其他"],
@@ -21243,6 +21331,8 @@
     let planPickerSelection = new Set();
     let planLinkageFilter = "";
     let planLinkageSnapshot = null;
+    let planLinkageValidationErrors = [];
+    let planLinkageValidationAttempted = false;
     let planGroupSearchText = "";
     let planGroupManagerCollapsed = false;
     let planTodoManagerCollapsed = false;
@@ -25442,6 +25532,11 @@
       plan.orgIds = orgIds;
       plan.org = getPlanOrgSummary(orgIds, plan.org || "");
       plan.status = normalizePlanStatus(plan.status);
+      if (!plan.collectRule) plan.collectRule = {};
+      plan.collectRule.cancelHrbpTemplate = plan.collectRule.cancelHrbpTemplate || "取消入职通知模板";
+      if (!Array.isArray(plan.collectRule.cancelHrbpChannels) || !plan.collectRule.cancelHrbpChannels.length) {
+        plan.collectRule.cancelHrbpChannels = ["邮件"];
+      }
       plan.creator = plan.creator || plan.operator || "--";
       plan.createdAt = plan.createdAt || plan.time || "--";
       getPlanI18nField(plan, "name");
@@ -25452,6 +25547,12 @@
           field.helpText = field.helpText || "";
           field.helpPosition = field.helpPosition === "below" ? "below" : "question";
           if (!Array.isArray(field.options)) field.options = getPlanFieldOptions(field);
+        });
+      });
+      (plan.prepareItems || []).forEach(item => {
+        (item.rules || []).forEach((rule, index) => {
+          const priority = Number(rule.priority);
+          rule.priority = Number.isFinite(priority) && priority > 0 ? priority : index + 1;
         });
       });
       return plan;
@@ -25973,7 +26074,9 @@
       return [
         "最高学历", "最高学位", "学位", "工作地区", "外语水平", "计算机水平",
         "是否有亲属/亲密朋友在本司任职", "本司任职亲属/亲密朋友姓名", "亲属/亲密关系",
-        "语言", "是否母语", "掌握程度", "书写能力", "阅读能力", "口语能力"
+        "是否在其他公司兼职法人", "兼职信息", "是否有签证", "签证国家", "签证类型",
+        "签证生效日期", "签证失效日期", "签证附件", "语言", "是否母语", "掌握程度",
+        "书写能力", "阅读能力", "口语能力"
       ];
     }
 
@@ -26029,10 +26132,15 @@
         外语水平: ["无", "一般", "良好", "熟练", "精通"],
         是否深户: ["是", "否"],
         "是否有亲属/亲密朋友在本司任职": ["是", "否"],
+        "是否在其他公司兼职法人": ["是", "否"],
+        "是否有签证": ["是", "否"],
         "员工状态": ["在职", "离职", "待入职"],
         "人员类型": ["正式员工", "实习生", "劳务派遣", "兼职员工"]
       };
-      return map[sourceField] || ["是", "否", "男", "女", "A", "B", "默认人员范围"];
+      if (map[sourceField]) return map[sourceField];
+      const meta = getPlanLinkageFieldMeta(sourceField);
+      if (!meta || !isPlanLinkageEnumType(meta.type)) return [];
+      return meta.field ? getPlanFieldOptions(meta.field) : getCollectDefaultOptions(sourceField, meta.type);
     }
 
     function getPlanLinkageFieldNames() {
@@ -26236,7 +26344,8 @@
       const icons = {
         edit: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>`,
         copy: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>`,
-        more: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>`
+        enable: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m8.8 12.2 2.1 2.1 4.3-4.6"/></svg>`,
+        disable: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M8 12h8"/></svg>`
       };
       return icons[name] || "";
     }
@@ -26267,11 +26376,7 @@
             <div class="plan-row-actions">
               <button class="plan-action-icon" type="button" data-plan-action="edit" data-index="${realIndex}" data-tooltip="编辑" aria-label="编辑">${planActionIcon("edit")}</button>
               <button class="plan-action-icon" type="button" data-plan-action="copy" data-index="${realIndex}" data-tooltip="复制" aria-label="复制">${planActionIcon("copy")}</button>
-              <button class="plan-action-icon" type="button" data-plan-more-toggle data-tooltip="更多" aria-label="更多">${planActionIcon("more")}</button>
-              <span class="plan-action-menu" role="menu">
-                <button class="link" type="button" role="menuitem" data-plan-action="toggle" data-index="${realIndex}">禁用</button>
-                <button class="link" type="button" role="menuitem" data-plan-action="delete" data-index="${realIndex}">删除</button>
-              </span>
+              <button class="plan-action-icon" type="button" data-plan-action="toggle" data-index="${realIndex}" data-tooltip="${status === "启用" ? "禁用" : "启用"}" aria-label="${status === "启用" ? "禁用" : "启用"}">${planActionIcon(status === "启用" ? "disable" : "enable")}</button>
             </div>
           </td>
         `;
@@ -26658,6 +26763,7 @@
       const groupList = document.querySelector("#planGroupList");
       if (!plan || !groupList) return;
       const readonly = isPlanReadonly();
+      renderPlanTemplateValidation(plan);
       syncPlanGroupManagerState();
       if (!Array.isArray(plan.collectGroups)) plan.collectGroups = [];
       const query = planGroupSearchText.trim();
@@ -26681,6 +26787,33 @@
         `;
       }).join("") : `<div class="scheme-list-empty">暂无匹配分组</div>`;
       renderPlanFieldConfig();
+    }
+
+    function getPlanTemplateValidationErrors(plan = getActivePlan()) {
+      if (!plan) return [];
+      const groups = Array.isArray(plan.collectGroups) ? plan.collectGroups : [];
+      const errors = [];
+      if (!groups.length) errors.push("字段分组不能为空，请至少添加一个分组");
+      if (groups.some(group => group.name === "员工信息" && !(group.fields || []).length)) {
+        errors.push("员工信息分组下未配置字段");
+      }
+      return errors;
+    }
+
+    function renderPlanTemplateValidation(plan = getActivePlan()) {
+      const container = document.querySelector("#planTemplateValidation");
+      if (!container) return;
+      const errors = getPlanTemplateValidationErrors(plan);
+      if (!errors.length) {
+        container.hidden = true;
+        container.innerHTML = "";
+        return;
+      }
+      container.hidden = false;
+      container.innerHTML = `
+        <strong>存在${errors.length}处错误，请先修复后再提交</strong>
+        <ul>${errors.map(error => `<li>${escapeHtml(error)}</li>`).join("")}</ul>
+      `;
     }
 
     function renderPlanFieldConfig() {
@@ -26906,7 +27039,9 @@
         rule.value = normalizePlanLinkageValues(rule.value);
         rule.targetField = normalizePlanLinkageValues(rule.targetField);
         rule.operator = rule.operator === "不等于" ? "不等于" : "等于";
-        rule.action = rule.action === "显示并选填"
+        rule.action = rule.action === ""
+          ? ""
+          : rule.action === "显示并选填"
           ? "显示且选填"
           : rule.action === "显示并必填"
             ? "显示且必填"
@@ -26915,6 +27050,324 @@
               : "显示且必填";
       });
       return plan.linkageRules;
+    }
+
+    function getPlanLinkageFieldMeta(fieldName = "") {
+      const plan = getActivePlan();
+      let field = null;
+      (plan?.collectGroups || []).some(group => {
+        field = (group.fields || []).find(item => getPlanFieldDisplayName(item) === fieldName || item.name === fieldName) || null;
+        return Boolean(field);
+      });
+      const catalog = planEmployeeFieldCatalog.find(item => item.name === fieldName);
+      const specialTypes = {
+        工作地区: "值域映射",
+        学位: "单选列表",
+        "是否在其他公司兼职法人": "是否",
+        是否有签证: "是否",
+        兼职信息: "单行文本",
+        签证国家: "单行文本",
+        签证类型: "单选列表",
+        签证生效日期: "日期",
+        签证失效日期: "日期",
+        签证附件: "多文件上传",
+        语言: "单选列表",
+        是否母语: "是否",
+        掌握程度: "单选列表",
+        书写能力: "单选列表",
+        阅读能力: "单选列表",
+        口语能力: "单选列表"
+      };
+      const type = specialTypes[fieldName] || (field ? getPlanFieldType(field) : catalog?.secondType || "");
+      return field || catalog || specialTypes[fieldName] ? { field, catalog, type } : null;
+    }
+
+    function isPlanLinkageEnumType(type = "") {
+      return type === "值域映射" || ["是否", "是/否", "员工单选"].includes(type) || /单选|下拉/.test(type);
+    }
+
+    function getPlanLinkageRequiredPolicies() {
+      const highestValues = ["本科", "硕士研究生", "MBA", "博士研究生", "EMBA", "MPA"];
+      const policies = {};
+      const addPolicy = (targets, description, allowed) => {
+        targets.forEach(target => { policies[target] = { description, allowed }; });
+      };
+      addPolicy(
+        ["最高学位", "学位"],
+        "最高学历为本科、硕士研究生、MBA、博士研究生、EMBA、MPA 时显示且必填，其他值时隐藏",
+        [{ sourceField: "最高学历", operator: "等于", value: highestValues, action: "显示且必填" }]
+      );
+      addPolicy(
+        ["外语水平", "计算机水平"],
+        "工作地区等于中国大陆时显示且必填，其他值时显示且选填",
+        [{ sourceField: "工作地区", operator: "等于", value: ["中国大陆"], action: "显示且必填" }]
+      );
+      addPolicy(
+        ["本司任职亲属/亲密朋友姓名", "亲属/亲密关系"],
+        "是否有亲属/亲密朋友在本司任职等于是时显示且必填，等于否时隐藏",
+        [
+          { sourceField: "是否有亲属/亲密朋友在本司任职", operator: "等于", value: ["是"], action: "显示且必填" },
+          { sourceField: "是否有亲属/亲密朋友在本司任职", operator: "等于", value: ["否"], action: "隐藏" }
+        ]
+      );
+      addPolicy(
+        ["兼职信息"],
+        "是否在其他公司兼职法人等于是时显示且必填，等于否时隐藏",
+        [
+          { sourceField: "是否在其他公司兼职法人", operator: "等于", value: ["是"], action: "显示且必填" },
+          { sourceField: "是否在其他公司兼职法人", operator: "等于", value: ["否"], action: "隐藏" }
+        ]
+      );
+      addPolicy(
+        ["签证国家", "签证类型", "签证生效日期", "签证失效日期", "签证附件"],
+        "是否有签证等于是时显示且必填，等于否时隐藏",
+        [
+          { sourceField: "是否有签证", operator: "等于", value: ["是"], action: "显示且必填" },
+          { sourceField: "是否有签证", operator: "等于", value: ["否"], action: "隐藏" }
+        ]
+      );
+      addPolicy(
+        ["语言", "是否母语", "掌握程度", "书写能力", "阅读能力", "口语能力"],
+        "外语水平不等于无时显示且选填",
+        [{ sourceField: "外语水平", operator: "不等于", value: ["无"], action: "显示且选填" }]
+      );
+      return policies;
+    }
+
+    function arePlanLinkageValueSetsEqual(left, right) {
+      const a = normalizePlanLinkageValues(left).sort();
+      const b = normalizePlanLinkageValues(right).sort();
+      return a.length === b.length && a.every((value, index) => value === b[index]);
+    }
+
+    function doesPlanLinkageRuleMatchPolicy(rule, policyRule) {
+      return rule.sourceField === policyRule.sourceField
+        && rule.operator === policyRule.operator
+        && rule.action === policyRule.action
+        && arePlanLinkageValueSetsEqual(rule.value, policyRule.value);
+    }
+
+    function doPlanLinkageConditionsOverlap(left, right) {
+      if (left.sourceField !== right.sourceField) return true;
+      const leftValues = new Set(normalizePlanLinkageValues(left.value));
+      const rightValues = new Set(normalizePlanLinkageValues(right.value));
+      if (left.operator === "等于" && right.operator === "等于") {
+        return Array.from(leftValues).some(value => rightValues.has(value));
+      }
+      if (left.operator === "等于" && right.operator === "不等于") {
+        return Array.from(leftValues).some(value => !rightValues.has(value));
+      }
+      if (left.operator === "不等于" && right.operator === "等于") {
+        return Array.from(rightValues).some(value => !leftValues.has(value));
+      }
+      const domain = getPlanLinkageValueOptions(left.sourceField);
+      return domain.length
+        ? domain.some(value => !leftValues.has(value) && !rightValues.has(value))
+        : true;
+    }
+
+    function describePlanLinkageRule(rule, index, target = "") {
+      const targetText = target || normalizePlanLinkageValues(rule.targetField).join("、") || "未选择目标字段";
+      return `规则#${index + 1}【${rule.sourceField || "未选择源字段"}${rule.operator || "未选择运算符"}${getPlanLinkageSelectedLabels(rule.value, "未选择源值")} → ${rule.action || "未选择动作"} → ${targetText}】`;
+    }
+
+    function validatePlanLinkageRules() {
+      const rules = ensurePlanLinkageRules();
+      const availableFields = new Set(getPlanLinkageFieldNames());
+      const allowedOperators = new Set(["等于", "不等于"]);
+      const allowedActions = new Set(["显示且必填", "显示且选填", "隐藏"]);
+      const policies = getPlanLinkageRequiredPolicies();
+      const errors = [];
+      const seenErrors = new Set();
+      const addError = (key, rowIndices, fields, message) => {
+        if (seenErrors.has(key)) return;
+        seenErrors.add(key);
+        errors.push({
+          rowIndices: Array.from(new Set(rowIndices.filter(index => Number.isInteger(index)))).sort((a, b) => a - b),
+          fields: Array.from(new Set(fields)),
+          message
+        });
+      };
+
+      rules.forEach((rule, index) => {
+        const values = normalizePlanLinkageValues(rule.value);
+        const targets = normalizePlanLinkageValues(rule.targetField);
+        const missing = [];
+        if (!rule.sourceField) missing.push("源字段");
+        if (!rule.operator) missing.push("运算符");
+        if (!values.length) missing.push("源值");
+        if (!rule.action) missing.push("规则类型");
+        if (!targets.length) missing.push("目标字段");
+        if (missing.length) {
+          const fieldMap = { 源字段: "sourceField", 运算符: "operator", 源值: "value", 规则类型: "action", 目标字段: "targetField" };
+          addError(`required-${index}`, [index], missing.map(item => fieldMap[item]), `规则#${index + 1}未填写完整，缺少【${missing.join("、")}】，请补充后再保存`);
+        }
+        if (rule.sourceField && !availableFields.has(rule.sourceField)) {
+          addError(`source-missing-${index}`, [index], ["sourceField"], `规则#${index + 1}的源字段【${rule.sourceField}】已失效或不在当前方案中，请重新选择`);
+        }
+        if (rule.operator && !allowedOperators.has(rule.operator)) {
+          addError(`operator-${index}`, [index], ["operator"], `规则#${index + 1}的运算符【${rule.operator}】不受支持，请选择等于或不等于`);
+        }
+        if (rule.action && !allowedActions.has(rule.action)) {
+          addError(`action-${index}`, [index], ["action"], `规则#${index + 1}的规则类型【${rule.action}】不受支持，请重新选择`);
+        }
+
+        const sourceMeta = getPlanLinkageFieldMeta(rule.sourceField);
+        if (rule.sourceField && availableFields.has(rule.sourceField) && (!sourceMeta || !isPlanLinkageEnumType(sourceMeta.type))) {
+          addError(`source-type-${index}`, [index], ["sourceField"], `字段【${rule.sourceField}】类型为${sourceMeta?.type || "未知类型"}，不支持作为联动触发字段，请改选有值域的字段`);
+        }
+        if (sourceMeta && isPlanLinkageEnumType(sourceMeta.type) && values.length) {
+          const domain = new Set(getPlanLinkageValueOptions(rule.sourceField));
+          const invalidValues = values.filter(value => !domain.has(value));
+          if (invalidValues.length) {
+            addError(`value-domain-${index}`, [index], ["value"], `字段【${rule.sourceField}】的源值【${invalidValues.join("、")}】不在现有值域中，请重新选择`);
+          }
+        }
+
+        targets.forEach(target => {
+          if (!availableFields.has(target)) {
+            addError(`target-missing-${index}-${target}`, [index], ["targetField"], `规则#${index + 1}的目标字段【${target}】已失效或不在当前方案中，请重新选择`);
+            return;
+          }
+          if (target === rule.sourceField) {
+            addError(`self-${index}-${target}`, [index], ["sourceField", "targetField"], `规则#${index + 1}中，目标字段【${target}】不能与源字段相同，请重新选择`);
+          }
+          const targetMeta = getPlanLinkageFieldMeta(target);
+          if (targetMeta?.field && ["隐藏", "只读"].includes(targetMeta.field.editable)) {
+            addError(`target-invalid-${index}-${target}`, [index], ["targetField"], `规则#${index + 1}中，目标字段【${target}】为${targetMeta.field.editable}字段，不可用于联动，请重新选择`);
+          }
+          if (target === "学位证") {
+            addError(`target-protected-${index}-${target}`, [index], ["targetField"], `字段【学位证】沿用现有系统必填说明，本期联动不得新增、覆盖或改写，请重新选择目标字段`);
+          }
+          const policy = policies[target];
+          if (policy && !policy.allowed.some(item => doesPlanLinkageRuleMatchPolicy(rule, item))) {
+            addError(
+              `policy-${index}-${target}`,
+              [index],
+              ["sourceField", "operator", "value", "action", "targetField"],
+              `字段【${target}】的必填说明为“${policy.description}”。${describePlanLinkageRule(rule, index, target)}与该说明不一致，请按必填说明重新配置`
+            );
+          }
+        });
+      });
+
+      const branches = [];
+      rules.forEach((rule, rowIndex) => {
+        normalizePlanLinkageValues(rule.targetField).forEach(target => branches.push({ rule, rowIndex, target }));
+      });
+      for (let leftIndex = 0; leftIndex < branches.length; leftIndex += 1) {
+        for (let rightIndex = leftIndex + 1; rightIndex < branches.length; rightIndex += 1) {
+          const left = branches[leftIndex];
+          const right = branches[rightIndex];
+          if (left.target !== right.target || left.rowIndex === right.rowIndex) continue;
+          const sameCondition = left.rule.sourceField === right.rule.sourceField
+            && left.rule.operator === right.rule.operator
+            && arePlanLinkageValueSetsEqual(left.rule.value, right.rule.value);
+          if (sameCondition && left.rule.action === right.rule.action) {
+            addError(
+              `duplicate-${left.rowIndex}-${right.rowIndex}-${left.target}`,
+              [left.rowIndex, right.rowIndex],
+              ["sourceField", "operator", "value", "action", "targetField"],
+              `联动规则重复：${describePlanLinkageRule(right.rule, right.rowIndex, right.target)}与${describePlanLinkageRule(left.rule, left.rowIndex, left.target)}相同，请删除其中一条后再保存`
+            );
+            continue;
+          }
+          const overlapping = doPlanLinkageConditionsOverlap(left.rule, right.rule);
+          const differentSourceConflict = left.rule.sourceField !== right.rule.sourceField && left.rule.action !== right.rule.action;
+          if (overlapping && (left.rule.sourceField === right.rule.sourceField || differentSourceConflict)) {
+            addError(
+              `conflict-${left.rowIndex}-${right.rowIndex}-${left.target}`,
+              [left.rowIndex, right.rowIndex],
+              ["sourceField", "operator", "value", "action", "targetField"],
+              `目标字段【${left.target}】存在不能同时生效的规则：${describePlanLinkageRule(left.rule, left.rowIndex, left.target)}；${describePlanLinkageRule(right.rule, right.rowIndex, right.target)}。请拆分为互斥条件或删除其中一条后再保存`
+            );
+          }
+        }
+      }
+
+      const edges = branches
+        .filter(item => item.rule.sourceField && item.target && item.rule.sourceField !== item.target)
+        .map(item => ({ from: item.rule.sourceField, to: item.target, rowIndex: item.rowIndex }));
+      const adjacency = new Map();
+      edges.forEach(edge => {
+        if (!adjacency.has(edge.from)) adjacency.set(edge.from, []);
+        adjacency.get(edge.from).push(edge);
+      });
+      const findPath = (start, end, excludedEdge) => {
+        const queue = [{ field: start, path: [] }];
+        const visited = new Set([start]);
+        while (queue.length) {
+          const current = queue.shift();
+          if (current.field === end) return current.path;
+          (adjacency.get(current.field) || []).forEach(edge => {
+            if (edge === excludedEdge || visited.has(edge.to)) return;
+            visited.add(edge.to);
+            queue.push({ field: edge.to, path: [...current.path, edge] });
+          });
+        }
+        return null;
+      };
+      edges.forEach(edge => {
+        const path = findPath(edge.to, edge.from, edge);
+        if (!path) return;
+        const cycle = [edge, ...path];
+        const rowIndices = cycle.map(item => item.rowIndex);
+        const key = `cycle-${Array.from(new Set(rowIndices)).sort((a, b) => a - b).join("-")}`;
+        const chain = [cycle[0].from, ...cycle.map(item => item.to)].join(" → ");
+        addError(key, rowIndices, ["sourceField", "targetField"], `检测到循环引用：${chain}。请删除或调整该链路中的任一规则后再保存`);
+      });
+
+      return errors;
+    }
+
+    function renderPlanLinkageValidationState() {
+      const summary = document.querySelector("#planLinkageValidation");
+      const tbody = document.querySelector("#planLinkageRows");
+      if (!summary || !tbody) return;
+      tbody.querySelectorAll(".plan-linkage-error-detail").forEach(row => row.remove());
+      tbody.querySelectorAll(".plan-linkage-row-error").forEach(row => row.classList.remove("plan-linkage-row-error"));
+      tbody.querySelectorAll(".plan-linkage-control-error").forEach(cell => cell.classList.remove("plan-linkage-control-error"));
+      if (!planLinkageValidationErrors.length) {
+        summary.hidden = true;
+        summary.innerHTML = "";
+        return;
+      }
+      summary.hidden = false;
+      summary.innerHTML = `
+        <strong>联动设置存在${planLinkageValidationErrors.length}处错误，请先修复后再保存</strong>
+        <ol>${planLinkageValidationErrors.map(error => `<li>${escapeHtml(error.message)}</li>`).join("")}</ol>
+      `;
+      const fieldColumns = { sourceField: 1, operator: 2, value: 3, action: 4, targetField: 5 };
+      tbody.querySelectorAll("[data-plan-linkage-index]").forEach(row => {
+        const index = Number(row.dataset.planLinkageIndex);
+        const rowErrors = planLinkageValidationErrors.filter(error => error.rowIndices.includes(index));
+        if (!rowErrors.length) return;
+        row.classList.add("plan-linkage-row-error");
+        rowErrors.flatMap(error => error.fields).forEach(field => {
+          const column = fieldColumns[field];
+          if (Number.isInteger(column)) row.children[column]?.classList.add("plan-linkage-control-error");
+        });
+        row.insertAdjacentHTML("afterend", `
+          <tr class="plan-linkage-error-detail">
+            <td colspan="7"><ul>${rowErrors.map(error => `<li>${escapeHtml(error.message)}</li>`).join("")}</ul></td>
+          </tr>
+        `);
+      });
+    }
+
+    function refreshPlanLinkageValidation() {
+      if (!planLinkageValidationAttempted) return;
+      planLinkageValidationErrors = validatePlanLinkageRules();
+      renderPlanLinkageValidationState();
+    }
+
+    function focusFirstPlanLinkageError() {
+      window.requestAnimationFrame(() => {
+        const firstCell = document.querySelector("#planLinkageRows .plan-linkage-control-error");
+        const control = firstCell?.querySelector("select, button, input");
+        firstCell?.scrollIntoView({ behavior: "smooth", block: "center" });
+        control?.focus({ preventScroll: true });
+      });
     }
 
     function renderPlanLinkageRules() {
@@ -26940,6 +27393,7 @@
       if (table) {
         table.querySelector("colgroup").innerHTML = readonly
           ? `
+            <col style="width: 70px">
             <col style="width: 220px">
             <col style="width: 128px">
             <col style="width: 220px">
@@ -26947,6 +27401,7 @@
             <col style="width: 328px">
           `
           : `
+            <col style="width: 70px">
             <col style="width: 200px">
             <col style="width: 118px">
             <col style="width: 170px">
@@ -26956,6 +27411,7 @@
           `;
         table.querySelector("thead tr").innerHTML = readonly
           ? `
+              <th>序号</th>
               <th>源字段</th>
               <th>运算符</th>
               <th>源值</th>
@@ -26963,6 +27419,7 @@
               <th>目标字段</th>
             `
           : `
+              <th>序号</th>
               <th>源字段</th>
               <th>运算符</th>
               <th>源值</th>
@@ -26973,18 +27430,20 @@
       }
       tbody.innerHTML = filtered.length ? filtered.map(({ rule, index }) => `
         <tr data-plan-linkage-index="${index}">
+          <td><span class="plan-linkage-order">${index + 1}</span></td>
           <td><select data-plan-linkage-prop="sourceField">${planOptionHtml(getPlanLinkageFieldNames(), rule.sourceField, "请选择")}</select></td>
           <td><select data-plan-linkage-prop="operator">${optionHtml(["等于", "不等于"], rule.operator || "等于")}</select></td>
           <td>${renderPlanLinkageMultiControl(index, "value", getPlanLinkageValueOptions(rule.sourceField).map(value => ({ value, label: value })), rule.value, "请选择")}</td>
-          <td><select data-plan-linkage-prop="action">${optionHtml(["显示且必填", "显示且选填", "隐藏"], rule.action || "显示且必填")}</select></td>
+          <td><select data-plan-linkage-prop="action">${optionHtml(["显示且必填", "显示且选填", "隐藏"], rule.action || "", "请选择")}</select></td>
           <td>${renderPlanLinkageMultiControl(index, "targetField", getPlanLinkageFieldNames().map(value => ({ value, label: value })), rule.targetField, "请选择")}</td>
           ${readonly ? "" : `<td>
             <button class="link danger" type="button" data-plan-linkage-delete="${index}">删除</button>
           </td>`}
         </tr>
-      `).join("") : `<tr><td class="plan-empty-row" colspan="${readonly ? 5 : 6}">暂无联动规则</td></tr>`;
+      `).join("") : `<tr><td class="plan-empty-row" colspan="${readonly ? 6 : 7}">暂无联动规则</td></tr>`;
       if (total) total.textContent = `共${filtered.length}条`;
       applyPlanLinkageReadonly();
+      renderPlanLinkageValidationState();
     }
 
     function applyPlanLinkageReadonly() {
@@ -26997,9 +27456,16 @@
       });
     }
 
-    function openPlanLinkageModal() {
+    function openPlanLinkageModal(options = {}) {
       ensurePlanLinkageRules();
       planLinkageSnapshot = clonePlanPayload(getActivePlan()?.linkageRules || []);
+      planLinkageValidationAttempted = Boolean(options.validationErrors?.length);
+      planLinkageValidationErrors = options.validationErrors || [];
+      if (planLinkageValidationAttempted) {
+        planLinkageFilter = "";
+        const filter = document.querySelector("#planLinkageFieldFilter");
+        if (filter) filter.value = "";
+      }
       renderPlanLinkageRules();
       modalMask.classList.add("show");
       const modal = document.querySelector("#planLinkageModal");
@@ -27019,12 +27485,24 @@
       closePlanLinkageMultiSelects();
       hidePlanHelpTip();
       planLinkageSnapshot = null;
+      planLinkageValidationErrors = [];
+      planLinkageValidationAttempted = false;
       renderPlanFieldConfig();
     }
 
     function savePlanLinkageModal() {
+      planLinkageValidationAttempted = true;
+      planLinkageValidationErrors = validatePlanLinkageRules();
+      if (planLinkageValidationErrors.length) {
+        planLinkageFilter = "";
+        document.querySelector("#planLinkageFieldFilter").value = "";
+        renderPlanLinkageRules();
+        focusFirstPlanLinkageError();
+        return;
+      }
       planLinkageSnapshot = null;
       closePlanLinkageModal();
+      showPrepareToast("联动规则已保存");
     }
 
     function addPlanLinkageRule() {
@@ -27034,11 +27512,12 @@
       rules.push({
         sourceField: fields[0] || "",
         operator: "等于",
-        value: ["是"],
-        action: "显示且必填",
-        targetField: [fields[1] || fields[0] || ""]
+        value: [],
+        action: "",
+        targetField: []
       });
       renderPlanLinkageRules();
+      refreshPlanLinkageValidation();
     }
 
     function getPlanNotifyChannels(rule = {}, field = "notifyChannels") {
@@ -27314,11 +27793,19 @@
             <span class="plan-form-block-title">取消入职通知模板配置</span>
             <span class="plan-form-block-desc">可设置取消入职通知模板，候选人取消入职后，系统将自动告知入职准备事项责任人，及时调整或终止相关准备工作。</span>
           </div>
+          <div class="plan-message-config-title">通知入职准备事项负责人</div>
           ${renderPlanMessageConfigRow({
             templateId: "planCancelTemplate",
             templateValue: rule.cancelTemplate || "取消入职通知模板",
             rule,
             channelField: "cancelChannels"
+          })}
+          <div class="plan-message-config-title">通知 HRBP</div>
+          ${renderPlanMessageConfigRow({
+            templateId: "planCancelHrbpTemplate",
+            templateValue: rule.cancelHrbpTemplate || "取消入职通知模板",
+            rule,
+            channelField: "cancelHrbpChannels"
           })}
         </div>
       `;
@@ -27678,11 +28165,8 @@
         return rule;
       }
       if (rule.ownerType === "指定角色") {
-        const roleType = rule.ownerRoleType && todoRoleOptionsByType[rule.ownerRoleType]
-          ? rule.ownerRoleType
-          : getTodoRoleTypeByRole(rule.ownerRole);
-        const roleOptions = todoRoleOptionsByType[roleType] || [];
-        rule.ownerRoleType = roleType;
+        rule.ownerRoleType = "组织角色";
+        const roleOptions = todoOwnerOptions["指定角色"] || [];
         if (rule.ownerRole && !roleOptions.includes(rule.ownerRole)) rule.ownerRole = "";
       } else {
         delete rule.ownerRoleType;
@@ -27699,28 +28183,7 @@
       if (rule.ownerType !== "指定角色") {
         return renderPlanOwnerPersonMulti(rule, index);
       }
-      const roleType = rule.ownerRoleType || getTodoRoleTypeByRole(rule.ownerRole);
-      const roleOptions = todoRoleOptionsByType[roleType] || [];
-      const displayText = rule.ownerRole ? `${roleType} / ${rule.ownerRole}` : "请选择";
-      return `
-        <div class="plan-owner-cascade" data-plan-owner-cascade="${index}">
-          <button class="plan-owner-cascade-trigger" type="button" data-plan-owner-cascade-toggle="${index}" title="${escapeHtml(displayText)}">
-            <span class="plan-owner-cascade-value ${rule.ownerRole ? "" : "placeholder"}">${escapeHtml(displayText)}</span>
-          </button>
-          <div class="plan-owner-cascade-menu" role="listbox">
-            <div class="plan-owner-type-list">
-              ${getTodoRoleTypes().map(type => `
-                <button class="${type === roleType ? "active" : ""}" type="button" data-plan-owner-role-type="${escapeHtml(type)}" data-index="${index}">${escapeHtml(type)}</button>
-              `).join("")}
-            </div>
-            <div class="plan-owner-role-list">
-              ${roleOptions.map(role => `
-                <button class="${role === rule.ownerRole ? "active" : ""}" type="button" data-plan-owner-role="${escapeHtml(role)}" data-index="${index}">${escapeHtml(role)}</button>
-              `).join("")}
-            </div>
-          </div>
-        </div>
-      `;
+      return `<select data-plan-todo-rule-prop="ownerRole" data-index="${index}">${optionHtml(todoOwnerOptions["指定角色"], rule.ownerRole || "", "请选择")}</select>`;
     }
 
     function closePlanOwnerCascades(except = null) {
@@ -27816,12 +28279,14 @@
       if (table) {
         table.querySelector("colgroup").innerHTML = readonly
           ? `
+                      <col style="width: 86px">
                       <col style="width: 330px">
                       <col style="width: 140px">
                       <col style="width: 180px">
                       <col style="width: 300px">
                     `
           : `
+                      <col style="width: 86px">
                       <col style="width: 300px">
                       <col style="width: 120px">
                       <col style="width: 160px">
@@ -27830,12 +28295,14 @@
                     `;
         table.querySelector("thead tr").innerHTML = readonly
           ? `
+                        <th>优先级</th>
                         <th>规则适用范围</th>
                         <th>待办类型</th>
                         <th>负责人类型</th>
                         <th>负责人</th>
                       `
           : `
+                        <th>优先级</th>
                         <th>规则适用范围</th>
                         <th>待办类型</th>
                         <th>负责人类型</th>
@@ -27844,15 +28311,17 @@
                       `;
       }
       if (!todo) {
-        tbody.innerHTML = `<tr><td class="plan-empty-row" colspan="${readonly ? 4 : 5}">请先新增事项类别</td></tr>`;
+        tbody.innerHTML = `<tr><td class="plan-empty-row" colspan="${readonly ? 5 : 6}">请先新增事项类别</td></tr>`;
         return;
       }
       const rules = todo.rules || [];
       tbody.innerHTML = rules.length ? rules.map((rule, index) => {
         normalizePlanTodoRuleOwner(rule);
+        if (!Number.isFinite(Number(rule.priority)) || Number(rule.priority) < 1) rule.priority = index + 1;
         const todoType = rule.todoType ?? (rule.oaFlow === "是" ? "流程" : "待办");
         return `
           <tr>
+            <td><input type="number" min="1" step="1" value="${escapeHtml(rule.priority)}" data-plan-todo-rule-prop="priority" data-index="${index}" aria-label="优先级"></td>
             <td>${renderPlanTodoScopeTrigger(rule, index)}</td>
             <td><select data-plan-todo-rule-prop="todoType" data-index="${index}">${optionHtml(todoTypeOptions, todoType, "请选择")}</select></td>
             <td><select data-plan-todo-rule-prop="ownerType" data-index="${index}">${optionHtml(["指定人", "指定角色"], rule.ownerType || "", "请选择")}</select></td>
@@ -27860,7 +28329,7 @@
             ${readonly ? "" : `<td><button class="link danger" type="button" data-plan-todo-rule-delete="${index}">删除</button></td>`}
           </tr>
         `;
-      }).join("") : `<tr><td class="plan-empty-row" colspan="${readonly ? 4 : 5}">请至少添加一条数据</td></tr>`;
+      }).join("") : `<tr><td class="plan-empty-row" colspan="${readonly ? 5 : 6}">请至少添加一条数据</td></tr>`;
     }
 
     function savePlanConfigToList() {
@@ -27869,6 +28338,21 @@
       const plan = syncPlanDraftFromBasicForm({ validate: true });
       if (!plan) return;
       normalizePlanPayload(plan);
+      const templateErrors = getPlanTemplateValidationErrors(plan);
+      renderPlanTemplateValidation(plan);
+      if (templateErrors.length) {
+        activePlanStep = "template";
+        syncPlanStepper();
+        renderPlanTemplateStep();
+        applyPlanReadonly();
+        return;
+      }
+      const linkageErrors = validatePlanLinkageRules();
+      if (linkageErrors.length) {
+        openPlanLinkageModal({ validationErrors: linkageErrors });
+        focusFirstPlanLinkageError();
+        return;
+      }
       const now = formatNow();
       const isExistingPlan = activePlanMode === "edit" && activePlanIndex !== null;
       const payload = {
@@ -27901,7 +28385,7 @@
     function togglePlanStatus(index) {
       const plan = onboardingPlans[index];
       if (!plan) return;
-      plan.status = "禁用";
+      plan.status = normalizePlanStatus(plan.status) === "启用" ? "禁用" : "启用";
       plan.operator = "当前用户";
       plan.time = formatNow();
       renderOnboardingPlans();
@@ -27932,6 +28416,7 @@
       const candidateSubmitChannels = getChannelValues("candidateSubmitChannels", previousCollectRule.candidateSubmitChannels || ["邮件"]);
       const returnCollectChannels = getChannelValues("returnCollectChannels", previousCollectRule.returnCollectChannels || ["邮件"]);
       const cancelChannels = getChannelValues("cancelChannels", previousCollectRule.cancelChannels || ["邮件"]);
+      const cancelHrbpChannels = getChannelValues("cancelHrbpChannels", previousCollectRule.cancelHrbpChannels || ["邮件"]);
       const singleTodoChannels = getChannelValues("singleTodoChannels", previousPrepareRule.singleTodoChannels || ["邮件"]);
       const mergedTodoChannels = getChannelValues("mergedTodoChannels", previousPrepareRule.mergedTodoChannels || ["邮件"]);
       const prepareReminderChannels = getChannelValues("prepareReminderChannels", previousPrepareRule.prepareReminderChannels || previousPrepareRule.reminderChannels || ["邮件"]);
@@ -27965,6 +28450,8 @@
         returnCollectChannels,
         cancelTemplate: document.querySelector("#planCancelTemplate")?.value || previousCollectRule.cancelTemplate || "取消入职通知模板",
         cancelChannels,
+        cancelHrbpTemplate: document.querySelector("#planCancelHrbpTemplate")?.value || previousCollectRule.cancelHrbpTemplate || "取消入职通知模板",
+        cancelHrbpChannels,
         reminderDays: Number(document.querySelector("#planReminderDays")?.value ?? previousCollectRule.reminderDays ?? 3),
         reminderInterval: Number(document.querySelector("#planReminderInterval")?.value ?? previousCollectRule.reminderInterval ?? 1),
         reminderTime: document.querySelector("#planReminderTime")?.value || previousCollectRule.reminderTime || "09:00",
@@ -28098,6 +28585,7 @@
             name: source?.name || `${category}事项`,
             detail: source?.detail || "",
             rules: (source?.rules || []).slice(0, 1).map(rule => ({
+              priority: Number(rule.priority) > 0 ? Number(rule.priority) : 1,
               scope: "",
               scopeMode: "",
               todoType: rule.todoType || "待办",
@@ -28195,7 +28683,10 @@
       const todo = getActivePlanTodo();
       if (!todo) return;
       if (!todo.rules) todo.rules = [];
-      todo.rules.push({ scope: "", scopeMode: "", todoType: "", ownerType: "", ownerRole: "" });
+      const nextPriority = todo.rules.length
+        ? Math.max(...todo.rules.map(rule => Number(rule.priority) || 0)) + 1
+        : 1;
+      todo.rules.push({ priority: nextPriority, scope: "", scopeMode: "", todoType: "", ownerType: "", ownerRole: "" });
       renderPlanTodoRules();
       applyPlanReadonly();
     }
@@ -28209,12 +28700,13 @@
         alert("暂无可导出的准备事项规则");
         return;
       }
-      const headers = ["事项名称", "事项说明明细", "规则适用范围", "待办类型", "负责人类型", "负责人"];
+      const headers = ["事项名称", "事项说明明细", "优先级", "规则适用范围", "待办类型", "负责人类型", "负责人"];
       const csvRows = [
         headers,
         ...rows.map(({ item, rule }) => [
           item.name || "",
           item.detail || "",
+          rule.priority || "",
           getPlanTodoScopeMode(rule) === "高级公式" ? "高级公式" : (rule.scope || ""),
           rule.todoType || (rule.oaFlow === "是" ? "流程" : "待办"),
           rule.ownerType || "",
@@ -30805,18 +31297,6 @@
       renderOnboardingPlans();
     });
     planRows.addEventListener("click", event => {
-      const moreToggle = event.target.closest("[data-plan-more-toggle]");
-      if (moreToggle) {
-        const actions = moreToggle.closest(".plan-row-actions");
-        const willOpen = !actions.classList.contains("open");
-        closePlanActionMenus(actions);
-        actions.classList.toggle("open", willOpen);
-        const menu = actions.querySelector(".plan-action-menu");
-        if (willOpen) placePlanActionMenu(moreToggle, menu);
-        else resetPlanActionMenu(menu);
-        event.stopPropagation();
-        return;
-      }
       const button = event.target.closest("[data-plan-action]");
       if (!button) return;
       closePlanActionMenus();
@@ -31185,6 +31665,7 @@
         const wrapper = multiOption.closest(".plan-linkage-multi");
         if (!rule || !prop) return;
         rule[prop] = syncPlanLinkageMultiTrigger(wrapper);
+        refreshPlanLinkageValidation();
         return;
       }
       const control = event.target.closest("[data-plan-linkage-prop]");
@@ -31198,6 +31679,7 @@
         rule.value = [];
         renderPlanLinkageRules();
       }
+      refreshPlanLinkageValidation();
     });
     document.querySelector("#planLinkageRows").addEventListener("click", event => {
       if (isPlanReadonly()) return;
@@ -31205,6 +31687,7 @@
       if (remove) {
         ensurePlanLinkageRules().splice(Number(remove.dataset.planLinkageDelete), 1);
         renderPlanLinkageRules();
+        refreshPlanLinkageValidation();
       }
     });
     document.querySelector("#planBlockTip").addEventListener("input", syncActivePlanGroupMeta);
@@ -31413,7 +31896,9 @@
       const todo = getActivePlanTodo();
       const rule = todo?.rules?.[Number(control.dataset.index)];
       if (!rule) return;
-      rule[control.dataset.planTodoRuleProp] = control.value;
+      rule[control.dataset.planTodoRuleProp] = control.dataset.planTodoRuleProp === "priority"
+        ? Math.max(1, Number(control.value || 1))
+        : control.value;
       if (control.dataset.planTodoRuleProp === "ownerType") {
         if (control.value === "指定角色") {
           rule.ownerRoleType = "组织角色";
@@ -31442,7 +31927,9 @@
       const todo = getActivePlanTodo();
       const rule = todo?.rules?.[Number(control.dataset.index)];
       if (!rule) return;
-      rule[control.dataset.planTodoRuleProp] = control.value;
+      rule[control.dataset.planTodoRuleProp] = control.dataset.planTodoRuleProp === "priority"
+        ? Math.max(1, Number(control.value || 1))
+        : control.value;
     });
     document.querySelector("#planTodoRuleRows").addEventListener("click", event => {
       const personToggle = event.target.closest("[data-plan-owner-person-toggle]");
