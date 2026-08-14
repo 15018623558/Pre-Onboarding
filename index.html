@@ -12141,13 +12141,6 @@
       line-height: 18px;
     }
 
-    .collect-notify-field > label::before {
-      content: "*";
-      margin-right: 4px;
-      color: #e5484d;
-      font-weight: 650;
-    }
-
     .collect-notify-field > label::after {
       content: "：";
     }
@@ -19655,27 +19648,8 @@
     </div>
     <div class="collect-notify-body">
       <div class="collect-notify-field">
-        <label>通知人员</label>
+        <label id="collectNotifyRecipientsLabel">通知人员</label>
         <div class="collect-notify-recipients" id="collectNotifyRecipients" role="textbox" aria-readonly="true" aria-label="通知人员"></div>
-      </div>
-      <div class="collect-notify-field">
-        <label>通知方式</label>
-        <div class="collect-notify-methods" id="collectNotifyMethods">
-          <label class="collect-notify-method">
-            <input type="checkbox" value="mail" checked>
-            <span>
-              <strong>邮件通知</strong>
-              <span>发送到员工个人邮箱</span>
-            </span>
-          </label>
-          <label class="collect-notify-method">
-            <input type="checkbox" value="sms">
-            <span>
-              <strong>短信通知</strong>
-              <span>发送到员工手机号码</span>
-            </span>
-          </label>
-        </div>
       </div>
     </div>
     <div class="collect-notify-foot">
@@ -20640,7 +20614,7 @@
         { text: "＋ 新增待入职", primary: true },
         { text: "采集入职信息", primary: true, id: "openCollectNotifyModal" },
         { text: "催办填写资料", primary: true, id: "openCollectUrgeModal" },
-        { text: "发起入职准备", primary: true },
+        { text: "发起入职准备", primary: true, id: "openPrepareLaunchModal" },
         { text: "⇩ 导出", primary: true },
         { text: "⚙ 导出设置" }
       ],
@@ -22905,26 +22879,30 @@
       const box = document.querySelector("#collectNotifyRecipients");
       if (!box) return;
       box.innerHTML = collectNotifyRecipients.length
-        ? collectNotifyRecipients.map((person, index) => `
+        ? collectNotifyRecipients.map(person => `
           <span class="collect-notify-person-chip" title="${escapeHtml(person)}">
             <span>${escapeHtml(person)}</span>
-            <button class="collect-notify-remove" type="button" data-collect-notify-remove="${index}" aria-label="删除${escapeHtml(person)}">×</button>
           </span>
         `).join("")
         : `<span class="collect-notify-empty">暂无通知人员</span>`;
     }
 
     function openCollectNotifyModal(options = {}) {
-      const title = options.urge ? "催办填写资料" : "信息采集通知";
+      const title = options.title || (options.urge ? "催办填写资料" : "信息采集通知");
       document.querySelector("#collectNotifyTitle").textContent = title;
+      document.querySelector("#collectNotifyRecipientsLabel").textContent = title === "发起入职准备" ? "待入职人员" : "通知人员";
       renderCollectNotifyRecipients();
       collectNotifyModal.classList.add("show");
       modalMask.classList.add("show");
-      setTimeout(() => document.querySelector("#collectNotifyMethods input")?.focus(), 0);
+      setTimeout(() => document.querySelector("#sendCollectNotifyModal")?.focus(), 0);
     }
 
     function openCollectUrgeModal() {
-      showPrepareToast("操作成功");
+      openCollectNotifyModal({ title: "催办填写资料" });
+    }
+
+    function openPrepareLaunchModal() {
+      openCollectNotifyModal({ title: "发起入职准备" });
     }
 
     function closeCollectNotifyModal() {
@@ -22933,11 +22911,6 @@
     }
 
     function sendCollectNotifyModal() {
-      const selectedMethods = document.querySelectorAll("#collectNotifyMethods input:checked");
-      if (!selectedMethods.length) {
-        alert("请至少选择一种通知方式");
-        return;
-      }
       closeCollectNotifyModal();
     }
 
@@ -31265,12 +31238,7 @@
     document.querySelector("#employmentToolbar").addEventListener("click", event => {
       if (event.target.closest("#openCollectUrgeModal")) openCollectUrgeModal();
       if (event.target.closest("#openCollectNotifyModal")) openCollectNotifyModal();
-    });
-    document.querySelector("#collectNotifyRecipients").addEventListener("click", event => {
-      const remove = event.target.closest("[data-collect-notify-remove]");
-      if (!remove) return;
-      collectNotifyRecipients.splice(Number(remove.dataset.collectNotifyRemove), 1);
-      renderCollectNotifyRecipients();
+      if (event.target.closest("#openPrepareLaunchModal")) openPrepareLaunchModal();
     });
     document.querySelector("#closeCollectNotifyModal").addEventListener("click", closeCollectNotifyModal);
     document.querySelector("#cancelCollectNotifyModal").addEventListener("click", closeCollectNotifyModal);
@@ -32456,6 +32424,9 @@
     });
     document.querySelector("#detailCollectUrge").addEventListener("click", openCollectUrgeModal);
     document.querySelector("#detailCollectNotify").addEventListener("click", () => openCollectNotifyModal());
+    document.querySelector(".prepare-detail-action").addEventListener("click", event => {
+      if (event.currentTarget.textContent.trim() === "发起入职准备") openPrepareLaunchModal();
+    });
     document.querySelector("#detailCollectReturn").addEventListener("click", openCollectReturnModal);
     document.querySelector("#employmentCollectDetailPage").addEventListener("click", event => {
       const expandFiles = event.target.closest("[data-file-expand]");
